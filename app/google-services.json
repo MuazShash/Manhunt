@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "208386603631",
+    "project_id": "speedy-precept-314221",
+    "storage_bucket": "speedy-precept-314221.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:208386603631:android:166f1e850530fb8400eb9a",
+        "android_client_info": {
+          "package_name": "com.example.manhunt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "208386603631-3lte0ijtk2all3dmdv652sjuast3egbf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDidcH6VTT66dSmIs3I8ZdEMiFt4M3Lwg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "208386603631-3lte0ijtk2all3dmdv652sjuast3egbf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
