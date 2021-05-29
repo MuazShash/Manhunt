@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Lobby">
+
+    <Button
+        android:id="@+id/selectHunter"
+        android:layout_width="128dp"
+        android:layout_height="71dp"
+        android:text="Hunter"
+        tools:layout_editor_absoluteX="34dp"
+        tools:layout_editor_absoluteY="619dp" />
+
+    <Button
+        android:id="@+id/selectRunner"
+        android:layout_width="135dp"
+        android:layout_height="64dp"
+        android:text="Runner"
+        tools:layout_editor_absoluteX="201dp"
+        tools:layout_editor_absoluteY="624dp" />
+
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Username"
+        tools:layout_editor_absoluteX="73dp"
+        tools:layout_editor_absoluteY="548dp" />
+
+    <TextView
+        android:id="@+id/lobbyView"
+        android:layout_width="277dp"
+        android:layout_height="423dp"
+        android:layout_marginTop="108dp"
+        android:text="Lobby"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="47dp" />
+
+    <TextView
+        android:id="@+id/lobbyView2"
+        android:layout_width="253dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:text="Time to round start"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="61dp" />
+
+    <ImageButton
+        android:id="@+id/settings"
+        android:layout_width="52dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_preferences"
+        tools:layout_editor_absoluteX="334dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
