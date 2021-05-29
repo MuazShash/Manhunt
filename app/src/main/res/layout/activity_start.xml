@@ -6,19 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Start">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp"
-        android:layout_marginEnd="196dp"
-        android:layout_marginRight="196dp"
-        android:text="Logo" />
-
     <Button
         android:id="@+id/createGame"
         android:layout_width="wrap_content"
@@ -36,4 +23,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="329dp"
         android:text="Join Game" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/logo" />
 </RelativeLayout>
