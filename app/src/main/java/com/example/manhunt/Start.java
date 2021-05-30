@@ -22,7 +22,7 @@ public class Start extends AppCompatActivity {
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent OpenLobby = new Intent(getApplicationContext(), Lobby.class);
+                Intent OpenLobby = new Intent(getApplicationContext(), Options.class);
                 startActivity(OpenLobby);
             }
         });

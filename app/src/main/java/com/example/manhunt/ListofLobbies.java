@@ -37,32 +37,23 @@ public class ListofLobbies extends AppCompatActivity {
         getWindow().setLayout((int)(width*.8),(int)(height*.75));
 
 
-        /*view = (ListView) findViewById(R.id.lobbies);//the list view is the lobbies list view
-
-        ArrayList<String> lobbies = new ArrayList<>(); //
-
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,lobbies); //creating an arrayadapter for the listview
-        view.setAdapter(arrayAdapter); //setting the views adapter to arrayadapter
-        lobbies.add("halo");*/
-
-
         myRef.child("lobbies").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        ShowLobbies(dataSnapshot);
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ShowLobbies(dataSnapshot);
 
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
     }
 
     private void ShowLobbies(DataSnapshot dataSnapshot) {
         view = (ListView) findViewById(R.id.lobbies);//the list view is the lobbies list view
 
-        ArrayList<String> lobbies = new ArrayList<>(); //
+        ArrayList<String> lobbies = new ArrayList<>();
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,lobbies); //creating an arrayadapter for the listview
         view.setAdapter(arrayAdapter); //setting the views adapter to arrayadapter
