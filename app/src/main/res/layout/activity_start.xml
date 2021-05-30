@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="329dp"
+        android:layout_marginTop="436dp"
         android:text="Join Game" />
+
 </RelativeLayout>
