@@ -18,6 +18,7 @@
         <activity android:name=".Options"></activity>
         <activity android:name=".Lobby" />
         <activity android:name=".Game" />
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -39,6 +40,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ListofLobbies"
+            android:theme="@style/Theme.AppCompat.popupTheme"
+            android:label="Lobbies">
+
+            </activity>
     </application>
 
 </manifest>

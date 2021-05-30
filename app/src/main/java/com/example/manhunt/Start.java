@@ -14,15 +14,15 @@ public class Start extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        final Button JoinGame = findViewById(R.id.joinGame);
-        final Button CreateGame = findViewById(R.id.createGame);
+        final Button JoinGame = (Button) findViewById(R.id.joinGame);
+        final Button CreateGame = (Button) findViewById(R.id.createGame);
 
 
 
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent OpenLobby = new Intent(getApplicationContext(), Lobby.class);
+                Intent OpenLobby = new Intent(getApplicationContext(), Options.class);
                 startActivity(OpenLobby);
             }
         });
@@ -32,7 +32,7 @@ public class Start extends AppCompatActivity {
         JoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                    startActivity(new Intent(Start.this,ListofLobbies.class));
             }
         });
     }
