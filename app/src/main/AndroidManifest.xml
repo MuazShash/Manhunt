@@ -41,7 +41,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListofLobbies"
-            android:theme="@style/popupTheme">
+            android:theme="@style/Theme.AppCompat.popupTheme"
+            android:label="Lobbies">
 
             </activity>
     </application>
