@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.security.cert.PKIXRevocationChecker;
+import java.util.ArrayList;
 
 public class Lobby extends AppCompatActivity {
 
@@ -22,6 +23,16 @@ public class Lobby extends AppCompatActivity {
 
     TextView lobbyView = null;
 
+    String strLobbyName;
+    Options gameSettings;
+
+    ArrayList<Players> listOfPlayers = new ArrayList<Players>();
+
+    // listener for start of game maybe?
+
+    /* also is game going to work through a lobby or through a game object?
+     * would lobby just be a waiting room then for the game to start?
+     */
 
 
     @Override
