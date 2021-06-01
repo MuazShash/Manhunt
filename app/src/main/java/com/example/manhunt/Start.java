@@ -27,8 +27,6 @@ public class Start extends AppCompatActivity {
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
 
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 

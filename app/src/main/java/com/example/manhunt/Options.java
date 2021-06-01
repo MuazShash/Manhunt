@@ -21,6 +21,9 @@ public class Options extends AppCompatActivity {
     int intCD, intDistance, intBoundary, intTimer, intHunters, intTimeLimit;
     SeekBar seekCD, seekDistance, seekBoundary, seekTimer, seekHunters, seekTimeLimit;
     TextView txtCD, txtDistance, txtBoundary, txtTimer, txtHunters, txtTimeLimit;
+    GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+    String lobby = "lobby1";
+    //String user = globalPlayer.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class Options extends AppCompatActivity {
     }
 
     private void getCD(){
-        myRef.child("lobbies").child("lobby1").child("settings").child("cooldown").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("lobbies").child(lobby).child("settings").child("cooldown").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -79,7 +82,7 @@ public class Options extends AppCompatActivity {
     }
 
     private void getDistance(){
-        myRef.child("lobbies").child("lobby1").child("settings").child("distance").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("lobbies").child(lobby).child("settings").child("distance").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -98,7 +101,7 @@ public class Options extends AppCompatActivity {
     }
 
     private void getBoundary(){
-        myRef.child("lobbies").child("lobby1").child("settings").child("boundary").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("lobbies").child(lobby).child("settings").child("boundary").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -117,7 +120,7 @@ public class Options extends AppCompatActivity {
     }
 
     private void getTimer(){
-        myRef.child("lobbies").child("lobby1").child("settings").child("timer").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("lobbies").child(lobby).child("settings").child("timer").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -136,7 +139,7 @@ public class Options extends AppCompatActivity {
     }
 
     private void getHunters(){
-        myRef.child("lobbies").child("lobby1").child("settings").child("hunters").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("lobbies").child(lobby).child("settings").child("hunters").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -155,7 +158,7 @@ public class Options extends AppCompatActivity {
     }
 
     private void getTimeLimit(){
-        myRef.child("lobbies").child("lobby1").child("settings").child("time_limit").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("lobbies").child(lobby).child("settings").child("time_limit").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
