@@ -50,7 +50,6 @@ public class GlobalPlayerClass extends Application {
         Hunter = hunter;
     }
 
-
     public String getName() {
         return name;
     }

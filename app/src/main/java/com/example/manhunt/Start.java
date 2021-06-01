@@ -12,6 +12,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -48,9 +49,23 @@ public class Start extends AppCompatActivity {
         JoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    globalPlayer.setName(usernameInput.getText().toString());
 
-                    startActivity(new Intent(Start.this,ListofLobbies.class));
+                String username = usernameInput.getText().toString(); // storing username
+
+                // if username is blank, they need to make one before advancing
+                if(username.equals("")) {
+
+                    // popup asking for username
+                    Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
+
+                } else { // once they have a username
+
+                    // set username
+                    globalPlayer.setName(username);
+
+                    // display available lobbies
+                    startActivity(new Intent(Start.this, ListofLobbies.class));
+                }
             }
         });
 

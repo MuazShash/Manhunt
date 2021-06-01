@@ -40,10 +40,12 @@ public class Lobby extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        // finding elements
         nameInput = (EditText) findViewById(R.id.nameInput);
         saveName = (Button) findViewById(R.id.btnName);
         lobbyView = (TextView) findViewById(R.id.lobbyView);
 
+        // text field of users in lobby
         lobbyView.setText(null);
 
         saveName.setOnClickListener(new View.OnClickListener() {
@@ -52,23 +54,24 @@ public class Lobby extends AppCompatActivity {
                 name = nameInput.getText().toString();
                 lobbyView.append(name + "\n");
 
-                showToast(name);
+                nameUpdated(name);
             }
         });
 
+        // settings button
         final ImageButton button = findViewById(R.id.settings);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent OpenOptions = new Intent(getApplicationContext(), Options.class);
-                startActivity(OpenOptions);
+                startActivity(OpenOptions); // opens settings page
             }
         });
 
     }
 
-    private void showToast(String text) {
+    private void nameUpdated(String text) {
         Toast.makeText(this, "Name updated!", Toast.LENGTH_SHORT).show();
     }
 }
