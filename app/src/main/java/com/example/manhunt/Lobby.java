@@ -19,6 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
+
 import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 
@@ -27,6 +29,8 @@ public class Lobby extends AppCompatActivity {
     //database reference
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
+    // Write a string when this client loses connection
+
 
     // listener for start of game maybe?
 
@@ -43,6 +47,14 @@ public class Lobby extends AppCompatActivity {
         // getting global variables to check which lobby was chosen
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
         String lobbyChosen = globalPlayer.getLobbychosen();
+
+        //If statement to delete the lobby or just their use data from the database depending on if they are lobby leader or not
+        if(globalPlayer.isLeader()){
+            myRef.child("lobbies").child(lobbyChosen).onDisconnect().removeValue();
+        }
+        else{
+            myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).onDisconnect().removeValue();
+        }
 
         // Updating listview of players in the lobby
         myRef.child("lobbies").child(lobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
