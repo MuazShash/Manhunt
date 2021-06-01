@@ -9,18 +9,24 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:usesCleartextTraffic="true"
+        android:name=".GlobalPlayerClass"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Manhunt"
-        android:name=".GlobalPlayerClass">
-        <activity android:name=".Options"></activity>
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".CreateGamePopup"
+            android:theme="@style/Theme.AppCompat.CreateGamePopup"
+            >
+        </activity>
+
+        <activity android:name=".Options" />
         <activity android:name=".Lobby" />
         <activity android:name=".Game" />
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -42,11 +48,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ListofLobbies"
-            android:theme="@style/Theme.AppCompat.popupTheme"
-            android:label="Lobbies">
-
-            </activity>
+        <activity
+            android:name=".ListofLobbies"
+            android:label="Lobbies"
+            android:theme="@style/Theme.AppCompat.popupTheme"></activity>
     </application>
 
 </manifest>

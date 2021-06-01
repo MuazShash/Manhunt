@@ -10,6 +10,8 @@ public class GlobalPlayerClass extends Application {
     private double Latitude;
     private String lobbychosen;
 
+
+
     public String getLobbychosen() {
         return lobbychosen;
     }

@@ -4,9 +4,7 @@ package com.example.manhunt;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -14,12 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
 
 public class Start extends AppCompatActivity {
-
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String UserName = "";
 
 
     @Override
@@ -44,7 +38,6 @@ public class Start extends AppCompatActivity {
 
                 // if username is blank, they need to make one before advancing
                 if(username.equals("")) {
-
                     // popup asking for username
                     Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
 
@@ -53,9 +46,8 @@ public class Start extends AppCompatActivity {
                     // set username
                     globalPlayer.setName(username);
                     globalPlayer.setLeader(true); // setting them leader for creating the game
-
                     // display available lobbies
-                    startActivity(new Intent(Start.this, Options.class));
+                    startActivity(new Intent(Start.this, CreateGamePopup.class));
                 }
             }
         });
