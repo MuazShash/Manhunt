@@ -63,6 +63,7 @@ public class CreateGamePopup extends AppCompatActivity {
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("distance").setValue(5);
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("time_limit").setValue(60);
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("timer").setValue(30);
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("hunters").setValue(1);
 
 
                     startActivity(new Intent(CreateGamePopup.this,Lobby.class)); //open lobby activity

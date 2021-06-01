@@ -24,7 +24,7 @@ public class Options extends AppCompatActivity {
     SeekBar seekCD, seekDistance, seekBoundary, seekTimer, seekHunters, seekTimeLimit;
     TextView txtCD, txtDistance, txtBoundary, txtTimer, txtHunters, txtTimeLimit;
     Button back, save;
-    String lobby = "lobby1";
+    String lobby;
 
 
     @Override
@@ -32,8 +32,9 @@ public class Options extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
 
-        //GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext(); USED ONCE CREATE GAME POP UP IS READY
-        //lobby = globalPlayer.getLobbychosen();
+        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        //System.out.println("************************lobby name: " + globalPlayer.getLobbychosen());
+        lobby = globalPlayer.getLobbychosen();
 
         System.out.println("Creating started");
         seekCD = findViewById(R.id.seekCD);
@@ -295,9 +296,6 @@ public class Options extends AppCompatActivity {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
-                    intHunters = 1;
-                    txtHunters.setText("Cooldown duration: " + intHunters + " s");
-                    seekHunters.setProgress(intHunters);
                 }
                 else {
                     intHunters = Integer.parseInt(String.valueOf(task.getResult().getValue()));
