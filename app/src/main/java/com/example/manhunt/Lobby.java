@@ -33,7 +33,7 @@ public class Lobby extends AppCompatActivity {
     /* also is game going to work through a lobby or through a game object?
      * would lobby just be a waiting room then for the game to start?
      */
-    ListView listofPlayers;
+    ListView listOfPlayers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,29 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
+        // hunter and runner button IDs
+        final Button Hunter = (Button) findViewById(R.id.selectHunter);
+        final Button Runner = (Button) findViewById(R.id.selectRunner);
 
+        Hunter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { // on click of hunter
+
+                // set the user to be hunter (hunter = true)
+                myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true);
+                globalPlayer.setHunter(true);
+            }
+        });
+
+        Runner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { // on click of runner
+
+                // set the user to be runner (hunter = false)
+                myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
+                globalPlayer.setHunter(false);
+            }
+        });
 
         // settings button
         final ImageButton button = findViewById(R.id.settings);
@@ -71,12 +93,12 @@ public class Lobby extends AppCompatActivity {
     }
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {
-        listofPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view
+        listOfPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view
 
         ArrayList<String> players = new ArrayList<>();
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,players); //creating an arrayadapter for the listview
-        listofPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
+        listOfPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                 players.add(snapshot.getKey());
         }
@@ -85,4 +107,5 @@ public class Lobby extends AppCompatActivity {
     private void nameUpdated(String text) {
         Toast.makeText(this, "Name updated!", Toast.LENGTH_SHORT).show();
     }
+
 }

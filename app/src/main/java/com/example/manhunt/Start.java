@@ -41,8 +41,24 @@ public class Start extends AppCompatActivity {
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent OpenLobby = new Intent(getApplicationContext(), Options.class);
-                startActivity(OpenLobby);
+
+                String username = usernameInput.getText().toString(); // storing username
+
+                // if username is blank, they need to make one before advancing
+                if(username.equals("")) {
+
+                    // popup asking for username
+                    Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
+
+                } else { // once they have a username
+
+                    // set username
+                    globalPlayer.setName(username);
+                    globalPlayer.setLeader(true); // setting them leader for creating the game
+
+                    // display available lobbies
+                    startActivity(new Intent(Start.this, Options.class));
+                }
             }
         });
 
@@ -62,6 +78,7 @@ public class Start extends AppCompatActivity {
 
                     // set username
                     globalPlayer.setName(username);
+                    globalPlayer.setLeader(false); // setting them non-leader for joining game
 
                     // display available lobbies
                     startActivity(new Intent(Start.this, ListofLobbies.class));
