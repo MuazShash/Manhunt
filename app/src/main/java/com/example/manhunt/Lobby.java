@@ -5,62 +5,61 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 
 public class Lobby extends AppCompatActivity {
 
-    String name;
-
-    EditText nameInput;
-    Button saveName;
-
-    TextView lobbyView = null;
-
-    String strLobbyName;
-    Options gameSettings;
-
-    ArrayList<Players> listOfPlayers = new ArrayList<Players>();
+    //database reference
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
 
     // listener for start of game maybe?
 
     /* also is game going to work through a lobby or through a game object?
      * would lobby just be a waiting room then for the game to start?
      */
-
+    ListView listofPlayers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
-        // finding elements
-        nameInput = (EditText) findViewById(R.id.nameInput);
-        saveName = (Button) findViewById(R.id.btnName);
-        lobbyView = (TextView) findViewById(R.id.lobbyView);
+        // getting global variables to check which lobby was chosen
+        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        String lobbyChosen = globalPlayer.getLobbychosen();
 
-        // text field of users in lobby
-        lobbyView.setText(null);
-
-        saveName.setOnClickListener(new View.OnClickListener() {
+        // Updating listview of players in the lobby
+        myRef.child("lobbies").child(lobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                name = nameInput.getText().toString();
-                lobbyView.append(name + "\n");
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ShowPlayers(dataSnapshot);
 
-                nameUpdated(name);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
 
+
+
         // settings button
         final ImageButton button = findViewById(R.id.settings);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +68,18 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void ShowPlayers(DataSnapshot dataSnapshot) {
+        listofPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view
+
+        ArrayList<String> players = new ArrayList<>();
+
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,players); //creating an arrayadapter for the listview
+        listofPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                players.add(snapshot.getKey());
+        }
     }
 
     private void nameUpdated(String text) {

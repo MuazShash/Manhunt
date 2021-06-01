@@ -40,10 +40,10 @@ public class ListofLobbies extends AppCompatActivity {
 
         System.out.println(username);
         setContentView(R.layout.listoflobbies);
-        DisplayMetrics dimentions = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dimentions);
-        int width = dimentions.widthPixels;
-        int height = dimentions.heightPixels;
+        DisplayMetrics dimensions = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dimensions);
+        int width = dimensions.widthPixels;
+        int height = dimensions.heightPixels;
         getWindow().setLayout((int)(width*.8),(int)(height*.75));
 
 
@@ -66,18 +66,18 @@ public class ListofLobbies extends AppCompatActivity {
         ArrayList<String> lobbies = new ArrayList<>();
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,lobbies); //creating an arrayadapter for the listview
-        LobbyListView.setAdapter(arrayAdapter); //setting the views adapter to arrayadapter
+        LobbyListView.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            System.out.println(snapshot.getKey());
             lobbies.add(snapshot.getKey());
 
         }
         LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Lobbychosen = arrayAdapter.getItem(position).toString();
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+                    Lobbychosen = arrayAdapter.getItem(position).toString();
                     username = globalPlayer.getName();
+                    globalPlayer.setLobbychosen(Lobbychosen);
 
                     //write username to database here
                     myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("Hunter").setValue(globalPlayer.isHunter());
