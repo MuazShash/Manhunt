@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -21,46 +23,195 @@ public class Options extends AppCompatActivity {
     int intCD, intDistance, intBoundary, intTimer, intHunters, intTimeLimit;
     SeekBar seekCD, seekDistance, seekBoundary, seekTimer, seekHunters, seekTimeLimit;
     TextView txtCD, txtDistance, txtBoundary, txtTimer, txtHunters, txtTimeLimit;
-    GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+    Button back, save;
     String lobby = "lobby1";
-    //String user = globalPlayer.getName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
 
+        //GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext(); USED ONCE CREATE GAME POP UP IS READY
+        //lobby = globalPlayer.getLobbychosen();
+
         System.out.println("Creating started");
         seekCD = findViewById(R.id.seekCD);
+        seekCD.setOnSeekBarChangeListener(seekCDChange);
         txtCD = findViewById(R.id.txtCD);
         getCD();
 
         seekDistance = findViewById(R.id.seekDistance);
         txtDistance = findViewById(R.id.txtDistance);
+        seekDistance.setOnSeekBarChangeListener(seekDistanceChange);
         getDistance();
 
         seekBoundary = findViewById(R.id.seekBoundary);
         txtBoundary = findViewById(R.id.txtBoundary);
+        seekBoundary.setOnSeekBarChangeListener(seekBoundaryChange);
         getBoundary();
 
 
         seekTimer = findViewById(R.id.seekTimer);
         txtTimer = findViewById(R.id.txtTimer);
+        seekTimer.setOnSeekBarChangeListener(seekTimerChange);
         getTimer();
 
 
         seekHunters = findViewById(R.id.seekHunters);
         txtHunters = findViewById(R.id.txtHunters);
+        seekHunters.setOnSeekBarChangeListener(seekHuntersChange);
         getHunters();
 
 
         seekTimeLimit = findViewById(R.id.seekTimeLimit);
         txtTimeLimit = findViewById(R.id.txtTimeLimit);
+        seekTimeLimit.setOnSeekBarChangeListener(seekTimeLimitChange);
         getTimeLimit();
 
-
+        save = findViewById(R.id.btnSave);
+        back = findViewById(R.id.btnBack);
         System.out.println("Creating is done");
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        save.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                myRef.child("lobbies").child(lobby).child("settings").child("cooldown").setValue(intCD);
+                myRef.child("lobbies").child(lobby).child("settings").child("boundary").setValue(intBoundary);
+                myRef.child("lobbies").child(lobby).child("settings").child("timer").setValue(intTimer);
+                myRef.child("lobbies").child(lobby).child("settings").child("time_limit").setValue(intTimeLimit);
+                myRef.child("lobbies").child(lobby).child("settings").child("hunters").setValue(intHunters);
+                myRef.child("lobbies").child(lobby).child("settings").child("distance").setValue(intDistance);
+                System.out.println("Hunters = " + intHunters);
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+    SeekBar.OnSeekBarChangeListener seekCDChange = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            intCD = progress;
+            txtCD.setText("Cooldown duration: " + intCD + " s");
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    SeekBar.OnSeekBarChangeListener seekDistanceChange = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            intDistance = progress;
+            txtDistance.setText("Capture distance: " + intDistance + " m");
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    SeekBar.OnSeekBarChangeListener seekBoundaryChange = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            intBoundary = progress;
+            txtBoundary.setText("Map boundaries (radius): " + intBoundary + " m");
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    SeekBar.OnSeekBarChangeListener seekTimerChange = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            intTimer = progress;
+            txtTimer.setText("Hunt start timer: " + intTimer + " s");
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    SeekBar.OnSeekBarChangeListener seekHuntersChange = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            intHunters = progress;
+            txtHunters.setText("Starting hunters: " + intHunters);
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
+    SeekBar.OnSeekBarChangeListener seekTimeLimitChange = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            intTimeLimit = progress;
+            txtTimeLimit.setText("Game Time Limit: " + intTimeLimit + " mins");
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
 
     private void getCD(){
         myRef.child("lobbies").child(lobby).child("settings").child("cooldown").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -88,7 +239,7 @@ public class Options extends AppCompatActivity {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intDistance = 2;
-                    txtDistance.setText("Capture distnace: " + intDistance + " s");
+                    txtDistance.setText("Capture distance: " + intDistance + " m");
                     seekDistance.setProgress(intDistance);
                 }
                 else {
@@ -112,7 +263,7 @@ public class Options extends AppCompatActivity {
                 }
                 else {
                     intBoundary = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtBoundary.setText("Cooldown duration: " + intBoundary + " s");
+                    txtBoundary.setText("Map boundaries (radius): " + intBoundary + " m");
                     seekBoundary.setProgress(intBoundary);
                 }
             }
@@ -131,7 +282,7 @@ public class Options extends AppCompatActivity {
                 }
                 else {
                     intTimer = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtTimer.setText("Cooldown duration: " + intTimer + " s");
+                    txtTimer.setText("Hunt start timer: " + intTimer + " s");
                     seekTimer.setProgress(intTimer);
                 }
             }
@@ -150,7 +301,7 @@ public class Options extends AppCompatActivity {
                 }
                 else {
                     intHunters = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtHunters.setText("Cooldown duration: " + intHunters + " s");
+                    txtHunters.setText("Starting hunters: " + intHunters);
                     seekHunters.setProgress(intHunters);
                 }
             }
@@ -169,7 +320,7 @@ public class Options extends AppCompatActivity {
                 }
                 else {
                     intTimeLimit = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtTimeLimit.setText("Cooldown duration: " + intTimeLimit + " s");
+                    txtTimeLimit.setText("Game Time Limit: " + intTimeLimit + " mins");
                     seekTimeLimit.setProgress(intTimeLimit);
                 }
             }
