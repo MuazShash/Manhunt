@@ -6,66 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Options">
 
-    <TextView
-        android:id="@+id/txtCD"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="69dp"
-        android:text="Cooldown Duration" />
-
-    <TextView
-        android:id="@+id/txtDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="127dp"
-        android:text="Capture Distance" />
-
-    <TextView
-        android:id="@+id/txtBoundary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="183dp"
-        android:text="Game Boundary Radius" />
-
-    <TextView
-        android:id="@+id/txtTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="250dp"
-        android:text="Countdown Timer" />
-
-    <TextView
-        android:id="@+id/txtHunter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="321dp"
-        android:text="Starting Hunters" />
-
-    <TextView
-        android:id="@+id/txtTimeLimit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="380dp"
-        android:text="Game Time Limit" />
-
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
@@ -91,81 +31,141 @@
         android:text="Back" />
 
     <SeekBar
-        android:id="@+id/seekCD"
-        android:max="120"
-        android:min="10"
+        android:id="@+id/seekTimeLimit"
         android:layout_width="149dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="67dp"
-        android:layout_marginEnd="43dp"
-        android:layout_marginRight="43dp" />
+        android:layout_marginTop="430dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginRight="41dp"
+        android:max="120"
+        android:min="10" />
+
+    <TextView
+        android:id="@+id/txtTimeLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="427dp"
+        android:text="Game Time Limit: _mins" />
+
+    <TextView
+        android:id="@+id/txtCD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="116dp"
+        android:text="Cooldown Duration: _s" />
+
+    <SeekBar
+        android:id="@+id/seekCD"
+        android:layout_width="149dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="114dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
+        android:max="120"
+        android:min="10" />
 
     <SeekBar
         android:id="@+id/seekDistance"
-        android:max="10"
-        android:min="1"
         android:layout_width="149dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="130dp"
-        android:layout_marginEnd="44dp"
-        android:layout_marginRight="44dp" />
+        android:layout_marginTop="177dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginRight="37dp"
+        android:max="10"
+        android:min="1" />
+
+    <TextView
+        android:id="@+id/txtDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="174dp"
+        android:text="Capture Distance: _m" />
+
+    <TextView
+        android:id="@+id/txtBoundary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="230dp"
+        android:text="Game Boundary Radius: _m" />
 
     <SeekBar
         android:id="@+id/seekBoundary"
-        android:max="5000"
-        android:min="500"
         android:layout_width="149dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="187dp"
-        android:layout_marginEnd="43dp"
-        android:layout_marginRight="43dp" />
+        android:layout_marginTop="234dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
+        android:max="5000"
+        android:min="100" />
 
     <SeekBar
         android:id="@+id/seekTimer"
-        android:max="60"
-        android:min="10"
         android:layout_width="149dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="254dp"
-        android:layout_marginEnd="43dp"
-        android:layout_marginRight="43dp" />
+        android:layout_marginTop="301dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
+        android:max="60"
+        android:min="10" />
+
+    <TextView
+        android:id="@+id/txtTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="297dp"
+        android:text="Countdown Timer: _s" />
+
+    <TextView
+        android:id="@+id/txtHunters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="368dp"
+        android:text="Starting Hunters: _" />
 
     <SeekBar
         android:id="@+id/seekHunters"
-        android:max="120"
-        android:min="10"
         android:layout_width="149dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="323dp"
-        android:layout_marginEnd="45dp"
-        android:layout_marginRight="45dp" />
-
-    <SeekBar
-        android:id="@+id/seekTimeLimit"
+        android:layout_marginTop="370dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginRight="37dp"
         android:max="120"
-        android:min="10"
-        android:layout_width="149dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="383dp"
-        android:layout_marginEnd="49dp"
-        android:layout_marginRight="49dp" />
+        android:min="10" />
 
 </RelativeLayout>
