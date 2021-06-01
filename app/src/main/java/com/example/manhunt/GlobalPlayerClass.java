@@ -8,7 +8,15 @@ public class GlobalPlayerClass extends Application {
     private boolean Leader = false;
     private double Longitude;
     private double Latitude;
+    private String lobbychosen;
 
+    public String getLobbychosen() {
+        return lobbychosen;
+    }
+
+    public void setLobbychosen(String lobbychosen) {
+        this.lobbychosen = lobbychosen;
+    }
 
     public double getLatitude() {
         return Latitude;
