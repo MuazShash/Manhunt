@@ -40,7 +40,7 @@ public class CreateGamePopup extends AppCompatActivity {
         CreateLobby.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(LobbyName.getText().equals("")){
+                if(LobbyName.getText().toString().equals("")){
                     Toast.makeText(CreateGamePopup.this, "Please enter a LobbyName", Toast.LENGTH_SHORT).show();
                 }
                 else{
