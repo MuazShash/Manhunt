@@ -1,8 +1,14 @@
 package com.example.manhunt;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -15,20 +21,24 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ListofLobbies extends AppCompatActivity {
 
-
+    String SHARED_PREFS = "sharedPrefs";
+    private String username = "";
+    String Lobbychosen;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
 
-    ListView view; //listview variable
+
+    ListView LobbyListView; //listview variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        System.out.println(username);
         setContentView(R.layout.listoflobbies);
         DisplayMetrics dimentions = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dimentions);
@@ -51,16 +61,30 @@ public class ListofLobbies extends AppCompatActivity {
     }
 
     private void ShowLobbies(DataSnapshot dataSnapshot) {
-        view = (ListView) findViewById(R.id.lobbies);//the list view is the lobbies list view
+        LobbyListView = (ListView) findViewById(R.id.lobbies);//the list view is the lobbies list view
 
         ArrayList<String> lobbies = new ArrayList<>();
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,lobbies); //creating an arrayadapter for the listview
-        view.setAdapter(arrayAdapter); //setting the views adapter to arrayadapter
+        LobbyListView.setAdapter(arrayAdapter); //setting the views adapter to arrayadapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             System.out.println(snapshot.getKey());
             lobbies.add(snapshot.getKey());
 
         }
+        LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Lobbychosen = arrayAdapter.getItem(position).toString();
+                    GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+                    username = globalPlayer.getName();
+
+                    //write username to database here
+                    myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("Hunter").setValue(globalPlayer.isHunter());
+                    startActivity(new Intent(ListofLobbies.this,Lobby.class));
+
+
+            }
+        });
     }
 }
