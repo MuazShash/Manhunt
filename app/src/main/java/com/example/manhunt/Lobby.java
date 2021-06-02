@@ -48,8 +48,9 @@ public class Lobby extends AppCompatActivity {
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
         String lobbyChosen = globalPlayer.getLobbychosen();
 
-        //If statement to delete the lobby or just their use data from the database depending on if they are lobby leader or not
+        //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if(globalPlayer.isLeader()){
+            myRef.child("lobbies").child(lobbyChosen).child("disconnected").onDisconnect().setValue(true);
             myRef.child("lobbies").child(lobbyChosen).onDisconnect().removeValue();
         }
         else{
@@ -61,7 +62,20 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ShowPlayers(dataSnapshot);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
+        // Updating listview of players in the lobby
+        myRef.child("lobbies").child(lobbyChosen).child("disconnected").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if((boolean) dataSnapshot.getValue()){
+                    Intent backToStart = new Intent(getApplicationContext(), Start.class);
+                    startActivity(backToStart);
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -101,7 +115,6 @@ public class Lobby extends AppCompatActivity {
                 startActivity(OpenOptions); // opens settings page
             }
         });
-
     }
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {
