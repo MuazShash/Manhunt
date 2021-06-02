@@ -128,11 +128,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private void MarkLocation(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             if((boolean) dataSnapshot.child("hunter").getValue() != true){
-                LatLng PlayerLocation = new LatLng( (double) dataSnapshot.child("latitude").getValue(), (double) dataSnapshot.child("longitude").getValue());
+                LatLng PlayerLocation = new LatLng(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())) , Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
                 mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
             }
-
-
 
         }
     }
