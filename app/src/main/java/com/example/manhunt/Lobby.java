@@ -1,5 +1,6 @@
     package com.example.manhunt;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -120,6 +121,16 @@ public class Lobby extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        String lobbyChosen = globalPlayer.getLobbychosen();
+
+        myRef.child("lobbies").child(lobbyChosen).child("disconnect").setValue(true);
+        myRef.child("lobbies").child(lobbyChosen).removeValue();
+        super.onBackPressed();
     }
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {

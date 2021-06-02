@@ -1,6 +1,7 @@
 
 package com.example.manhunt;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,14 +13,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 public class Start extends AppCompatActivity {
 
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
+        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
@@ -27,7 +33,6 @@ public class Start extends AppCompatActivity {
         final EditText usernameInput = (EditText)findViewById(R.id.NameInput);
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
-
 
 
         CreateGame.setOnClickListener(new View.OnClickListener() {
@@ -93,5 +98,17 @@ public class Start extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+
+        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("disconnect").setValue(true);
+        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).removeValue();
+
+        super.onBackPressed();
+        finish();
     }
 }
