@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -97,16 +98,26 @@ public class Start extends AppCompatActivity {
 
             }
         });
-
     }
 
     boolean doubleBackToExitPressedOnce = false;
 
     @Override
     public void onBackPressed() {
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
 
-        super.onBackPressed();
-        finish();
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
