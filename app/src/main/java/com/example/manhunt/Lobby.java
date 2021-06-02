@@ -127,9 +127,16 @@ public class Lobby extends AppCompatActivity {
     public void onBackPressed() {
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
         String lobbyChosen = globalPlayer.getLobbychosen();
+        boolean leader = globalPlayer.isLeader();
 
-        myRef.child("lobbies").child(lobbyChosen).child("disconnect").setValue(true);
-        myRef.child("lobbies").child(lobbyChosen).removeValue();
+        if (leader) {
+            myRef.child("lobbies").child(lobbyChosen).child("disconnect").setValue(true);
+            myRef.child("lobbies").child(lobbyChosen).removeValue();
+        } else {
+            myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).removeValue();
+        }
+
+        globalPlayer.setLobbychosen("");
         super.onBackPressed();
     }
 

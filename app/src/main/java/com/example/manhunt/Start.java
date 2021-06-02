@@ -100,13 +100,11 @@ public class Start extends AppCompatActivity {
 
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
-
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-
-        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("disconnect").setValue(true);
-        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).removeValue();
 
         super.onBackPressed();
         finish();
