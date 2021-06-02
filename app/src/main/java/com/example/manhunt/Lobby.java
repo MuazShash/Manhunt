@@ -68,12 +68,13 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        // Updating listview of players in the lobby
+        //Move players back to start page
         myRef.child("lobbies").child(lobbyChosen).child("disconnected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if((boolean) dataSnapshot.getValue()){
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
+                    Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
                     startActivity(backToStart);
                 }
             }
