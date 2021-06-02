@@ -37,6 +37,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private ActivityGameBinding binding;
     private Options GameOptions;
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
+    String LobbyChosen;
+    GlobalPlayerClass globalPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +53,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         // application player object
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        String LobbyChosen = globalPlayer.getLobbychosen();
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        LobbyChosen = globalPlayer.getLobbychosen();
 
         //scanner button for hunters
         final Button scan = (Button) findViewById(R.id.btnScan);
@@ -104,7 +106,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             globalPlayer.setLongitude(location.getLongitude());
                             globalPlayer.setLatitude(location.getLatitude());
                             myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLongitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
                         }
                     });
