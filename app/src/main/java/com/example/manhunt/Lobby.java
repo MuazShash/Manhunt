@@ -1,6 +1,7 @@
     package com.example.manhunt;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -84,9 +85,16 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        // hunter and runner button IDs
+        // hunter, runner and start button IDs
+
         final Button Hunter = (Button) findViewById(R.id.selectHunter);
         final Button Runner = (Button) findViewById(R.id.selectRunner);
+
+
+
+
+
+
 
         Hunter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +129,41 @@ public class Lobby extends AppCompatActivity {
                 }
             }
         });
+
+        //start button
+        final Button Start = (Button) findViewById(R.id.btnStart);
+
+        //limiting start button visibility to only lobby leader
+        View StartVisibility = findViewById(R.id.btnStart);
+        if(!globalPlayer.isLeader()){
+            StartVisibility.setVisibility(View.GONE);
+        }
+
+        //on Start button press, the game will start
+        Start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myRef.child("lobbies").child(lobbyChosen).child("start").setValue(true);
+                startActivity(new Intent(Lobby.this,Game.class)); //open maps game activity
+            }
+        });
+
+
+        //putting every user into the game now
+        myRef.child("lobbies").child(lobbyChosen).child("start").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if((boolean) snapshot.getValue()){
+                    startActivity(new Intent(Lobby.this,Game.class)); //open maps game activity
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+
     }
 
     @Override
