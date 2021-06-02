@@ -8,7 +8,7 @@ public class GlobalPlayerClass extends Application {
     private boolean Leader = false;
     private double Longitude;
     private double Latitude;
-    private String lobbychosen;
+    private String lobbychosen = "";
 
 
 
