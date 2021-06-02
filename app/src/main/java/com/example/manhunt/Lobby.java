@@ -1,4 +1,4 @@
-    package com.example.manhunt;
+package com.example.manhunt;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -20,7 +20,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 
 
 import java.security.cert.PKIXRevocationChecker;
@@ -51,11 +50,10 @@ public class Lobby extends AppCompatActivity {
         String lobbyChosen = globalPlayer.getLobbychosen();
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
-        if(globalPlayer.isLeader()){
+        if (globalPlayer.isLeader()) {
             myRef.child("lobbies").child(lobbyChosen).child("disconnected").onDisconnect().setValue(true);
             myRef.child("lobbies").child(lobbyChosen).onDisconnect().removeValue();
-        }
-        else{
+        } else {
             myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).onDisconnect().removeValue();
         }
 
@@ -65,6 +63,7 @@ public class Lobby extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ShowPlayers(dataSnapshot);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -74,12 +73,13 @@ public class Lobby extends AppCompatActivity {
         myRef.child("lobbies").child(lobbyChosen).child("disconnected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if((boolean) dataSnapshot.getValue()){
+                if ((boolean) dataSnapshot.getValue()) {
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
                     Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
                     startActivity(backToStart);
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -89,11 +89,6 @@ public class Lobby extends AppCompatActivity {
 
         final Button Hunter = (Button) findViewById(R.id.selectHunter);
         final Button Runner = (Button) findViewById(R.id.selectRunner);
-
-
-
-
-
 
 
         Hunter.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +116,7 @@ public class Lobby extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(globalPlayer.isLeader()) { // only the leader can change game settings
+                if (globalPlayer.isLeader()) { // only the leader can change game settings
                     Intent OpenOptions = new Intent(getApplicationContext(), Options.class);
                     startActivity(OpenOptions); // opens settings page
                 } else {
@@ -135,7 +130,7 @@ public class Lobby extends AppCompatActivity {
 
         //limiting start button visibility to only lobby leader
         View StartVisibility = findViewById(R.id.btnStart);
-        if(!globalPlayer.isLeader()){
+        if (!globalPlayer.isLeader()) {
             StartVisibility.setVisibility(View.GONE);
         }
 
@@ -144,7 +139,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myRef.child("lobbies").child(lobbyChosen).child("start").setValue(true);
-                startActivity(new Intent(Lobby.this,Game.class)); //open maps game activity
+                startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
             }
         });
 
@@ -153,8 +148,8 @@ public class Lobby extends AppCompatActivity {
         myRef.child("lobbies").child(lobbyChosen).child("start").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if((boolean) snapshot.getValue()){
-                    startActivity(new Intent(Lobby.this,Game.class)); //open maps game activity
+                if ((boolean) snapshot.getValue()) {
+                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
                 }
             }
 
@@ -188,10 +183,10 @@ public class Lobby extends AppCompatActivity {
 
         ArrayList<String> players = new ArrayList<>();
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,players); //creating an arrayadapter for the listview
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
         listOfPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                players.add(snapshot.getKey());
+            players.add(snapshot.getKey());
         }
     }
 

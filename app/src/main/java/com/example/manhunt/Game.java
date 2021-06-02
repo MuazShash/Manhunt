@@ -1,33 +1,138 @@
 package com.example.manhunt;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.manhunt.databinding.ActivityGameBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Game extends FragmentActivity implements OnMapReadyCallback {
 
+    //database reference
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
+
     private GoogleMap mMap;
     private ActivityGameBinding binding;
+    private Options GameOptions;
+    private FusedLocationProviderClient fusedLocationClient; // fused location provider client
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        super.onCreate(savedInstanceState);
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // application player object
+        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        String LobbyChosen = globalPlayer.getLobbychosen();
+
+        //scanner button for hunters
+        final Button scan = (Button) findViewById(R.id.btnScan);
+
+        //limiting scan button visibility to only hunters
+        View StartVisibility = findViewById(R.id.btnScan);
+        if (!globalPlayer.isHunter()) {
+            StartVisibility.setVisibility(View.GONE);
+        }
+
+        scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+                myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        MarkLocation(snapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                    }
+                });
+
+            }
+        });
+
+
+        myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if ((boolean) snapshot.getValue()) {
+                    //asking to use location
+                    /*if (ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }*/
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            globalPlayer.setLongitude(location.getLongitude());
+                            globalPlayer.setLatitude(location.getLatitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLongitude());
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+
+
+
+
+    }
+
+    private void MarkLocation(DataSnapshot snapshot) {
+        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+            if((boolean) dataSnapshot.child("hunter").getValue() != true){
+                LatLng PlayerLocation = new LatLng( (double) dataSnapshot.child("latitude").getValue(), (double) dataSnapshot.child("longitude").getValue());
+                mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
+            }
+
+
+
+        }
     }
 
     /**

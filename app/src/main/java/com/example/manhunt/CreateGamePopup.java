@@ -53,6 +53,9 @@ public class CreateGamePopup extends AppCompatActivity {
                     //creates the disconnected attribute within the lobby
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("disconnected").setValue(false);
 
+                    //creates the scan attribute within th lobby
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(false);
+
                     //setting default user attributes on firebase
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);

@@ -26,6 +26,14 @@ public class Options extends AppCompatActivity {
     Button back, save;
     String lobby;
 
+    public Options(){
+        intCD = 0;
+        intDistance = 0;
+        intTimer = 0;
+        intTimeLimit = 0;
+        intHunters = 0;
+        intBoundary = 0;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
