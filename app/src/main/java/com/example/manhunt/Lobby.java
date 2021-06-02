@@ -1,4 +1,4 @@
-package com.example.manhunt;
+    package com.example.manhunt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -68,7 +68,7 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        //Move players back to start page
+        // Move players back to start page
         myRef.child("lobbies").child(lobbyChosen).child("disconnected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -112,8 +112,12 @@ public class Lobby extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent OpenOptions = new Intent(getApplicationContext(), Options.class);
-                startActivity(OpenOptions); // opens settings page
+                if(globalPlayer.isLeader()) { // only the leader can change game settings
+                    Intent OpenOptions = new Intent(getApplicationContext(), Options.class);
+                    startActivity(OpenOptions); // opens settings page
+                } else {
+                    showToast("Only the host can change the game settings");
+                }
             }
         });
     }
@@ -130,8 +134,8 @@ public class Lobby extends AppCompatActivity {
         }
     }
 
-    private void nameUpdated(String text) {
-        Toast.makeText(this, "Name updated!", Toast.LENGTH_SHORT).show();
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
 }
