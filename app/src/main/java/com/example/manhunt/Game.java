@@ -8,6 +8,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 
@@ -65,10 +66,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             StartVisibility.setVisibility(View.GONE);
         }
 
+
+
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+
                 myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -85,41 +88,26 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         });
 
 
-        myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if ((boolean) snapshot.getValue()) {
-                    //asking to use location
-                    /*if (ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }*/
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            globalPlayer.setLongitude(location.getLongitude());
-                            globalPlayer.setLatitude(location.getLatitude());
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
+        final Handler handler = new Handler();
+        final int delay = 2000;
 
-                        }
-                    });
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("myHandler: here!");
+                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        globalPlayer.setLongitude(location.getLongitude());
+                        globalPlayer.setLatitude(location.getLatitude());
+                        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
-                }
+                    }
+                });
+                // Do your work here
+                handler.postDelayed(this, delay);
             }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
-
+        }, delay);
 
 
 
