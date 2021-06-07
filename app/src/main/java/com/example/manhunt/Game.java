@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     //database reference
@@ -66,15 +68,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             StartVisibility.setVisibility(View.GONE);
         }
 
-
-
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
                 myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
+                        mMap.clear();
                         MarkLocation(snapshot);
                     }
 
@@ -87,13 +88,22 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
-
         final Handler handler = new Handler();
         final int delay = 2000;
 
         handler.postDelayed(new Runnable() {
             public void run() {
                 System.out.println("myHandler: here!");
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
@@ -109,8 +119,43 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             }
         }, delay);
 
+        /*
+        myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if ((boolean) snapshot.getValue()) {
+                    //asking to use location
+                    if (ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            globalPlayer.setLongitude(location.getLongitude());
+                            globalPlayer.setLatitude(location.getLatitude());
 
+                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+          */
     }
 
     private void MarkLocation(DataSnapshot snapshot) {
@@ -119,8 +164,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 LatLng PlayerLocation = new LatLng(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())) , Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
                 mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
             }
-
         }
+        //myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(false);
     }
 
     /**
@@ -136,9 +181,5 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
