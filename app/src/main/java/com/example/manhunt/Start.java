@@ -34,7 +34,7 @@ public class Start extends AppCompatActivity {
         final EditText usernameInput = (EditText)findViewById(R.id.NameInput);
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
-
+        
 
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
