@@ -67,7 +67,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
          globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
         // application player object
-        LobbyChosen = globalPlayer.getLobbychosen();
+        LobbyChosen = globalPlayer.getLobbyChosen();
         username = globalPlayer.getName();
 
 
@@ -165,8 +165,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             globalPlayer.setLongitude(location.getLongitude());
                             globalPlayer.setLatitude(location.getLatitude());
 
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
                         }
                     });
@@ -194,7 +194,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
             }
         }
-        //myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(false);
+        //myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("scan").setValue(false);
     }
 
     /**

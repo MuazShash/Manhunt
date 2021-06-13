@@ -45,34 +45,34 @@ public class CreateGamePopup extends AppCompatActivity {
                 }
                 else{
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext(); //Global player object
-                    globalPlayer.setLobbychosen(LobbyName.getText().toString()); //set global lobby name to the EditText input
+                    globalPlayer.setLobbyChosen(LobbyName.getText().toString()); //set global lobby name to the EditText input
 
                     //setting the start game object to false (players will listen to this object in the lobby screen)
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("start").setValue(false);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("start").setValue(false);
 
                     //creates the disconnected attribute within the lobby
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("disconnected").setValue(false);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("disconnected").setValue(false);
 
                     //creates the scan attribute within th lobby
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(false);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("scan").setValue(false);
 
                     //setting default user attributes on firebase
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(0.0);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(0.0);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(0.0);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(0.0);
 
                     //updating global player attributes
                     globalPlayer.setHunter(false);
                     globalPlayer.setLeader(true);
 
                     //setting default lobby settings on firebase
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("boundary").setValue(500);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("cooldown").setValue(5);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("distance").setValue(5);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("time_limit").setValue(60);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("timer").setValue(30);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("settings").child("hunters").setValue(1);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("settings").child("boundary").setValue(500);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("settings").child("cooldown").setValue(5);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("settings").child("distance").setValue(5);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("settings").child("time_limit").setValue(60);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("settings").child("timer").setValue(30);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("settings").child("hunters").setValue(1);
 
 
                     startActivity(new Intent(CreateGamePopup.this,Lobby.class)); //open lobby activity

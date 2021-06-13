@@ -47,7 +47,7 @@ public class Lobby extends AppCompatActivity {
 
         // getting global variables to check which lobby was chosen
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        String lobbyChosen = globalPlayer.getLobbychosen();
+        String lobbyChosen = globalPlayer.getLobbyChosen();
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
@@ -167,7 +167,7 @@ public class Lobby extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        String lobbyChosen = globalPlayer.getLobbychosen();
+        String lobbyChosen = globalPlayer.getLobbyChosen();
         boolean leader = globalPlayer.isLeader();
 
         if (leader) {
@@ -177,7 +177,7 @@ public class Lobby extends AppCompatActivity {
             myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).removeValue();
         }
 
-        globalPlayer.setLobbychosen("");
+        globalPlayer.setLobbyChosen("");
         super.onBackPressed();
     }
 

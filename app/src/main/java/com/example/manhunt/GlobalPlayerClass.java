@@ -8,16 +8,16 @@ public class GlobalPlayerClass extends Application {
     private boolean Leader = false;
     private double Longitude;
     private double Latitude;
-    private String lobbychosen = "";
+    private String lobbyChosen = "";
 
 
 
-    public String getLobbychosen() {
-        return lobbychosen;
+    public String getLobbyChosen() {
+        return lobbyChosen;
     }
 
-    public void setLobbychosen(String lobbychosen) {
-        this.lobbychosen = lobbychosen;
+    public void setLobbyChosen(String lobbyChosen) {
+        this.lobbyChosen = lobbyChosen;
     }
 
     public double getLatitude() {

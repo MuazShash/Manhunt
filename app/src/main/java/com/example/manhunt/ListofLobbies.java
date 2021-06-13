@@ -27,7 +27,7 @@ public class ListofLobbies extends AppCompatActivity {
 
     String SHARED_PREFS = "sharedPrefs";
     private String username = "";
-    String Lobbychosen;
+    String LobbyChosen;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
 
@@ -75,15 +75,15 @@ public class ListofLobbies extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-                    Lobbychosen = arrayAdapter.getItem(position).toString();
+                    LobbyChosen = arrayAdapter.getItem(position).toString();
                     username = globalPlayer.getName();
-                    globalPlayer.setLobbychosen(Lobbychosen);
+                    globalPlayer.setLobbyChosen(LobbyChosen);
 
                     //write username to database here with some defaults
-                    myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("hunter").setValue(false);
-                    myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("leader").setValue(false);
-                    myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("latitude").setValue(0.0);
-                    myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("longitude").setValue(0.0);
+                    myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
+                    myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
+                    myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
+                    myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);
 
 
 

@@ -41,8 +41,8 @@ public class Options extends AppCompatActivity {
         setContentView(R.layout.activity_options);
 
         GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        //System.out.println("************************lobby name: " + globalPlayer.getLobbychosen());
-        lobby = globalPlayer.getLobbychosen();
+        //System.out.println("************************lobby name: " + globalPlayer.getLobbyChosen());
+        lobby = globalPlayer.getLobbyChosen();
 
         System.out.println("Creating started");
         seekCD = findViewById(R.id.seekCD);

@@ -65,7 +65,7 @@ public class GameRunner extends FragmentActivity implements OnMapReadyCallback {
 
         // application player object
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        LobbyChosen = globalPlayer.getLobbychosen();
+        LobbyChosen = globalPlayer.getLobbyChosen();
 
 
         // setting initial player status in top left
@@ -128,8 +128,8 @@ public class GameRunner extends FragmentActivity implements OnMapReadyCallback {
                     public void onSuccess(Location location) {
                         globalPlayer.setLongitude(location.getLongitude());
                         globalPlayer.setLatitude(location.getLatitude());
-                        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
-                        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
+                        myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                        myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
                     }
                 });
@@ -160,8 +160,8 @@ public class GameRunner extends FragmentActivity implements OnMapReadyCallback {
                             globalPlayer.setLongitude(location.getLongitude());
                             globalPlayer.setLatitude(location.getLatitude());
 
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
-                            myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                            myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
                         }
                     });
