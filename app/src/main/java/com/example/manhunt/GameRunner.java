@@ -1,25 +1,28 @@
 package com.example.manhunt;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.manhunt.databinding.ActivityGameBinding;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import com.example.manhunt.databinding.ActivityGameRunnerBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -33,30 +36,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-
-public class Game extends FragmentActivity implements OnMapReadyCallback {
+public class GameRunner extends FragmentActivity implements OnMapReadyCallback {
 
     //database reference
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
 
     private GoogleMap mMap;
-    private ActivityGameBinding binding;
+    private ActivityGameRunnerBinding binding;
     private Options GameOptions;
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
-    private String LobbyChosen, username;
+    private String LobbyChosen;
     private GlobalPlayerClass globalPlayer;
-    private double lat, lon;
 
-    private final boolean HUNTER = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         super.onCreate(savedInstanceState);
-        binding = ActivityGameBinding.inflate(getLayoutInflater());
+        binding = ActivityGameRunnerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -64,42 +63,42 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-         globalPlayer = (GlobalPlayerClass) getApplicationContext();
-
         // application player object
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
         LobbyChosen = globalPlayer.getLobbychosen();
-        username = globalPlayer.getName();
 
 
-        //scanner button for hunters
-        final Button scan = (Button) findViewById(R.id.btnScan);
-
-        // setting initial visibility of scan button and player status in top right
-        ShowButton();
+        // setting initial player status in top left
         ShowStatus();
 
-        // Listener for scan button when clicked by hunters
-        scan.setOnClickListener(new View.OnClickListener() {
+        myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                //myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
-                myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
-                        mMap.clear(); // clear map
-                        MarkLocation(snapshot); // redraw the map with new locations
-                        checkCaught(snapshot, globalPlayer);
-                    }
+            public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
+                mMap.clear(); // clear map
+                runnerLocations(snapshot); // redraw the map with new locations
 
-                    @Override
-                    public void onCancelled(DatabaseError error) {
+                if ((boolean) snapshot.child(globalPlayer.getName()).child("hunter").getValue()) {
+                    globalPlayer.setHunter(true);
 
-                    }
-                });
+                    /* Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    // Vibrate for 500 milliseconds
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate(500);
+                    } */
+
+                    startActivity(new Intent(GameRunner.this, Game.class));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
 
             }
         });
-
 
 
 
@@ -114,7 +113,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         handler.postDelayed(new Runnable() {
             public void run() {
                 System.out.println("myHandler: here!");
-                if (ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(GameRunner.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GameRunner.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -129,12 +128,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     public void onSuccess(Location location) {
                         globalPlayer.setLongitude(location.getLongitude());
                         globalPlayer.setLatitude(location.getLatitude());
-
-                        lat = (Double) globalPlayer.getLatitude();
-                        lon = (Double) globalPlayer.getLongitude();
-
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(lat);
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(lon);
+                        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
+                        myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
 
                     }
                 });
@@ -182,21 +177,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
           */
     }
 
-    private void MarkLocation(DataSnapshot snapshot) {
-        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
-            LatLng PlayerLocation = new LatLng(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())) , Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
-
-            // draw hunters in blue, and runners in red
-            if((boolean) dataSnapshot.child("hunter").getValue()){ // hunters
-                mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(180)).position(PlayerLocation).title(dataSnapshot.getKey()));
-            } else { // runners
-                mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
-            }
-        }
-        //myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(false);
-    }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -212,42 +192,27 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-    private void ShowStatus() { // textview in top right showing the player status (hunter)
-        TextView txtPlayerStatus = (TextView) findViewById(R.id.txtPlayerStatus);
-
-            txtPlayerStatus.setTextColor(Color.RED); // colour change for visibility
-            txtPlayerStatus.setText("Hunter");
-    }
-
-    private void ShowButton() {
-        // scan button visibility
-        View StartVisibility = findViewById(R.id.btnScan);
-
-        StartVisibility.setVisibility(View.VISIBLE);
-    }
-
-    private void checkCaught(DataSnapshot snapshot, GlobalPlayerClass gp) {
-
-        Location myLocation = new Location(""); // my location, using
-        myLocation.setLatitude(gp.getLatitude());
-        myLocation.setLongitude(gp.getLongitude());
-
+    private void runnerLocations(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
-            String playerName = dataSnapshot.getKey();
+            LatLng PlayerLocation = new LatLng(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())) , Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
-            Location playerLocation = new Location("");// looping through the other player locations
-            playerLocation.setLatitude(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())));
-            playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
+            // draw hunters in blue, and runners in red
+            if((boolean) dataSnapshot.child("hunter").getValue()){ // hunters
+                // does nothing since runners can only see other runners
 
-            float distanceInMeters =  myLocation.distanceTo(playerLocation); // distance to the other players
-
-            if (distanceInMeters <= 10) { // people within 10 meters
-                if(!((boolean) dataSnapshot.child("hunter").getValue())) { // if they're a runner
-                    myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true);
-                }
+            } else { // runners
+                mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
             }
         }
+    }
+
+    private void ShowStatus() { // textview in top right showing the player status (runner)
+        TextView txtPlayerStatus = (TextView) findViewById(R.id.txtPlayerStatus);
+
+            txtPlayerStatus.setTextColor(Color.GREEN);
+            txtPlayerStatus.setText("Runner");
+
     }
 
 
@@ -256,7 +221,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
-            startActivity(new Intent(Game.this, Start.class));
+            startActivity(new Intent(GameRunner.this, Start.class));
             return;
         }
 

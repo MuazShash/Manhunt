@@ -8,6 +8,10 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".GlobalPlayerClass"
         android:allowBackup="true"
@@ -27,6 +31,7 @@
         <activity android:name=".Options" />
         <activity android:name=".Lobby" />
         <activity android:name=".Game" />
+        <activity android:name=".GameRunner" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

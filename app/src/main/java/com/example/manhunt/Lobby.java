@@ -139,7 +139,6 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myRef.child("lobbies").child(lobbyChosen).child("start").setValue(true);
-                startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
             }
         });
 
@@ -149,7 +148,11 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    if (globalPlayer.isHunter()) {
+                        startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    } else {
+                        startActivity(new Intent(Lobby.this, GameRunner.class)); //open maps game activity
+                    }
                 }
             }
 
