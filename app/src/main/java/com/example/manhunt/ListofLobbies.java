@@ -78,6 +78,8 @@ public class ListofLobbies extends AppCompatActivity {
                     Lobbychosen = arrayAdapter.getItem(position).toString();
                     username = globalPlayer.getName();
                     globalPlayer.setLobbychosen(Lobbychosen);
+                    globalPlayer.setLatitude(0.0);
+                    globalPlayer.setLongitude(0.0);
 
                     //write username to database here with some defaults
                     myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("hunter").setValue(false);
