@@ -148,11 +148,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    if (globalPlayer.isHunter()) {
                         startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
-                    } else {
-                        startActivity(new Intent(Lobby.this, GameRunner.class)); //open maps game activity
-                    }
                 }
             }
 
