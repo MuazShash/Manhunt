@@ -94,8 +94,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         handler.postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             public void run() {
-                System.out.println("myHandler: here!");
-                if (myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter") =) {
+                if (globalPlayer.isHunter()) {
                     ShowStatus("hunter", Color.RED); //Updating user interface
                     ShowButton(); //Updating user interface
                     myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
