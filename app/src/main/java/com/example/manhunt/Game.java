@@ -94,6 +94,19 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         handler.postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             public void run() {
+                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        globalPlayer.setLongitude(location.getLongitude());
+                        globalPlayer.setLatitude(location.getLatitude());
+
+                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+
+                        ready = true;
+                    }
+                });
+
                 if (globalPlayer.isHunter()) {
                     ShowStatus("hunter", Color.RED); //Updating user interface
                     ShowButton(); //Updating user interface
@@ -109,19 +122,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         }
                     });
                 }
-
-                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        globalPlayer.setLongitude(location.getLongitude());
-                        globalPlayer.setLatitude(location.getLatitude());
-
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
-
-                        ready = true;
-                    }
-                });
                 // Do your work here
                 handler.postDelayed(this, delay);
             }
@@ -165,8 +165,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         if(!globalPlayer.isHunter()) {
             myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot scanSnapshot) {
-                    globalPlayer.setHunter(true);
+                public void onDataChange(DataSnapshot hunterSnapshot) {
+                    if((boolean) hunterSnapshot.getValue() == true){
+                        globalPlayer.setHunter(true);
+                    }
+
                 }
 
                 @Override
@@ -233,7 +236,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         myLocation.setLongitude(globalPlayer.getLongitude());
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-            if (!((boolean) dataSnapshot.child("hunter").getValue())) {
+            if (dataSnapshot.getKey() != globalPlayer.getName()) {
                 String playerName = dataSnapshot.getKey();
 
                 Location playerLocation = new Location("");// looping through the other player locations
@@ -241,11 +244,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); // distance to the other players
-                System.out.println(globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName);
 
+                System.out.println("- - - - - - - -- - - - - -- -" + globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName + "- - - - - - - -- - - - - -- -");
+
+                /*
                 if (distanceInMeters <= 10) { // people within 10 meters
                     myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true);
                 }
+                */
             }
         }
     }
