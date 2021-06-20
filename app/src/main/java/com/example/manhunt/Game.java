@@ -94,19 +94,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         handler.postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             public void run() {
-                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        globalPlayer.setLongitude(location.getLongitude());
-                        globalPlayer.setLatitude(location.getLatitude());
-
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
-
-                        ready = true;
-                    }
-                });
-
                 if (globalPlayer.isHunter()) {
                     ShowStatus("hunter", Color.RED); //Updating user interface
                     ShowButton(); //Updating user interface
@@ -122,6 +109,19 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         }
                     });
                 }
+
+                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        globalPlayer.setLongitude(location.getLongitude());
+                        globalPlayer.setLatitude(location.getLatitude());
+
+                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+
+                        ready = true;
+                    }
+                });
                 // Do your work here
                 handler.postDelayed(this, delay);
             }
