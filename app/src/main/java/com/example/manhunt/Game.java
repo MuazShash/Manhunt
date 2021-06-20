@@ -236,7 +236,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         myLocation.setLongitude(globalPlayer.getLongitude());
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-            if (dataSnapshot.getKey() != globalPlayer.getName()) {
+            if ((boolean) dataSnapshot.child("hunter").getValue()) {
                 String playerName = dataSnapshot.getKey();
 
                 Location playerLocation = new Location("");// looping through the other player locations
