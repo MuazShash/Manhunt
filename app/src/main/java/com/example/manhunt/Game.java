@@ -75,6 +75,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             ShowStatus("Hunter", Color.RED);
         } else {
             ShowStatus("Runner", Color.GREEN);
+            hideButton();
         }
     }
 
@@ -203,6 +204,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         StartVisibility.setVisibility(View.VISIBLE);
     }
 
+    private void hideButton() {
+        // scan button visibility
+        View StartVisibility = findViewById(R.id.btnScan);
+        StartVisibility.setVisibility(View.INVISIBLE);
+    }
     private void checkCaught(DataSnapshot snapshot) {
 
         Location myLocation = new Location(""); // my location, using
