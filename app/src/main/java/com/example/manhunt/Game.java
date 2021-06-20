@@ -224,6 +224,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); // distance to the other players
+                System.out.println(globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName);
 
                 if (distanceInMeters <= 10) { // people within 10 meters
                     myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true);
