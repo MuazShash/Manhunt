@@ -95,7 +95,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @SuppressLint("MissingPermission")
             public void run() {
                 System.out.println("myHandler: here!");
-                if (globalPlayer.isHunter()) {
+                if (myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter") =) {
                     ShowStatus("hunter", Color.RED); //Updating user interface
                     ShowButton(); //Updating user interface
                     myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
@@ -119,6 +119,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+
                         ready = true;
                     }
                 });
@@ -153,6 +154,20 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         });
 
                     }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+
+                }
+            });
+        }
+
+        if(!globalPlayer.isHunter()) {
+            myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot scanSnapshot) {
+                    globalPlayer.setHunter(true);
                 }
 
                 @Override
