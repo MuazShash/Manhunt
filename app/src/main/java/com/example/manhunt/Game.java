@@ -49,6 +49,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private String LobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
     Button scan;
+    boolean ready = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +101,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
-                            checkCaught(snapshot);
+                            if(ready){
+                                checkCaught(snapshot);
+                            }
                         }
                         @Override
                         public void onCancelled(DatabaseError error) {
@@ -116,7 +119,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
-
+                        ready = true;
                     }
                 });
                 // Do your work here
