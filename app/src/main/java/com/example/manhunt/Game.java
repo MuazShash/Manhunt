@@ -54,7 +54,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private GlobalPlayerClass globalPlayer;
     Button scan;
     boolean ready = false; //Flags if the round start timer is finished
-    long startTime = System.currentTimeMillis(), warningTimer; //Stores information for round start and out of bounds timers
+    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
 
     @SuppressLint("MissingPermission")
