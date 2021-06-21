@@ -53,11 +53,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private String LobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
     Button scan;
-    boolean ready = false;
-    long startTime = System.currentTimeMillis();
-    double startLat;
-    double startLng;
-
+    boolean ready = false; //Flags if the round start timer is finished
+    long startTime = System.currentTimeMillis(), warningTimer; //Stores information for round start and out of bounds timers
+    double startLat, startLng; //Stores starting latitude and longitude
 
     @SuppressLint("MissingPermission")
     @Override
@@ -78,24 +76,26 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         LobbyChosen = globalPlayer.getLobbychosen();
         username = globalPlayer.getName();
 
-        if(globalPlayer.isLeader()){
+        if(globalPlayer.isLeader()){ //Sets the start position to the leader's position when they press start game and updates the database
             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
+                    //Updating starting coordinates
                     startLat = location.getLatitude();
                     startLng = location.getLongitude();
-
                     LatLng startPosition = new LatLng(startLat, startLng);
+
+                    //Updating database
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLat").setValue(startLat);
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLng").setValue(startLng);
 
+                    //Draws a circle on the map
                     CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
-
                     mMap.addCircle(boundary);
                 }
             });
         }
-        else{
+        else{ //Reads the start position from the database for non leaders
             myRef.child("lobbies").child(LobbyChosen).child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -112,6 +112,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                         LatLng startPosition = new LatLng(startLat, startLng);
 
+                        //Draws a circle on the map
                         CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
                         mMap.addCircle(boundary);
 
@@ -142,14 +143,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         handler.postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             public void run() {
+
                 if (globalPlayer.isHunter()) {
                     ShowStatus("hunter", Color.RED); //Updating user interface
                     ShowButton(); //Updating user interface
                     myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
                         @Override
-                        public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
-                            if(ready){
-                                checkCaught(snapshot);
+                        public void onDataChange(DataSnapshot snapshot) { // on data change of a player's coordinates
+                            if(ready){ //Checks if the start timer is complete
+                                checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
                             }
                         }
                         @Override
@@ -158,9 +160,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     });
                 }
 
+                //Updates the database with the user's current location
                 fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+
                     @Override
                     public void onSuccess(Location location) {
+
                         globalPlayer.setLongitude(location.getLongitude());
                         globalPlayer.setLatitude(location.getLatitude());
 
@@ -168,11 +173,32 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
 
-                        if(System.currentTimeMillis() - startTime >= 10000){
-                            ready = true;
+                        //Checks if the user is out of bounds
+                        Location myLocation = new Location("");
+                        myLocation.setLatitude(globalPlayer.getLatitude());
+                        myLocation.setLongitude(globalPlayer.getLongitude());
+
+                        Location startLocation = new Location("");
+                        startLocation.setLatitude(startLat);
+                        startLocation.setLongitude(startLng);
+
+                        if(myLocation.distanceTo(startLocation) <= 1000){
+                            warningTimer = System.currentTimeMillis();
                         }
+                        else{
+                            showToast("You have " + Math.floor((30000 - System.currentTimeMillis()-warningTimer)/1000) + " seconds to return to game");
+                            if(System.currentTimeMillis() - warningTimer >= 30000){
+                                showToast("You have been out of bounds for too long and have been turned into a hunter!");
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
+                            }
+                        }
+
                     }
                 });
+
+                if(System.currentTimeMillis() - startTime >= 10000){ //Checks if the start timer is complete
+                    ready = true;
+                }
                 // Do your work here
                 handler.postDelayed(this, delay);
             }
@@ -187,12 +213,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         });
 
 
-        if(globalPlayer.isHunter()) {
+        if(globalPlayer.isHunter()) { //Only hunters should have to listen to the scan attribute
             myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot scanSnapshot) {
-                    if ((boolean) scanSnapshot.getValue()) {
-                        myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
+                    if ((boolean) scanSnapshot.getValue()) { //If a hunter has pressed the scan button
+                        myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() { //Look at all user locations
                             @Override
                             public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
                                 mMap.clear(); // clear map
@@ -213,12 +239,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             });
         }
 
-        if(!globalPlayer.isHunter()) {
+        if(!globalPlayer.isHunter()) { //Only runners should have to update their hunter status to hunter once they are caught
             myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot hunterSnapshot) {
-                    if((boolean) hunterSnapshot.getValue() == true){
-                        globalPlayer.setHunter(true);
+                    if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
+                        globalPlayer.setHunter(true); //They are hunter on their device
                     }
 
                 }
@@ -280,27 +306,27 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         View StartVisibility = findViewById(R.id.btnScan);
         StartVisibility.setVisibility(View.INVISIBLE);
     }
-    private void checkCaught(DataSnapshot snapshot) {
+    private void checkCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to eachother to be considered caught
 
-        Location myLocation = new Location(""); // my location, using
+        Location myLocation = new Location(""); //Saves the hunter's current location
         myLocation.setLatitude(globalPlayer.getLatitude());
         myLocation.setLongitude(globalPlayer.getLongitude());
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-            if ((boolean) dataSnapshot.child("hunter").getValue()) {
+            if (!((boolean) dataSnapshot.child("hunter").getValue())) { //Hunters should only compare themselves to runners
                 String playerName = dataSnapshot.getKey();
 
-                Location playerLocation = new Location("");// looping through the other player locations
+                Location playerLocation = new Location("");//Saves a runner's location
                 playerLocation.setLatitude(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())));
                 playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
-                float distanceInMeters = myLocation.distanceTo(playerLocation); // distance to the other players
+                float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
 
                 System.out.println("- - - - - - - -- - - - - -- -" + globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName + "- - - - - - - -- - - - - -- -");
 
 
-                if (distanceInMeters <= 10) { // people within 10 meters
-                    myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true);
+                if (distanceInMeters <= 10) { //If the runner is within 10 meters from a hunter
+                    myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                 }
 
             }
@@ -327,4 +353,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
 }
