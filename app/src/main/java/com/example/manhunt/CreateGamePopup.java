@@ -56,6 +56,10 @@ public class CreateGamePopup extends AppCompatActivity {
                     //creates the scan attribute within th lobby
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("scan").setValue(false);
 
+                    //creates the start position lat/long in the lobby
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLat").setValue(0);
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLng").setValue(0);
+
                     //setting default user attributes on firebase
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
                     myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);

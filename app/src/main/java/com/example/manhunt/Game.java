@@ -29,7 +29,9 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +55,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     Button scan;
     boolean ready = false;
     long startTime = System.currentTimeMillis();
+    double startLat;
+    double startLng;
+
 
     @SuppressLint("MissingPermission")
     @Override
@@ -73,18 +78,46 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         LobbyChosen = globalPlayer.getLobbychosen();
         username = globalPlayer.getName();
 
+        if(globalPlayer.isLeader()){
+            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    startLat = location.getLatitude();
+                    startLng = location.getLongitude();
 
+                    LatLng startPosition = new LatLng(startLat, startLng);
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLat").setValue(startLat);
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLng").setValue(startLng);
 
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                LatLng startPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
 
-                CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+                    mMap.addCircle(boundary);
+                }
+            });
+        }
+        else{
+            myRef.child("lobbies").child(LobbyChosen).child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        startLat = Double.parseDouble(String.valueOf(task.getResult().getValue()));
+                    }
+                }
+            });
 
-                mMap.addCircle(boundary);
-            }
-        });
+            myRef.child("lobbies").child(LobbyChosen).child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
+
+                        LatLng startPosition = new LatLng(startLat, startLng);
+
+                        CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+                        mMap.addCircle(boundary);
+
+                }
+            });
+        }
 
         // setting initial visibility of scan button and player status in top right
         if (globalPlayer.isHunter()) {
