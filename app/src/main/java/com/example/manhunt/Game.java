@@ -186,10 +186,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             warningTimer = System.currentTimeMillis();
                         }
                         else{
-                            showToast("You have " + Math.floor((30000 - System.currentTimeMillis()-warningTimer)/1000) + " seconds to return to game");
                             if(System.currentTimeMillis() - warningTimer >= 30000){
                                 showToast("You have been out of bounds for too long and have been turned into a hunter!");
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
+                            }
+                            else{
+                                showToast("You have " + Math.floor((30000 - (System.currentTimeMillis()-warningTimer))/1000) + " seconds to return to game boundaries");
                             }
                         }
 
