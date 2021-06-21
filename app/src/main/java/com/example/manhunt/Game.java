@@ -25,6 +25,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,7 +52,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private GlobalPlayerClass globalPlayer;
     Button scan;
     boolean ready = false;
+    long startTime = System.currentTimeMillis();
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -69,6 +73,18 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         LobbyChosen = globalPlayer.getLobbychosen();
         username = globalPlayer.getName();
 
+
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                LatLng startPosition = new LatLng(location.getLatitude(), location.getLongitude());
+
+                CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+
+                mMap.addCircle(boundary);
+            }
+        });
 
         // setting initial visibility of scan button and player status in top right
         if (globalPlayer.isHunter()) {
@@ -89,7 +105,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         // constants
         final Handler handler = new Handler();
         final int delay = 200;
-
         // handler
         handler.postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
@@ -119,7 +134,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
                         myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
-                        ready = true;
+
+                        if(System.currentTimeMillis() - startTime >= 10000){
+                            ready = true;
+                        }
                     }
                 });
                 // Do your work here
