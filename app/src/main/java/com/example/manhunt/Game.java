@@ -39,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Game extends FragmentActivity implements OnMapReadyCallback {
 
@@ -52,9 +53,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
     private String LobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
-    Button scan;
-    boolean ready = false; //Flags if the round start timer is finished
-    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
+    private TextView txtTimer;
+    Button scan, players;
+    boolean ready = false, inBound = true; //Flags if the round start timer is finished
+    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime; //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
 
     @SuppressLint("MissingPermission")
@@ -72,6 +74,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         scan = (Button) findViewById(R.id.btnScan); //scanner button for hunters;
+        players = (Button) findViewById(R.id.btnPlayers);
+        txtTimer = (TextView) findViewById(R.id.txtTimer);
+
         // application player object
         LobbyChosen = globalPlayer.getLobbychosen();
         username = globalPlayer.getName();
@@ -145,13 +150,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             public void run() {
 
                 if (globalPlayer.isHunter()) {
-                    ShowStatus("hunter", Color.RED); //Updating user interface
+                    ShowStatus("Hunter", Color.RED); //Updating user interface
                     ShowButton(); //Updating user interface
                     myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) { // on data change of a player's coordinates
                             if(ready){ //Checks if the start timer is complete
                                 checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
+                                if(runnersCaught(snapshot)){
+                                    showToast("All runners have been caught! Hunters win!");
+                                }
                             }
                         }
                         @Override
@@ -184,22 +192,35 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                         if(myLocation.distanceTo(startLocation) <= 1000){
                             warningTimer = System.currentTimeMillis();
+                            inBound = true;
                         }
                         else{
-                            if(System.currentTimeMillis() - warningTimer >= 30000){
+                            inBound = false;
+                            if(System.currentTimeMillis() - warningTimer >= 30000 && !globalPlayer.isHunter()){
                                 showToast("You have been out of bounds for too long and have been turned into a hunter!");
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
                             }
-                            else{
-                                showToast("You have " + Math.floor((30000 - (System.currentTimeMillis()-warningTimer))/1000) + " seconds to return to game boundaries");
+                            else if (!globalPlayer.isHunter()){
+                                txtTimer.setText("Return to game bounds in: " + Math.floor((30000 - (System.currentTimeMillis()-warningTimer))/1000) + "s");
                             }
                         }
-
                     }
                 });
 
-                if(System.currentTimeMillis() - startTime >= 10000){ //Checks if the start timer is complete
+                if(System.currentTimeMillis() - startTime >= 10000 && !ready){ //Checks if the start timer is complete
                     ready = true;
+                    runTime = System.currentTimeMillis();
+                }
+                else{
+                    txtTimer.setText("Round starts in: " + Math.floor((10000 - (System.currentTimeMillis() - startTime))/1000) + "s");
+                }
+
+                if(ready && inBound){
+                    txtTimer.setText("Round ends in: " + Math.floor((6000000 - (System.currentTimeMillis() - runTime))/1000) + "s");
+                }
+
+                if(ready && (6000000 - (System.currentTimeMillis() - runTime)) < 0){
+                    showToast("Hunters failed to catch all runners in time! Runners win!");
                 }
                 // Do your work here
                 handler.postDelayed(this, delay);
@@ -211,6 +232,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+            }
+        });
+
+        //Listener for player button when clicked
+        players.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Game.this, ListOfPlayers.class));
             }
         });
 
@@ -247,6 +276,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 public void onDataChange(DataSnapshot hunterSnapshot) {
                     if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
                         globalPlayer.setHunter(true); //They are hunter on their device
+                        showToast("You have been caught by a hunter!");
                     }
 
                 }
@@ -258,6 +288,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             });
         }
     }
+
 
 
     private void MarkLocation(DataSnapshot snapshot) {
@@ -335,6 +366,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
+    private boolean runnersCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to eachother to be considered caught
+        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+            if (!((boolean) dataSnapshot.child("hunter").getValue())) { //Hunters should only compare themselves to runners
+                return false;
+            }
+        }
+        return true;
+    }
 
     boolean doubleBackToExitPressedOnce = false;
 
