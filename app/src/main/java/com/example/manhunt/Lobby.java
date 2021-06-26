@@ -39,6 +39,8 @@ public class Lobby extends AppCompatActivity {
      * would lobby just be a waiting room then for the game to start?
      */
     ListView listOfPlayers;
+    GlobalPlayerClass globalPlayer;
+    String lobbyChosen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +48,8 @@ public class Lobby extends AppCompatActivity {
         setContentView(R.layout.activity_lobby);
 
         // getting global variables to check which lobby was chosen
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        String lobbyChosen = globalPlayer.getLobbyChosen();
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        lobbyChosen = globalPlayer.getLobbychosen();
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
@@ -148,11 +150,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    if (globalPlayer.isHunter()) {
                         startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
-                    } else {
-                        startActivity(new Intent(Lobby.this, GameRunner.class)); //open maps game activity
-                    }
                 }
             }
 
@@ -166,18 +164,14 @@ public class Lobby extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        String lobbyChosen = globalPlayer.getLobbyChosen();
-        boolean leader = globalPlayer.isLeader();
-
-        if (leader) {
+        if (globalPlayer.isLeader()) {
             myRef.child("lobbies").child(lobbyChosen).child("disconnect").setValue(true);
             myRef.child("lobbies").child(lobbyChosen).removeValue();
         } else {
             myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).removeValue();
         }
 
-        globalPlayer.setLobbyChosen("");
+        globalPlayer.setLobbychosen("");
         super.onBackPressed();
     }
 

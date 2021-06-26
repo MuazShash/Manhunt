@@ -7,9 +7,7 @@
          location permissions for the "MyLocation" functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -21,17 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Manhunt"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".ListOfPlayers"
+            android:label="@string/title_activity_list_of_players"
+            android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
         <activity
             android:name=".CreateGamePopup"
-            android:theme="@style/Theme.AppCompat.CreateGamePopup"
-            >
-        </activity>
-
+            android:theme="@style/Theme.AppCompat.CreateGamePopup"></activity>
         <activity android:name=".Options" />
         <activity android:name=".Lobby" />
         <activity android:name=".Game" />
-        <activity android:name=".GameRunner" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -56,7 +53,7 @@
         <activity
             android:name=".ListofLobbies"
             android:label="Lobbies"
-            android:theme="@style/Theme.AppCompat.popupTheme"></activity>
+            android:theme="@style/Theme.AppCompat.popupTheme" />
     </application>
 
 </manifest>

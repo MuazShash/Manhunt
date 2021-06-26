@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -24,9 +25,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Game extends FragmentActivity implements OnMapReadyCallback {
 
@@ -47,10 +53,13 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
     private String LobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
-    private double lat, lon;
+    private TextView txtTimer;
+    Button scan, players;
+    boolean ready = false, inBound = true; //Flags if the round start timer is finished
+    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime; //Stores information for round start and out of bounds timers
+    double startLat, startLng; //Stores starting latitude and longitude
 
-    private final boolean HUNTER = true;
-
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -60,127 +69,227 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-         globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        scan = (Button) findViewById(R.id.btnScan); //scanner button for hunters;
+        players = (Button) findViewById(R.id.btnPlayers);
+        txtTimer = (TextView) findViewById(R.id.txtTimer);
 
         // application player object
-        LobbyChosen = globalPlayer.getLobbyChosen();
+        LobbyChosen = globalPlayer.getLobbychosen();
         username = globalPlayer.getName();
 
+        if(globalPlayer.isLeader()){ //Sets the start position to the leader's position when they press start game and updates the database
+            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    //Updating starting coordinates
+                    startLat = location.getLatitude();
+                    startLng = location.getLongitude();
+                    LatLng startPosition = new LatLng(startLat, startLng);
 
-        //scanner button for hunters
-        final Button scan = (Button) findViewById(R.id.btnScan);
+                    //Updating database
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLat").setValue(startLat);
+                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLng").setValue(startLng);
+
+                    //Draws a circle on the map
+                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+                    mMap.addCircle(boundary);
+                }
+            });
+        }
+        else{ //Reads the start position from the database for non leaders
+            myRef.child("lobbies").child(LobbyChosen).child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        startLat = Double.parseDouble(String.valueOf(task.getResult().getValue()));
+                    }
+                }
+            });
+
+            myRef.child("lobbies").child(LobbyChosen).child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
+
+                        LatLng startPosition = new LatLng(startLat, startLng);
+
+                        //Draws a circle on the map
+                        CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+                        mMap.addCircle(boundary);
+
+                }
+            });
+        }
 
         // setting initial visibility of scan button and player status in top right
-        ShowButton();
-        ShowStatus();
+        if (globalPlayer.isHunter()) {
+            ShowButton();
+            ShowStatus("Hunter", Color.RED);
+        } else {
+            ShowStatus("Runner", Color.GREEN);
+            hideButton();
+        }
+    }
 
-        // Listener for scan button when clicked by hunters
-        scan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
-                myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
-                        mMap.clear(); // clear map
-                        MarkLocation(snapshot); // redraw the map with new locations
-                        checkCaught(snapshot, globalPlayer);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-
-                    }
-                });
-
-            }
-        });
-
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
         /* * * * * * * * * * * * * * * */
         // Handler for updating coordinates in real time below
 
         // constants
         final Handler handler = new Handler();
         final int delay = 200;
-
         // handler
         handler.postDelayed(new Runnable() {
+            @SuppressLint("MissingPermission")
             public void run() {
-                System.out.println("myHandler: here!");
-                if (ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
+
+                if (globalPlayer.isHunter()) {
+                    ShowStatus("Hunter", Color.RED); //Updating user interface
+                    ShowButton(); //Updating user interface
+                    myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) { // on data change of a player's coordinates
+                            if(ready){ //Checks if the start timer is complete
+                                checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
+                                if(runnersCaught(snapshot)){
+                                    showToast("All runners have been caught! Hunters win!");
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                        }
+                    });
                 }
+
+                //Updates the database with the user's current location
                 fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+
                     @Override
                     public void onSuccess(Location location) {
+
                         globalPlayer.setLongitude(location.getLongitude());
                         globalPlayer.setLatitude(location.getLatitude());
 
-                        lat = (Double) globalPlayer.getLatitude();
-                        lon = (Double) globalPlayer.getLongitude();
+                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(lat);
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(lon);
 
+                        //Checks if the user is out of bounds
+                        Location myLocation = new Location("");
+                        myLocation.setLatitude(globalPlayer.getLatitude());
+                        myLocation.setLongitude(globalPlayer.getLongitude());
+
+                        Location startLocation = new Location("");
+                        startLocation.setLatitude(startLat);
+                        startLocation.setLongitude(startLng);
+
+                        if(myLocation.distanceTo(startLocation) <= 1000){
+                            warningTimer = System.currentTimeMillis();
+                            inBound = true;
+                        }
+                        else{
+                            inBound = false;
+                            if(System.currentTimeMillis() - warningTimer >= 30000 && !globalPlayer.isHunter()){
+                                showToast("You have been out of bounds for too long and have been turned into a hunter!");
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
+                            }
+                            else if (!globalPlayer.isHunter()){
+                                txtTimer.setText("Return to game bounds in: " + Math.floor((30000 - (System.currentTimeMillis()-warningTimer))/1000) + "s");
+                            }
+                        }
                     }
                 });
+
+                if(System.currentTimeMillis() - startTime >= 10000 && !ready){ //Checks if the start timer is complete
+                    ready = true;
+                    runTime = System.currentTimeMillis();
+                }
+                else{
+                    txtTimer.setText("Round starts in: " + Math.floor((10000 - (System.currentTimeMillis() - startTime))/1000) + "s");
+                }
+
+                if(ready && inBound){
+                    txtTimer.setText("Round ends in: " + Math.floor((6000000 - (System.currentTimeMillis() - runTime))/1000) + "s");
+                }
+
+                if(ready && (6000000 - (System.currentTimeMillis() - runTime)) < 0){
+                    showToast("Hunters failed to catch all runners in time! Runners win!");
+                }
                 // Do your work here
                 handler.postDelayed(this, delay);
             }
         }, delay);
 
-        /*
-        myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
+        // Listener for scan button when clicked by hunters
+        scan.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if ((boolean) snapshot.getValue()) {
-                    //asking to use location
-                    if (ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Game.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            globalPlayer.setLongitude(location.getLongitude());
-                            globalPlayer.setLatitude(location.getLatitude());
-
-                            myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(globalPlayer.getLatitude());
-                            myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(globalPlayer.getLongitude());
-
-                        }
-                    });
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
+            public void onClick(View v) {
+                myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
             }
         });
-          */
+
+        //Listener for player button when clicked
+        players.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Game.this, ListOfPlayers.class));
+            }
+        });
+
+
+        if(globalPlayer.isHunter()) { //Only hunters should have to listen to the scan attribute
+            myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot scanSnapshot) {
+                    if ((boolean) scanSnapshot.getValue()) { //If a hunter has pressed the scan button
+                        myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() { //Look at all user locations
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
+                                mMap.clear(); // clear map
+                                MarkLocation(snapshot); // redraw the map with new locations
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+
+                }
+            });
+        }
+
+        if(!globalPlayer.isHunter()) { //Only runners should have to update their hunter status to hunter once they are caught
+            myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot hunterSnapshot) {
+                    if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
+                        globalPlayer.setHunter(true); //They are hunter on their device
+                        showToast("You have been caught by a hunter!");
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+
+                }
+            });
+        }
     }
+
+
 
     private void MarkLocation(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -194,7 +303,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
             }
         }
-        //myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("scan").setValue(false);
+        myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(false);
     }
 
     /**
@@ -212,44 +321,59 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-    private void ShowStatus() { // textview in top right showing the player status (hunter)
+    private void ShowStatus(String type, int color) { // textview in top right showing the player status (hunter)
         TextView txtPlayerStatus = (TextView) findViewById(R.id.txtPlayerStatus);
 
-            txtPlayerStatus.setTextColor(Color.RED); // colour change for visibility
-            txtPlayerStatus.setText("Hunter");
+            txtPlayerStatus.setTextColor(color); // colour change for visibility
+            txtPlayerStatus.setText(type);
     }
 
     private void ShowButton() {
         // scan button visibility
         View StartVisibility = findViewById(R.id.btnScan);
-
         StartVisibility.setVisibility(View.VISIBLE);
     }
 
-    private void checkCaught(DataSnapshot snapshot, GlobalPlayerClass gp) {
+    private void hideButton() {
+        // scan button visibility
+        View StartVisibility = findViewById(R.id.btnScan);
+        StartVisibility.setVisibility(View.INVISIBLE);
+    }
+    private void checkCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to eachother to be considered caught
 
-        Location myLocation = new Location(""); // my location, using
-        myLocation.setLatitude(gp.getLatitude());
-        myLocation.setLongitude(gp.getLongitude());
+        Location myLocation = new Location(""); //Saves the hunter's current location
+        myLocation.setLatitude(globalPlayer.getLatitude());
+        myLocation.setLongitude(globalPlayer.getLongitude());
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+            if (!((boolean) dataSnapshot.child("hunter").getValue())) { //Hunters should only compare themselves to runners
+                String playerName = dataSnapshot.getKey();
 
-            String playerName = dataSnapshot.getKey();
+                Location playerLocation = new Location("");//Saves a runner's location
+                playerLocation.setLatitude(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())));
+                playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
-            Location playerLocation = new Location("");// looping through the other player locations
-            playerLocation.setLatitude(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())));
-            playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
+                float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
 
-            float distanceInMeters =  myLocation.distanceTo(playerLocation); // distance to the other players
+                System.out.println("- - - - - - - -- - - - - -- -" + globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName + "- - - - - - - -- - - - - -- -");
 
-            if (distanceInMeters <= 10) { // people within 10 meters
-                if(!((boolean) dataSnapshot.child("hunter").getValue())) { // if they're a runner
-                    myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true);
+
+                if (distanceInMeters <= 10) { //If the runner is within 10 meters from a hunter
+                    myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                 }
+
             }
         }
     }
 
+    private boolean runnersCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to eachother to be considered caught
+        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+            if (!((boolean) dataSnapshot.child("hunter").getValue())) { //Hunters should only compare themselves to runners
+                return false;
+            }
+        }
+        return true;
+    }
 
     boolean doubleBackToExitPressedOnce = false;
 
@@ -270,4 +394,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
 }
