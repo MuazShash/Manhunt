@@ -90,8 +90,9 @@
 
     <TextView
         android:id="@+id/txtTimer"
-        android:layout_width="266dp"
-        android:layout_height="41dp"
+        android:layout_width="211dp"
+        android:layout_height="44dp"
+        android:scrollbars="vertical"
         android:text="Time to round start: "
         app:layout_constraintBottom_toTopOf="@+id/map"
         app:layout_constraintEnd_toStartOf="@+id/btnScan"

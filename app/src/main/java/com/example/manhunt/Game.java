@@ -54,7 +54,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private GlobalPlayerClass globalPlayer;
     private TextView txtTimer;
     Button scan, players;
-    boolean ready = false, inBound = true, hunterWin = false; //Flags if the round start timer is finished
+    boolean ready = false, inBound = true, gameEnd = false; //Flags if the round start timer is finished
     long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
 
@@ -94,7 +94,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLng").setValue(startLng);
 
                     //Draws a circle on the map within boundary
-                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, 15));
+                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED);
                     mMap.addCircle(boundary);
                 }
             });
@@ -117,7 +118,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         LatLng startPosition = new LatLng(startLat, startLng);
 
                         //Draws a circle on the map
-                        CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, 15));
+                        CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED);
                         mMap.addCircle(boundary);
 
                 }
@@ -158,7 +160,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                                 checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
                                 if(runnersCaught(snapshot)){
                                     txtTimer.setText("All runners have been caught! Hunters win!");
-                                    hunterWin = true;
+                                    gameEnd = true;
                                 }
                             }
                         }
@@ -215,15 +217,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtTimer.setText("Round starts in: " + (int) Math.floor((globalPlayer.getSettings(5)*1000 - (System.currentTimeMillis() - startTime))/1000) + "s");
                 }
 
-                if(ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 < 300 && (globalPlayer.getSettings(4)*1000- (System.currentTimeMillis() - runTime))/1000 > 0){
+                if(!gameEnd && ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 < 300 && (globalPlayer.getSettings(4)*1000- (System.currentTimeMillis() - runTime))/1000 > 0){
                     txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000) + "s");
                 }
-                else if (ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 > 300){
+                else if (!gameEnd && ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 > 300){
                     txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/60000) + " mins");
                 }
 
-                if(ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0 && !hunterWin){
+                if(!gameEnd && ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
+                    gameEnd = true;
                 }
                 // Do your work here
                 handler.postDelayed(this, delay);
@@ -306,12 +309,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             LatLng PlayerLocation = new LatLng(Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue())) , Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
             // draw hunters in blue, and runners in red
-            if((boolean) dataSnapshot.child("hunter").getValue()){ // hunters
-                mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(180)).position(PlayerLocation).title(dataSnapshot.getKey()));
-            } else { // runners
-                mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
+            if(!globalPlayer.getName().equals(dataSnapshot.getKey())){
+                if((boolean) dataSnapshot.child("hunter").getValue()){ // hunters
+                    mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(180)).position(PlayerLocation).title(dataSnapshot.getKey()));
+                } else { // runners
+                    mMap.addMarker(new MarkerOptions().position(PlayerLocation).title(dataSnapshot.getKey()));
+                }
             }
         }
+        showBoundary();
         myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(false);
     }
 
@@ -328,6 +334,13 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+    }
+
+    private void showBoundary(){
+        LatLng startPosition = new LatLng(startLat, startLng);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, 15));
+        CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED);
+        mMap.addCircle(boundary);
     }
 
     private void ShowStatus(String type, int color) { // textview in top right showing the player status (hunter)
