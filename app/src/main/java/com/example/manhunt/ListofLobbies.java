@@ -77,7 +77,7 @@ public class ListofLobbies extends AppCompatActivity {
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
                     Lobbychosen = arrayAdapter.getItem(position).toString();
                     username = globalPlayer.getName();
-                    globalPlayer.setLobbychosen(Lobbychosen);
+                    globalPlayer.setLobbyChosen(Lobbychosen);
                     globalPlayer.setLatitude(0.0);
                     globalPlayer.setLongitude(0.0);
 

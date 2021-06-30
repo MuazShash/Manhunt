@@ -21,6 +21,7 @@ public class Options extends AppCompatActivity {
     DatabaseReference myRef = database.getReference();
 
     int intCD, intDistance, intBoundary, intTimer, intHunters, intTimeLimit;
+    GlobalPlayerClass globalPlayer;
     SeekBar seekCD, seekDistance, seekBoundary, seekTimer, seekHunters, seekTimeLimit;
     TextView txtCD, txtDistance, txtBoundary, txtTimer, txtHunters, txtTimeLimit;
     Button back, save;
@@ -40,9 +41,9 @@ public class Options extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
 
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
         //System.out.println("************************lobby name: " + globalPlayer.getLobbychosen());
-        lobby = globalPlayer.getLobbychosen();
+        lobby = globalPlayer.getLobbyChosen();
 
         System.out.println("Creating started");
         seekCD = findViewById(R.id.seekCD);

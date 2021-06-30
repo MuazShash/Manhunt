@@ -49,14 +49,13 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityGameBinding binding;
-    private Options GameOptions;
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
     private String LobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
     private TextView txtTimer;
     Button scan, players;
     boolean ready = false, inBound = true; //Flags if the round start timer is finished
-    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime; //Stores information for round start and out of bounds timers
+    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
 
     @SuppressLint("MissingPermission")
@@ -78,7 +77,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         txtTimer = (TextView) findViewById(R.id.txtTimer);
 
         // application player object
-        LobbyChosen = globalPlayer.getLobbychosen();
+        LobbyChosen = globalPlayer.getLobbyChosen();
         username = globalPlayer.getName();
 
         if(globalPlayer.isLeader()){ //Sets the start position to the leader's position when they press start game and updates the database
@@ -91,11 +90,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     LatLng startPosition = new LatLng(startLat, startLng);
 
                     //Updating database
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLat").setValue(startLat);
-                    myRef.child("lobbies").child(globalPlayer.getLobbychosen()).child("startLng").setValue(startLng);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLat").setValue(startLat);
+                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLng").setValue(startLng);
 
-                    //Draws a circle on the map
-                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+                    //Draws a circle on the map within boundary
+                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0));
                     mMap.addCircle(boundary);
                 }
             });
@@ -118,7 +117,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         LatLng startPosition = new LatLng(startLat, startLng);
 
                         //Draws a circle on the map
-                        CircleOptions boundary = new CircleOptions().center(startPosition).radius(1000);
+                        CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0));
                         mMap.addCircle(boundary);
 
                 }
@@ -190,37 +189,40 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         startLocation.setLatitude(startLat);
                         startLocation.setLongitude(startLng);
 
-                        if(myLocation.distanceTo(startLocation) <= 1000){
+                        if(myLocation.distanceTo(startLocation) <= globalPlayer.getSettings(0)){
                             warningTimer = System.currentTimeMillis();
                             inBound = true;
                         }
                         else{
                             inBound = false;
-                            if(System.currentTimeMillis() - warningTimer >= 30000 && !globalPlayer.isHunter()){
+                            if(System.currentTimeMillis() - warningTimer >= 10000 && !globalPlayer.isHunter()){
                                 showToast("You have been out of bounds for too long and have been turned into a hunter!");
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
                             }
                             else if (!globalPlayer.isHunter()){
-                                txtTimer.setText("Return to game bounds in: " + Math.floor((30000 - (System.currentTimeMillis()-warningTimer))/1000) + "s");
+                                txtTimer.setText("Return to game bounds in: " + (int) Math.floor((10000 - (System.currentTimeMillis()-warningTimer))/1000) + "s");
                             }
                         }
                     }
                 });
 
-                if(System.currentTimeMillis() - startTime >= 10000 && !ready){ //Checks if the start timer is complete
+                if(System.currentTimeMillis() - startTime >= globalPlayer.getSettings(5)*1000 && !ready){ //Checks if the start timer is complete
                     ready = true;
                     runTime = System.currentTimeMillis();
                 }
-                else{
-                    txtTimer.setText("Round starts in: " + Math.floor((10000 - (System.currentTimeMillis() - startTime))/1000) + "s");
+                else if(!ready){
+                    txtTimer.setText("Round starts in: " + (int) Math.floor((globalPlayer.getSettings(5)*1000 - (System.currentTimeMillis() - startTime))/1000) + "s");
                 }
 
-                if(ready && inBound){
-                    txtTimer.setText("Round ends in: " + Math.floor((6000000 - (System.currentTimeMillis() - runTime))/1000) + "s");
+                if(ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 < 300 && (globalPlayer.getSettings(4)*1000- (System.currentTimeMillis() - runTime))/1000 > 0){
+                    txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000) + "s");
+                }
+                else if (ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 > 300){
+                    txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/60000) + " mins");
                 }
 
-                if(ready && (6000000 - (System.currentTimeMillis() - runTime)) < 0){
-                    showToast("Hunters failed to catch all runners in time! Runners win!");
+                if(ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
+                    txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                 }
                 // Do your work here
                 handler.postDelayed(this, delay);
@@ -231,7 +233,13 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 ) {
+                    myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+                    cooldownTimer = System.currentTimeMillis();
+                }
+                else{
+                    showToast(" Please wait " + (int) Math.floor((globalPlayer.getSettings(1)*1000- (System.currentTimeMillis() - cooldownTimer))/1000) + "s");
+                }
             }
         });
 
@@ -358,7 +366,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 System.out.println("- - - - - - - -- - - - - -- -" + globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName + "- - - - - - - -- - - - - -- -");
 
 
-                if (distanceInMeters <= 10) { //If the runner is within 10 meters from a hunter
+                if (distanceInMeters <= globalPlayer.getSettings(2)) { //If the runner is within 10 meters from a hunter
                     myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                 }
 
