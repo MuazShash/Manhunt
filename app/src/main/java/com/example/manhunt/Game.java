@@ -157,7 +157,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             if(ready){ //Checks if the start timer is complete
                                 checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
                                 if(runnersCaught(snapshot)){
-                                    showToast("All runners have been caught! Hunters win!");
+                                    txtTimer.setText("All runners have been caught! Hunters win!");
                                 }
                             }
                         }
