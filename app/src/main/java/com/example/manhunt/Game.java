@@ -54,7 +54,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private GlobalPlayerClass globalPlayer;
     private TextView txtTimer;
     Button scan, players;
-    boolean ready = false, inBound = true; //Flags if the round start timer is finished
+    boolean ready = false, inBound = true, hunterWin = false; //Flags if the round start timer is finished
     long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
 
@@ -158,6 +158,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                                 checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
                                 if(runnersCaught(snapshot)){
                                     txtTimer.setText("All runners have been caught! Hunters win!");
+                                    hunterWin = true;
                                 }
                             }
                         }
@@ -221,7 +222,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/60000) + " mins");
                 }
 
-                if(ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
+                if(ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0 && !hunterWin){
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                 }
                 // Do your work here
