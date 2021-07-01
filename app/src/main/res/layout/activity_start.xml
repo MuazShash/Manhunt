@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Start">
+    tools:context=".Start"
+    android:background="@color/soft_grey">
 
     <Button
         android:id="@+id/createGame"
@@ -13,7 +14,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="320dp"
-        android:text="Create Game" />
+        android:text="Create Game"
+        android:backgroundTint="@color/maroon"/>
 
     <Button
         android:id="@+id/joinGame"
@@ -22,15 +24,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="383dp"
-        android:text="Join Game" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        app:srcCompat="@drawable/logo_curved" />
+        android:text="Join Game"
+        android:backgroundTint="@color/maroon" />
 
     <EditText
         android:id="@+id/NameInput"
@@ -47,5 +42,14 @@
         android:hint="Enter username"
         android:inputType="textPersonName"
         android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/logo_curved_colourised" />
 
 </RelativeLayout>
