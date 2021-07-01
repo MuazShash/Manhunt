@@ -49,7 +49,7 @@ public class Lobby extends AppCompatActivity {
 
         // getting global variables to check which lobby was chosen
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        lobbyChosen = globalPlayer.getLobbychosen();
+        lobbyChosen = globalPlayer.getLobbyChosen();
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
@@ -150,7 +150,18 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                        startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    myRef.child("lobbies").child(lobbyChosen).child("settings").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            int i = 0;
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {}
+                    });
+                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
                 }
             }
 
@@ -171,7 +182,7 @@ public class Lobby extends AppCompatActivity {
             myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).removeValue();
         }
 
-        globalPlayer.setLobbychosen("");
+        globalPlayer.setLobbyChosen("");
         super.onBackPressed();
     }
 

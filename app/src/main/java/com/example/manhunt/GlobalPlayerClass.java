@@ -4,52 +4,49 @@ import android.app.Application;
 
 public class GlobalPlayerClass extends Application {
     private String name;
-    private boolean Hunter = false;
-    private boolean Leader = false;
-    private double Longitude;
-    private double Latitude;
+    private boolean hunter = false;
+    private boolean leader = false;
+    private double longitude;
+    private double latitude;
+    int[] settings = new int[6];
     private String lobbyChosen = "";
 
 
 
-    public String getLobbyChosen() {
-        return lobbyChosen;
-    }
+    public String getLobbyChosen() { return lobbyChosen; }
 
-    public void setLobbyChosen(String lobbyChosen) {
-        this.lobbyChosen = lobbyChosen;
+    public void setLobbyChosen(String lobbychosen) {
+        this.lobbyChosen = lobbychosen;
     }
 
     public double getLatitude() {
-        return Latitude;
+        return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        Latitude = latitude;
+    public void setLatitude(double Latitude) {
+        latitude = Latitude;
     }
 
-    public double getLongitude() {
-        return Longitude;
-    }
+    public double getLongitude() { return longitude; }
 
-    public void setLongitude(double longitude) {
-        Longitude = longitude;
+    public void setLongitude(double Longitude) {
+        longitude = Longitude;
     }
 
     public boolean isLeader() {
-        return Leader;
+        return leader;
     }
 
-    public void setLeader(boolean leader) {
-        Leader = leader;
+    public void setLeader(boolean Leader) {
+        leader = Leader;
     }
 
     public boolean isHunter() {
-        return Hunter;
+        return hunter;
     }
 
-    public void setHunter(boolean hunter) {
-        Hunter = hunter;
+    public void setHunter(boolean Hunter) {
+        hunter = Hunter;
     }
 
     public String getName() {
@@ -59,4 +56,8 @@ public class GlobalPlayerClass extends Application {
     public void setName(String name) {
         this.name = name;
     }
+
+    public int getSettings(int index){ return settings[index]; }
+
+    public void setSettings(int index, int value){ settings[index] = value;}
 }

@@ -35,7 +35,7 @@ public class ListOfPlayers extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        lobbyChosen = globalPlayer.getLobbychosen();
+        lobbyChosen = globalPlayer.getLobbyChosen();
 
         setContentView(R.layout.listofplayers);
         DisplayMetrics dimensions = new DisplayMetrics();
