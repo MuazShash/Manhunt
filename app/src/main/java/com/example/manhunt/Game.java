@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.example.manhunt.databinding.ActivityGameBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -59,6 +60,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     boolean ready = false, inBound = true, gameEnd = false; //Flags if the round start timer is finished
     long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
+    LocationRequest locationRequest;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -83,6 +85,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         LobbyChosen = globalPlayer.getLobbyChosen();
         username = globalPlayer.getName();
 
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(500);
+        locationRequest.setFastestInterval(500);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (globalPlayer.isLeader()) { //Sets the start position to the leader's position when they press start game and updates the database
             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -344,15 +350,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         }
         mMap.setMyLocationEnabled(true);
 
-        Task<Location> locationTask = fusedLocationClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,20));
-                mMap.addMarker(new MarkerOptions().position(latLng));
-            }
-        });
+
 
     }
 

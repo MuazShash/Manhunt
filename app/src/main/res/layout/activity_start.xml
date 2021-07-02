@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Start"
-    android:background="@color/soft_grey">
+    android:background="@drawable/layout_bg">
 
     <Button
         android:id="@+id/createGame"
