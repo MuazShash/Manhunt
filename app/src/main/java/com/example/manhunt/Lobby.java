@@ -91,6 +91,7 @@ public class Lobby extends AppCompatActivity {
 
         final Button Hunter = (Button) findViewById(R.id.selectHunter);
         final Button Runner = (Button) findViewById(R.id.selectRunner);
+        final TextView Status = (TextView) findViewById(R.id.lobbyView2);
 
 
         Hunter.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +101,7 @@ public class Lobby extends AppCompatActivity {
                 // set the user to be hunter (hunter = true)
                 myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true);
                 globalPlayer.setHunter(true);
+                Status.setText("You are a: Hunter");
             }
         });
 
@@ -110,6 +112,7 @@ public class Lobby extends AppCompatActivity {
                 // set the user to be runner (hunter = false)
                 myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
                 globalPlayer.setHunter(false);
+                Status.setText("You are a: Runner");
             }
         });
 

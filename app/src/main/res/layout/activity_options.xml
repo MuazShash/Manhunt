@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Options">
+    tools:context=".Options"
+    android:background="@color/soft_grey">
 
     <Button
         android:id="@+id/btnSave"
@@ -30,6 +31,17 @@
         android:layout_marginBottom="138dp"
         android:text="Back" />
 
+    <TextView
+        android:id="@+id/txtTimeLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="427dp"
+        android:text="Game Time Limit (min):"
+        android:textColor="@color/brown"/>
+
     <SeekBar
         android:id="@+id/seekTimeLimit"
         android:layout_width="149dp"
@@ -44,16 +56,6 @@
         android:min="10" />
 
     <TextView
-        android:id="@+id/txtTimeLimit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="427dp"
-        android:text="Game Time Limit: _mins" />
-
-    <TextView
         android:id="@+id/txtCD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,7 +63,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="116dp"
-        android:text="Cooldown Duration: _s" />
+        android:text="Cooldown Duration (s):"
+        android:textColor="@color/brown"/>
 
     <SeekBar
         android:id="@+id/seekCD"
@@ -74,7 +77,20 @@
         android:layout_marginEnd="36dp"
         android:layout_marginRight="36dp"
         android:max="120"
-        android:min="10" />
+        android:min="10"
+        android:progressBackgroundTint="@color/maroon"
+        android:progressDrawable=""/>
+
+    <TextView
+        android:id="@+id/txtDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="174dp"
+        android:text="Capture Distance (m):"
+        android:textColor="@color/brown"/>
 
     <SeekBar
         android:id="@+id/seekDistance"
@@ -90,16 +106,6 @@
         android:min="1" />
 
     <TextView
-        android:id="@+id/txtDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="174dp"
-        android:text="Capture Distance: _m" />
-
-    <TextView
         android:id="@+id/txtBoundary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -107,7 +113,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="230dp"
-        android:text="Game Boundary Radius: _m" />
+        android:text="Game Boundary Radius (m):"
+        android:textColor="@color/brown"/>
 
     <SeekBar
         android:id="@+id/seekBoundary"
@@ -143,7 +150,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="297dp"
-        android:text="Countdown Timer: _s" />
+        android:text="Countdown Timer (s):"
+        android:textColor="@color/brown"/>
 
     <TextView
         android:id="@+id/txtHunters"
@@ -153,7 +161,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="368dp"
-        android:text="Starting Hunters: _" />
+        android:text="Starting Hunters: "
+        android:textColor="@color/brown" />
 
     <SeekBar
         android:id="@+id/seekHunters"
