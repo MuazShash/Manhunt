@@ -5,7 +5,7 @@
     android:id="@+id/lstPlayer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/soft_grey"
+    android:background="@color/background_1"
     tools:context=".Lobby">
 
     <Button
@@ -19,7 +19,7 @@
         android:layout_marginLeft="50dp"
         android:layout_marginBottom="30dp"
         android:text="Hunter"
-        android:backgroundTint="@color/maroon"
+        android:backgroundTint="@color/button_accent"
         android:textColor="@color/white"/>
 
     <Button
@@ -33,7 +33,7 @@
         android:layout_marginRight="50dp"
         android:layout_marginBottom="30dp"
         android:text="Runner"
-        android:backgroundTint="@color/maroon"
+        android:backgroundTint="@color/button_accent"
         android:textColor="@color/white" />
 
     <TextView
@@ -101,7 +101,7 @@
         android:layout_marginLeft="141dp"
         android:layout_marginTop="54dp"
         android:text="Start Game"
-        android:backgroundTint="@color/maroon"
+        android:backgroundTint="@color/button_accent"
         android:textColor="@color/white" />
 
 </RelativeLayout>

@@ -72,7 +72,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.brown));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
