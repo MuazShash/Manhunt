@@ -181,8 +181,7 @@
         android:text="Starting Hunters: "
         android:textColor="@color/brown"
         android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:progressTint="@color/maroon" />
 
     <SeekBar
         android:id="@+id/seekHunters"
