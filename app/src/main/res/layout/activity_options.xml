@@ -11,13 +11,15 @@
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="259dp"
-        android:layout_marginLeft="259dp"
-        android:layout_marginBottom="137dp"
-        android:text="Save" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="80dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginTop="520dp"
+        android:text="Save"
+        android:backgroundTint="@color/maroon"
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/btnBack"
@@ -25,20 +27,22 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="91dp"
-        android:layout_marginLeft="91dp"
-        android:layout_marginBottom="138dp"
-        android:text="Back" />
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="520dp"
+        android:text="Back"
+        android:backgroundTint="@color/maroon"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/txtTimeLimit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="427dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="400dp"
         android:text="Game Time Limit (min):"
         android:textColor="@color/brown"/>
 
@@ -49,20 +53,23 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="430dp"
-        android:layout_marginEnd="41dp"
-        android:layout_marginRight="41dp"
+        android:layout_marginTop="396dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:max="120"
-        android:min="10" />
+        android:min="10"
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
     <TextView
         android:id="@+id/txtCD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="116dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="100dp"
         android:text="Cooldown Duration (s):"
         android:textColor="@color/brown"/>
 
@@ -73,22 +80,23 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="114dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginRight="36dp"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:max="120"
         android:min="10"
-        android:progressBackgroundTint="@color/maroon"
-        android:progressDrawable=""/>
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
     <TextView
         android:id="@+id/txtDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="174dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="160dp"
         android:text="Capture Distance (m):"
         android:textColor="@color/brown"/>
 
@@ -99,20 +107,23 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="177dp"
-        android:layout_marginEnd="37dp"
-        android:layout_marginRight="37dp"
+        android:layout_marginTop="156dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:max="10"
-        android:min="1" />
+        android:min="1"
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
     <TextView
         android:id="@+id/txtBoundary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="230dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="220dp"
         android:text="Game Boundary Radius (m):"
         android:textColor="@color/brown"/>
 
@@ -123,11 +134,14 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="234dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginRight="36dp"
+        android:layout_marginTop="216dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:max="5000"
-        android:min="100" />
+        android:min="100"
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
     <SeekBar
         android:id="@+id/seekTimer"
@@ -136,20 +150,23 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="301dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginRight="36dp"
+        android:layout_marginTop="276dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:max="60"
-        android:min="10" />
+        android:min="10"
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
     <TextView
         android:id="@+id/txtTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="297dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="280dp"
         android:text="Countdown Timer (s):"
         android:textColor="@color/brown"/>
 
@@ -158,11 +175,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="368dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="340dp"
         android:text="Starting Hunters: "
-        android:textColor="@color/brown" />
+        android:textColor="@color/brown"
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
     <SeekBar
         android:id="@+id/seekHunters"
@@ -171,10 +191,13 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="370dp"
-        android:layout_marginEnd="37dp"
-        android:layout_marginRight="37dp"
+        android:layout_marginTop="336dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:max="4"
-        android:min="1" />
+        android:min="1"
+        android:progressBackgroundTint="@color/brown"
+        android:progressTint="@color/maroon"
+        android:thumb="@drawable/IbHRI"/>
 
 </RelativeLayout>
