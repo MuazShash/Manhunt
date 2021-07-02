@@ -60,7 +60,7 @@
         android:min="10"
         android:progressBackgroundTint="@color/brown"
         android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:thumb="@drawable/slider"/>
 
     <TextView
         android:id="@+id/txtCD"
@@ -87,7 +87,7 @@
         android:min="10"
         android:progressBackgroundTint="@color/brown"
         android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:thumb="@drawable/slider"/>
 
     <TextView
         android:id="@+id/txtDistance"
@@ -114,7 +114,7 @@
         android:min="1"
         android:progressBackgroundTint="@color/brown"
         android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:thumb="@drawable/slider"/>
 
     <TextView
         android:id="@+id/txtBoundary"
@@ -141,7 +141,7 @@
         android:min="100"
         android:progressBackgroundTint="@color/brown"
         android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:thumb="@drawable/slider"/>
 
     <SeekBar
         android:id="@+id/seekTimer"
@@ -157,7 +157,7 @@
         android:min="10"
         android:progressBackgroundTint="@color/brown"
         android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:thumb="@drawable/slider"/>
 
     <TextView
         android:id="@+id/txtTimer"
@@ -198,6 +198,6 @@
         android:min="1"
         android:progressBackgroundTint="@color/brown"
         android:progressTint="@color/maroon"
-        android:thumb="@drawable/IbHRI"/>
+        android:thumb="@drawable/slider"/>
 
 </RelativeLayout>

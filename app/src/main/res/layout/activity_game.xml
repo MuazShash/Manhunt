@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Start">
+    tools:context=".Start"
+    android:background="@color/soft_grey">
 
     <fragment
         android:id="@+id/map"
@@ -28,7 +29,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/soft_grey"/>
 
     <TextView
         android:id="@+id/txtPlayerStatus"
@@ -48,6 +50,7 @@
 
     <Button
         android:id="@+id/btnScan"
+        android:backgroundTint="@color/maroon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
@@ -63,6 +66,7 @@
 
     <Button
         android:id="@+id/btnPlayers"
+        android:backgroundTint="@color/maroon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|top"
@@ -86,12 +90,14 @@
         app:layout_constraintHorizontal_bias="0.641"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toTopOf="@+id/view"
-        app:layout_constraintVertical_bias="0.292" />
+        app:layout_constraintVertical_bias="0.292"
+        android:textColor="@color/brown"/>
 
     <TextView
         android:id="@+id/txtTimer"
         android:layout_width="211dp"
         android:layout_height="44dp"
+        android:textColor="@color/brown"
         android:scrollbars="vertical"
         android:text="Time to round start: "
         app:layout_constraintBottom_toTopOf="@+id/map"
