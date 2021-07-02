@@ -47,6 +47,8 @@ public class Lobby extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.brown));
+
         // getting global variables to check which lobby was chosen
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         lobbyChosen = globalPlayer.getLobbyChosen();
