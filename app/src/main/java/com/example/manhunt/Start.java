@@ -78,7 +78,6 @@ public class Start extends AppCompatActivity {
                     // set username
                     globalPlayer.setName(username);
                     globalPlayer.setLeader(false); // setting them non-leader for joining game
-
                     // display available lobbies
                     startActivity(new Intent(Start.this, ListofLobbies.class));
                 }
