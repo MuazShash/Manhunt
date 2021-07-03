@@ -19,7 +19,7 @@
         android:layout_marginTop="520dp"
         android:text="Save"
         android:backgroundTint="@color/button_accent"
-        android:textColor="@color/white"/>
+        android:textColor="@color/button_text_color"/>
 
     <Button
         android:id="@+id/btnBack"
@@ -33,7 +33,7 @@
         android:layout_marginTop="520dp"
         android:text="Back"
         android:backgroundTint="@color/button_accent"
-        android:textColor="@color/white" />
+        android:textColor="@color/button_text_color" />
 
     <TextView
         android:id="@+id/txtTimeLimit"
@@ -44,7 +44,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="400dp"
         android:text="Game Time Limit (min):"
-        android:textColor="@color/accent_2"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekTimeLimit"
@@ -71,7 +71,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="100dp"
         android:text="Cooldown Duration (s):"
-        android:textColor="@color/accent_2"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekCD"
@@ -98,7 +98,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="160dp"
         android:text="Capture Distance (m):"
-        android:textColor="@color/accent_2"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekDistance"
@@ -125,7 +125,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="220dp"
         android:text="Game Boundary Radius (m):"
-        android:textColor="@color/accent_2"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekBoundary"
@@ -168,7 +168,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="280dp"
         android:text="Countdown Timer (s):"
-        android:textColor="@color/accent_2"/>
+        android:textColor="@color/text_color"/>
 
     <TextView
         android:id="@+id/txtHunters"
@@ -179,9 +179,8 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="340dp"
         android:text="Starting Hunters: "
-        android:textColor="@color/accent_2"
-        android:progressBackgroundTint="@color/accent_2"
-        android:progressTint="@color/button_accent" />
+        android:textColor="@color/text_color"
+         />
 
     <SeekBar
         android:id="@+id/seekHunters"
