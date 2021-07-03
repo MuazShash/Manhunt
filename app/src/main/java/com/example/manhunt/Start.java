@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -33,10 +34,10 @@ public class Start extends AppCompatActivity {
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
-        final EditText usernameInput = (EditText)findViewById(R.id.NameInput);
+
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
-        
+        final TextInputEditText usernameInput = (TextInputEditText)findViewById(R.id.NameTextInput);
 
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override

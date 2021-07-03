@@ -13,4 +13,5 @@
     <color name="accent_2">#3F3A27</color>
     <color name="text_color">#DCC27F</color>
     <color name="button_text_color">#FFFFFF</color>
+    <color name="red">#ff0010</color>
 </resources>

@@ -34,4 +34,9 @@
     <style name="Theme.Manhunt.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Manhunt.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="EditTextOutline" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/button_accent</item>
+        <item name="colorControlActivated">@color/button_accent</item>
+        <item name="color">@color/button_accent</item>
+    </style>
 </resources>
