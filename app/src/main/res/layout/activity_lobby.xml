@@ -5,7 +5,7 @@
     android:id="@+id/lstPlayer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/soft_grey"
+    android:background="@color/background_1"
     tools:context=".Lobby">
 
     <Button
@@ -19,8 +19,8 @@
         android:layout_marginLeft="50dp"
         android:layout_marginBottom="30dp"
         android:text="Hunter"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white"/>
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color"/>
 
     <Button
         android:id="@+id/selectRunner"
@@ -33,8 +33,8 @@
         android:layout_marginRight="50dp"
         android:layout_marginBottom="30dp"
         android:text="Runner"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white" />
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color" />
 
     <TextView
         android:id="@+id/lobbyView2"
@@ -71,7 +71,8 @@
         android:layout_marginLeft="38dp"
         android:layout_marginTop="103dp"
         android:text="Players"
-        android:textSize="15dp"/>
+        android:textSize="15dp"
+        android:textColor="@color/text_color"/>
 
     <LinearLayout
         android:layout_width="350dp"
@@ -101,7 +102,7 @@
         android:layout_marginLeft="141dp"
         android:layout_marginTop="54dp"
         android:text="Start Game"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white" />
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color" />
 
 </RelativeLayout>

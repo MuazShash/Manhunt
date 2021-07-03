@@ -41,7 +41,7 @@ public class Options extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
 
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.brown));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         //System.out.println("************************lobby name: " + globalPlayer.getLobbychosen());

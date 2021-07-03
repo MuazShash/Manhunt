@@ -31,7 +31,7 @@ public class Start extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.brown));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
         final EditText usernameInput = (EditText)findViewById(R.id.NameInput);
         final Button JoinGame = (Button) findViewById(R.id.joinGame);

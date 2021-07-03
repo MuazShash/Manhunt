@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Options"
-    android:background="@color/soft_grey">
+    android:background="@color/background_1">
 
     <Button
         android:id="@+id/btnSave"
@@ -18,8 +18,8 @@
         android:layout_marginRight="60dp"
         android:layout_marginTop="520dp"
         android:text="Save"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white"/>
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color"/>
 
     <Button
         android:id="@+id/btnBack"
@@ -32,8 +32,8 @@
         android:layout_marginLeft="60dp"
         android:layout_marginTop="520dp"
         android:text="Back"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white" />
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color" />
 
     <TextView
         android:id="@+id/txtTimeLimit"
@@ -44,7 +44,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="400dp"
         android:text="Game Time Limit (min):"
-        android:textColor="@color/brown"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekTimeLimit"
@@ -58,8 +58,8 @@
         android:layout_marginRight="20dp"
         android:max="120"
         android:min="10"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
+        android:progressBackgroundTint="@color/accent_2"
+        android:progressTint="@color/button_accent"
         android:thumb="@drawable/slider"/>
 
     <TextView
@@ -71,7 +71,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="100dp"
         android:text="Cooldown Duration (s):"
-        android:textColor="@color/brown"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekCD"
@@ -85,8 +85,8 @@
         android:layout_marginRight="20dp"
         android:max="120"
         android:min="10"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
+        android:progressBackgroundTint="@color/accent_2"
+        android:progressTint="@color/button_accent"
         android:thumb="@drawable/slider"/>
 
     <TextView
@@ -98,7 +98,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="160dp"
         android:text="Capture Distance (m):"
-        android:textColor="@color/brown"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekDistance"
@@ -112,8 +112,8 @@
         android:layout_marginRight="20dp"
         android:max="10"
         android:min="1"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
+        android:progressBackgroundTint="@color/accent_2"
+        android:progressTint="@color/button_accent"
         android:thumb="@drawable/slider"/>
 
     <TextView
@@ -125,7 +125,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="220dp"
         android:text="Game Boundary Radius (m):"
-        android:textColor="@color/brown"/>
+        android:textColor="@color/text_color"/>
 
     <SeekBar
         android:id="@+id/seekBoundary"
@@ -139,8 +139,8 @@
         android:layout_marginRight="20dp"
         android:max="5000"
         android:min="100"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
+        android:progressBackgroundTint="@color/accent_2"
+        android:progressTint="@color/button_accent"
         android:thumb="@drawable/slider"/>
 
     <SeekBar
@@ -155,8 +155,8 @@
         android:layout_marginRight="20dp"
         android:max="60"
         android:min="10"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
+        android:progressBackgroundTint="@color/accent_2"
+        android:progressTint="@color/button_accent"
         android:thumb="@drawable/slider"/>
 
     <TextView
@@ -168,7 +168,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="280dp"
         android:text="Countdown Timer (s):"
-        android:textColor="@color/brown"/>
+        android:textColor="@color/text_color"/>
 
     <TextView
         android:id="@+id/txtHunters"
@@ -179,9 +179,8 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="340dp"
         android:text="Starting Hunters: "
-        android:textColor="@color/brown"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon" />
+        android:textColor="@color/text_color"
+         />
 
     <SeekBar
         android:id="@+id/seekHunters"
@@ -195,8 +194,8 @@
         android:layout_marginRight="20dp"
         android:max="4"
         android:min="1"
-        android:progressBackgroundTint="@color/brown"
-        android:progressTint="@color/maroon"
+        android:progressBackgroundTint="@color/accent_2"
+        android:progressTint="@color/button_accent"
         android:thumb="@drawable/slider"/>
 
 </RelativeLayout>

@@ -72,7 +72,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.brown));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -358,7 +358,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     private void showBoundary(){
         LatLng startPosition = new LatLng(startLat, startLng);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, 15));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, 15)); // commented this out because it doesn't let you move map view
         CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED);
         mMap.addCircle(boundary);
     }
@@ -408,7 +408,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private boolean runnersCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to eachother to be considered caught
+    private boolean runnersCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to each other to be considered caught
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             if (!((boolean) dataSnapshot.child("hunter").getValue())) { //Hunters should only compare themselves to runners
                 return false;

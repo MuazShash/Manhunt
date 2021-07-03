@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/beige"
+    android:background="@color/background_2_dark"
     tools:context=".CreateGamePopup">
 
     <Button
@@ -15,12 +15,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:layout_marginStart="107dp"
-        android:layout_marginLeft="107dp"
-        android:layout_marginTop="187dp"
-        android:backgroundTint="@color/maroon"
+        android:layout_marginStart="93dp"
+        android:layout_marginLeft="93dp"
+        android:layout_marginTop="153dp"
         android:text="Create Lobby"
-        android:textColor="@color/white" />
+        android:textColor="@color/button_text_color"
+        android:backgroundTint="@color/button_accent"/>
 
     <EditText
         android:id="@+id/txtLobbyName"

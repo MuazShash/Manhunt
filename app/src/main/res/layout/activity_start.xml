@@ -15,8 +15,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="320dp"
         android:text="Create Game"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white" />
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color" />
 
     <Button
         android:id="@+id/joinGame"
@@ -26,8 +26,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="383dp"
         android:text="Join Game"
-        android:backgroundTint="@color/maroon"
-        android:textColor="@color/white" />
+        android:backgroundTint="@color/button_accent"
+        android:textColor="@color/button_text_color" />
 
     <EditText
         android:id="@+id/NameInput"
