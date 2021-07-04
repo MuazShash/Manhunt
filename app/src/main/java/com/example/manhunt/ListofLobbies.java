@@ -29,7 +29,7 @@ public class ListofLobbies extends AppCompatActivity {
 
     String SHARED_PREFS = "sharedPrefs";
     private String username = "";
-    String Lobbychosen;
+    String LobbyChosen;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
     boolean ready = false;
@@ -80,13 +80,13 @@ public class ListofLobbies extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
-                    Lobbychosen = arrayAdapter.getItem(position).toString();
+                    LobbyChosen = arrayAdapter.getItem(position).toString();
                     username = globalPlayer.getName();
-                    globalPlayer.setLobbyChosen(Lobbychosen);
+                    globalPlayer.setLobbyChosen(LobbyChosen);
                     globalPlayer.setLatitude(0.0);
                     globalPlayer.setLongitude(0.0);
 
-                    myRef.child("lobbies").child(Lobbychosen).child("users").addValueEventListener(new ValueEventListener() {
+                    myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
                             for(DataSnapshot dataSnapshot: snapshot.getChildren()){
@@ -101,10 +101,10 @@ public class ListofLobbies extends AppCompatActivity {
                             }
                             if(!isDuplicateUser && ready){
                                 //write username to database here with some defaults
-                                myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("hunter").setValue(false);
-                                myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("leader").setValue(false);
-                                myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("latitude").setValue(0.0);
-                                myRef.child("lobbies").child(Lobbychosen).child("users").child(username).child("longitude").setValue(0.0);
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);
 
                                 //Bringing user to the lobby screen
                                 startActivity(new Intent(ListofLobbies.this,Lobby.class));

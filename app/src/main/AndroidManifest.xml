@@ -21,7 +21,7 @@
         <activity
             android:name=".ListOfPlayers"
             android:label="@string/title_activity_list_of_players"
-            android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.listOfPlayersTheme"></activity>
         <activity
             android:name=".CreateGamePopup"
             android:theme="@style/Theme.AppCompat.CreateGamePopup"></activity>

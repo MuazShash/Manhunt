@@ -15,6 +15,10 @@
 
     </style>
 
+    <style name="Theme.AppCompat.listOfPlayersTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
 
     <style name="Theme.AppCompat.popupTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
