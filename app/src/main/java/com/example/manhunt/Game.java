@@ -1,6 +1,7 @@
 package com.example.manhunt;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -55,18 +57,18 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
     private String LobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
-    private TextView txtTimer;
+    private TextView txtTimer, txtScan;
     Button scan, players;
-    boolean ready = false, inBound = true, gameEnd = false; //Flags if the round start timer is finished
+    boolean ready = false, inBound = true, gameEnd = false, booting = true; //Flags if the round start timer is finished
     long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
     int zoom;
     LocationRequest locationRequest;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         super.onCreate(savedInstanceState);
@@ -83,6 +85,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         scan = (Button) findViewById(R.id.btnScan); //scanner button for hunters;
         players = (Button) findViewById(R.id.btnPlayers);
         txtTimer = (TextView) findViewById(R.id.txtTimer);
+        txtScan = (TextView) findViewById(R.id.txtScan);
 
         // application player object
         LobbyChosen = globalPlayer.getLobbyChosen();
@@ -100,7 +103,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             zoom = 13;
         }
 
-        if(globalPlayer.isLeader()){ //Sets the start position to the leader's position when they press start game and updates the database
+        if(globalPlayer.isLeader() && booting){ //Sets the start position to the leader's position when they press start game and updates the database
             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -113,14 +116,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLat").setValue(startLat);
                     myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLng").setValue(startLng);
 
-                    //Draws a circle on the map within boundary
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, zoom));
-                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED).fillColor(Color.argb(50,200,4,4));
-                    mMap.addCircle(boundary);
+                    showBoundary();
+                    booting = false;
                 }
             });
         }
-        else{ //Reads the start position from the database for non leaders
+        else if (!globalPlayer.isLeader() && booting){ //Reads the start position from the database for non leaders
             myRef.child("lobbies").child(LobbyChosen).child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -135,13 +136,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
                         startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
 
-                        LatLng startPosition = new LatLng(startLat, startLng);
-
-                        //Draws a circle on the map
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, zoom));
-                    CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED).fillColor(Color.argb(50,200,4,4));
-                        mMap.addCircle(boundary);
-
+                        showBoundary();
+                        booting = false;
                 }
             });
         }
@@ -159,6 +155,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     @Override
     protected void onResume() {
         super.onResume();
+
         /* * * * * * * * * * * * * * * */
         // Handler for updating coordinates in real time below
 
@@ -248,6 +245,17 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                     gameEnd = true;
                 }
+
+                //Button enabled/disabled on cooldown
+                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 ) {
+                    scan.setEnabled(true);
+                    txtScan.setText("");
+                }
+                else{
+                    scan.setEnabled(false);
+                    txtScan.setText(globalPlayer.getSettings(1) - (System.currentTimeMillis() - cooldownTimer)/1000 + "s");
+                }
+
                 // Do your work here
                 handler.postDelayed(this, delay);
             }
@@ -257,13 +265,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 ) {
-                    myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
-                    cooldownTimer = System.currentTimeMillis();
-                }
-                else{
-                    showToast(" Please wait " + (int) Math.floor((globalPlayer.getSettings(1)*1000- (System.currentTimeMillis() - cooldownTimer))/1000) + "s");
-                }
+                myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+                cooldownTimer = System.currentTimeMillis();
             }
         });
 
