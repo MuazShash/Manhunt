@@ -40,7 +40,7 @@ public class ListofLobbies extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        System.out.println(username);
+
         setContentView(R.layout.listoflobbies);
         DisplayMetrics dimensions = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
@@ -70,7 +70,16 @@ public class ListofLobbies extends AppCompatActivity {
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,lobbies); //creating an array adapter for the listview
         LobbyListView.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            lobbies.add(snapshot.getKey());
+                if(snapshot.child("start").getValue() != null){
+                    if((boolean) snapshot.child("start").getValue()){
+                        //do nothing
+                    }
+                    else{
+                        lobbies.add(snapshot.getKey()); //add lobby to the list of lobbies
+                    }
+                }
+
+
 
         }
 
