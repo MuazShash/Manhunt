@@ -247,11 +247,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 }
 
                 //Button enabled/disabled on cooldown
-                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 ) {
+                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 && globalPlayer.isHunter()) {
                     scan.setEnabled(true);
                     txtScan.setText("");
                 }
-                else{
+                else if (globalPlayer.isHunter()){
                     scan.setEnabled(false);
                     txtScan.setText(globalPlayer.getSettings(1) - (System.currentTimeMillis() - cooldownTimer)/1000 + "s");
                 }

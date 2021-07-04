@@ -7,11 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background_1">#627B28</color>
-    <color name="background_2_dark">#4A5C1E</color>
-    <color name="button_accent">#233E14</color>
-    <color name="accent_2">#3F3A27</color>
-    <color name="text_color">#DCC27F</color>
+    <color name="background_1">#6b705c</color>
+    <color name="background_2_dark">#aca885</color>
+    <color name="button_accent">#a5a58d</color>
+    <color name="accent_2">#6b705c</color>
+    <color name="text_color">#202925</color>
     <color name="button_text_color">#FFFFFF</color>
     <color name="red">#ff0010</color>
 </resources>
