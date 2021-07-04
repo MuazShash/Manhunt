@@ -42,9 +42,7 @@ public class ListOfPlayers extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
         int width = dimensions.widthPixels;
         int height = dimensions.heightPixels;
-        getWindow().setLayout((int)(width*.8),(int)(height*.75));
-
-
+        getWindow().setLayout((int)(width*.6),(int)(height*.7));
 
         myRef.child("lobbies").child(lobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
             @Override
