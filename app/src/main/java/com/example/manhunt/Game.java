@@ -353,6 +353,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/60000) + " mins");
                 }
                 else if(!gameEnd && ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
+                    globalPlayer.setHunterWins(false);
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                     gameEnd = true;
                 }
@@ -397,6 +398,22 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
         if(!globalPlayer.isHunter()) { //Only runners should have to update their hunter status to hunter once they are caught
             lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(hunterListener); //Update their status as hunter in game if they are hunter on the database
+        }
+
+
+
+        final int delay2 = 200;
+        handler.postDelayed(myRunnable = new Runnable(){
+                    @SuppressLint("MissingPermission")
+                    public void run() {
+                        handler.postDelayed(this,delay2);
+                    }
+
+        }, delay2);
+
+        if(gameEnd){
+            startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
+            finish(); //kills game activity
         }
     }
 

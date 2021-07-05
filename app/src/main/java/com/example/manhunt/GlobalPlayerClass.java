@@ -10,8 +10,14 @@ public class GlobalPlayerClass extends Application {
     private double latitude;
     int[] settings = new int[6];
     private String lobbyChosen = "";
+    private boolean hunterWins = true;
 
-
+    public boolean isHunterWins() {
+        return hunterWins;
+    }
+    public void setHunterWins(boolean hunterWins){
+        this.hunterWins = true;
+    }
 
     public String getLobbyChosen() { return lobbyChosen; }
 
