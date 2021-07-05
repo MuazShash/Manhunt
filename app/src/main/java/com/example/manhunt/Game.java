@@ -102,6 +102,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
 
         am = (AudioManager) getSystemService(this.AUDIO_SERVICE);
+        mpCaught = MediaPlayer.create(this, R.raw.caught_sound);
+        mpCaught.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mpScan = MediaPlayer.create(this, R.raw.scan_sound);
+        mpScan.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mpDC= MediaPlayer.create(this, R.raw.dc_sound);
+        mpDC.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mpApproaching = MediaPlayer.create(this, R.raw.approaching_sound);
+        mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         //Setting zoom level for scan button
         if(globalPlayer.getSettings(0) <= 1000){
             zoom = 15;
@@ -450,26 +459,18 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void caughtSound(){
-        mpCaught = MediaPlayer.create(this, R.raw.caught_sound);
-        mpCaught.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpCaught.start();
     }
 
     private void scanSound(){
-        mpScan = MediaPlayer.create(this, R.raw.scan_sound);
-        mpScan.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpScan.start();
     }
 
     private void dcSound(){
-        mpDC= MediaPlayer.create(this, R.raw.dc_sound);
-        mpDC.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpDC.start();
     }
 
     private void approachingSound(){
-        mpApproaching = MediaPlayer.create(this, R.raw.approaching_sound);
-        mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpApproaching.start();
     }
 
@@ -537,7 +538,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
                 }
                 else if(distanceInMeters > 30 || distanceInMeters < globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
-                    //mpApproaching.stop();
+                    mpApproaching.stop();
                 }
                 else if (distanceInMeters < 30 && distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters+1)), 0);
