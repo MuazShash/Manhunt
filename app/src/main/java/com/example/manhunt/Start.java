@@ -32,7 +32,7 @@ public class Start extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
 
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);

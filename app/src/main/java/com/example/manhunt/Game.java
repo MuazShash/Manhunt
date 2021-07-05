@@ -221,6 +221,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onCancelled(DatabaseError error) {}
         };
+
         usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) { // on data change of a player's coordinates
