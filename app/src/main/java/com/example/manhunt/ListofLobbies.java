@@ -117,6 +117,7 @@ public class ListofLobbies extends AppCompatActivity {
 
                                 //Bringing user to the lobby screen
                                 startActivity(new Intent(ListofLobbies.this,Lobby.class));
+                                finish();
                             }
 
 

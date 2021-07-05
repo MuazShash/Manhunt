@@ -50,31 +50,36 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     //database reference
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference();
+    DatabaseReference lobbyRef;
 
     private GoogleMap mMap;
     private ActivityGameBinding binding;
     private FusedLocationProviderClient fusedLocationClient; // fused location provider client
-    private String LobbyChosen, username;
+    private String lobbyChosen, username;
     private GlobalPlayerClass globalPlayer;
     private TextView txtTimer, txtScan;
-    Button scan, players;
-    boolean ready = false, inBound = true, gameEnd = false, booting = true; //Flags if the round start timer is finished
+    final Handler handler = new Handler();
+    private Runnable myRunnable;
+    private ValueEventListener dcListener, scanListener, usersListener, hunterListener;
+    private Button scan, players;
+    boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false;
     long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
     int zoom;
-    LocationRequest locationRequest;
 
+/*************************************************************************************************************************************
+//**************************************************ON CREATE*************************************************************************
+ This area handles the graphics and initializes values that will be used later on.
+//************************************************************************************************************************************/
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        super.onCreate(savedInstanceState);
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -88,13 +93,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         txtScan = (TextView) findViewById(R.id.txtScan);
 
         // application player object
-        LobbyChosen = globalPlayer.getLobbyChosen();
+        lobbyChosen = globalPlayer.getLobbyChosen();
         username = globalPlayer.getName();
 
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(500);
-        locationRequest.setFastestInterval(500);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        //Defining database reference location
+        lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
+        
         //Setting zoom level for scan button
         if(globalPlayer.getSettings(0) <= 1000){
             zoom = 15;
@@ -103,7 +107,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             zoom = 13;
         }
 
-        if(globalPlayer.isLeader() && booting){ //Sets the start position to the leader's position when they press start game and updates the database
+        //Sets the start position to the leader's position when they press start game and updates the database
+        if(globalPlayer.isLeader() && booting){
             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -113,8 +118,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     LatLng startPosition = new LatLng(startLat, startLng);
 
                     //Updating database
-                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLat").setValue(startLat);
-                    myRef.child("lobbies").child(globalPlayer.getLobbyChosen()).child("startLng").setValue(startLng);
+                    lobbyRef.child("startLat").setValue(startLat);
+                    lobbyRef.child("startLng").setValue(startLng);
 
                     showBoundary();
                     booting = false;
@@ -122,7 +127,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             });
         }
         else if (!globalPlayer.isLeader() && booting){ //Reads the start position from the database for non leaders
-            myRef.child("lobbies").child(LobbyChosen).child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            lobbyRef.child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
                     if (task.isSuccessful()) {
@@ -131,11 +136,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 }
             });
 
-            myRef.child("lobbies").child(LobbyChosen).child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            lobbyRef.child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
                         startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
-
                         showBoundary();
                         booting = false;
                 }
@@ -146,47 +150,126 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         if (globalPlayer.isHunter()) {
             ShowButton();
             ShowStatus("Hunter", Color.RED);
-        } else {
+        }
+        else {
             ShowStatus("Runner", Color.GREEN);
             hideButton();
         }
     }
+/*************************************************************************************************************************************
+//**************************************************ON START***************************************************************************
+ This area creates the listeners needed to read from the database such as disconnect, scan, hunter status and other information.
+//************************************************************************************************************************************/
+    protected void onStart(){
+        super.onStart();
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        //Declaring listeners
+        dcListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if ((boolean) dataSnapshot.getValue()) {
+                    Intent backToStart = new Intent(getApplicationContext(), Start.class);
+                    Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
+                    startActivity(backToStart);
+                }
+            }
 
-        /* * * * * * * * * * * * * * * */
-        // Handler for updating coordinates in real time below
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
 
-        // constants
-        final Handler handler = new Handler();
-        final int delay = 200;
-        // handler
-        handler.postDelayed(new Runnable() {
-            @SuppressLint("MissingPermission")
-            public void run() {
-
-                if (globalPlayer.isHunter()) {
-                    ShowStatus("Hunter", Color.RED); //Updating user interface
-                    myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
+        scanListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot scanSnapshot) {
+                if ((boolean) scanSnapshot.getValue()) { //If a hunter has pressed the scan button
+                    lobbyRef.child("users").addValueEventListener(new ValueEventListener() { //Look at all user locations
                         @Override
-                        public void onDataChange(DataSnapshot snapshot) { // on data change of a player's coordinates
-                            if(ready){ //Checks if the start timer is complete
-                                checkCaught(snapshot); //Checks if the runner/hunter are close enough to eachother
-                                if(runnersCaught(snapshot)){
-                                    txtTimer.setText("All runners have been caught! Hunters win!");
-                                    gameEnd = true;
-                                }
-                            }
+                        public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
+                            mMap.clear(); // clear map
+                            MarkLocation(snapshot); // redraw the map with new locations
                         }
 
                         @Override
                         public void onCancelled(DatabaseError error) {
                         }
                     });
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {}
+        };
+
+        hunterListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot hunterSnapshot) {
+                //  Block of code to try
+                if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
+                    globalPlayer.setHunter(true); //They are hunter on their device
+                    showToast("You have been caught by a hunter!");
+                    ShowButton();
                 }
 
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {}
+        };
+        usersListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) { // on data change of a player's coordinates
+                if(ready){ //Checks if the start timer is complete
+                    checkCaught(snapshot); //Checks if the runner/hunter are close enough to each other
+                    if(runnersCaught(snapshot)){
+                        txtTimer.setText("All runners have been caught! Hunters win!");
+                        gameEnd = true;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+            }
+        };
+    }
+
+/*************************************************************************************************************************************
+**************************************************ON RESUME***************************************************************************
+ * This method handles all the functions required to run the game such as timers, checking if the game is over, if players are in range
+ * of being caught and reading and writing to the database to update their information.
+*************************************************************************************************************************************/
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
+        if (globalPlayer.isLeader()) {
+            lobbyRef.child("disconnected").onDisconnect().setValue(true);
+            lobbyRef.onDisconnect().removeValue();
+        }
+        else {
+            lobbyRef.child("users").child(globalPlayer.getName()).onDisconnect().removeValue();
+        }
+
+        // Move players back to start page if the disconnected attribute is true
+        lobbyRef.child("disconnected").addValueEventListener(dcListener);
+
+        //Update hunter view if converted
+        if (globalPlayer.isHunter()) {
+            ShowStatus("Hunter", Color.RED); //Updating user interface
+            lobbyRef.child("users").addValueEventListener(usersListener);
+        }
+
+        /* * * * * * * * * * * * * * * */
+        // Handler for updating coordinates in real time below
+
+        // constants
+        final int delay = 200;
+
+        handler.postDelayed(myRunnable = new Runnable() {
+            @SuppressLint("MissingPermission")
+            public void run() {
                 //Updates the database with the user's current location
                 fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
 
@@ -196,8 +279,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         globalPlayer.setLongitude(location.getLongitude());
                         globalPlayer.setLatitude(location.getLatitude());
 
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                        myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+                        lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                        lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
 
                         //Checks if the user is out of bounds
@@ -217,7 +300,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             inBound = false;
                             if(System.currentTimeMillis() - warningTimer >= 10000 && !globalPlayer.isHunter()){
                                 showToast("You have been out of bounds for too long and have been turned into a hunter!");
-                                myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
+                                lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
                             }
                             else if (!globalPlayer.isHunter()){
                                 txtTimer.setText("Return to game bounds in: " + (int) Math.floor((10000 - (System.currentTimeMillis()-warningTimer))/1000) + "s");
@@ -226,6 +309,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     }
                 });
 
+                //checks if the game is ready to start
                 if(System.currentTimeMillis() - startTime >= globalPlayer.getSettings(5)*1000 && !ready){ //Checks if the start timer is complete
                     ready = true;
                     runTime = System.currentTimeMillis();
@@ -234,14 +318,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtTimer.setText("Round starts in: " + (int) Math.floor((globalPlayer.getSettings(5)*1000 - (System.currentTimeMillis() - startTime))/1000) + "s");
                 }
 
+                //checks if the game has reached the end of its time
                 if(!gameEnd && ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 < 300 && (globalPlayer.getSettings(4)*1000- (System.currentTimeMillis() - runTime))/1000 > 0){
                     txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000) + "s");
                 }
                 else if (!gameEnd && ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 > 300){
                     txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/60000) + " mins");
                 }
-
-                if(!gameEnd && ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
+                else if(!gameEnd && ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                     gameEnd = true;
                 }
@@ -265,7 +349,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
+                lobbyRef.child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
                 cooldownTimer = System.currentTimeMillis();
             }
         });
@@ -278,55 +362,42 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
-
         if(globalPlayer.isHunter()) { //Only hunters should have to listen to the scan attribute
-            myRef.child("lobbies").child(LobbyChosen).child("scan").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot scanSnapshot) {
-                    if ((boolean) scanSnapshot.getValue()) { //If a hunter has pressed the scan button
-                        myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() { //Look at all user locations
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
-                                mMap.clear(); // clear map
-                                MarkLocation(snapshot); // redraw the map with new locations
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                            }
-                        });
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-
-                }
-            });
+            lobbyRef.child("scan").addValueEventListener(scanListener); //Update the map with user locations when this is true
         }
 
         if(!globalPlayer.isHunter()) { //Only runners should have to update their hunter status to hunter once they are caught
-            myRef.child("lobbies").child(LobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot hunterSnapshot) {
-                    if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
-                        globalPlayer.setHunter(true); //They are hunter on their device
-                        showToast("You have been caught by a hunter!");
-                        ShowButton();
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-
-                }
-            });
+            lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(hunterListener); //Update their status as hunter in game if they are hunter on the database
         }
     }
 
+/*************************************************************************************************************************************
+//**************************************************ON PAUSE AND ON STOP**************************************************************
 
+ These methods are called when the activity is getting ready to close. Removes listeners and deletes the lobby from the database if they are a leader
+ or deletes their user from the lobby if they are not.
+*************************************************************************************************************************************/
+    protected void onPause(){
+        super.onPause();
+        lobbyRef.child("disconnected").removeEventListener(dcListener);
+        lobbyRef.child("scan").removeEventListener(scanListener);
+        lobbyRef.child("users").removeEventListener(usersListener);
+        lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
+        handler.removeCallbacks(myRunnable);
+    }
+
+    protected void onStop(){
+        super.onStop();
+        if(globalPlayer.isLeader()) {
+            lobbyRef.setValue(null);
+        }
+        else{
+            lobbyRef.child("users").setValue(null);
+        }
+
+    }
+
+    //Updates the map with markers of all player's locations
     private void MarkLocation(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
@@ -342,18 +413,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             }
         }
         showBoundary();
-        myRef.child("lobbies").child(LobbyChosen).child("scan").setValue(false);
+        lobbyRef.child("scan").setValue(false);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    //Initializes the map and any features
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -373,6 +436,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
+    //Draws a filled circle and moves the players camera and zoom centered at the start location
     private void showBoundary(){
         LatLng startPosition = new LatLng(startLat, startLng);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, zoom));
@@ -380,6 +444,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         mMap.addCircle(boundary);
     }
 
+    //Updates the user's status as hunter or runner
     private void ShowStatus(String type, int color) { // textview in top right showing the player status (hunter)
         TextView txtPlayerStatus = (TextView) findViewById(R.id.txtPlayerStatus);
 
@@ -387,18 +452,22 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             txtPlayerStatus.setText(type);
     }
 
+    //Reveals the button to scan players
     private void ShowButton() {
         // scan button visibility
         View StartVisibility = findViewById(R.id.btnScan);
         StartVisibility.setVisibility(View.VISIBLE);
     }
 
+    //Hides the button to scan players
     private void hideButton() {
         // scan button visibility
         View StartVisibility = findViewById(R.id.btnScan);
         StartVisibility.setVisibility(View.INVISIBLE);
     }
-    private void checkCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to eachother to be considered caught
+
+    //Checks if the runner and hunter are close enough to each other to be considered caught. This is called every time a user moves in the database
+    private void checkCaught(DataSnapshot snapshot) {
 
         Location myLocation = new Location(""); //Saves the hunter's current location
         myLocation.setLatitude(globalPlayer.getLatitude());
@@ -414,18 +483,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
 
-                System.out.println("- - - - - - - -- - - - - -- -" + globalPlayer.getName() + " is " + distanceInMeters + " meters away from " + playerName + "- - - - - - - -- - - - - -- -");
-
-
                 if (distanceInMeters <= globalPlayer.getSettings(2)) { //If the runner is within 10 meters from a hunter
-                    myRef.child("lobbies").child(LobbyChosen).child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
+                    lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                 }
 
             }
         }
     }
 
-    private boolean runnersCaught(DataSnapshot snapshot) { //Checks if the runner and hunter are close enough to each other to be considered caught
+    //Checks if there are any runners remaining signaling a game end. Called whenever a user moves in the database.
+    private boolean runnersCaught(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             if (!((boolean) dataSnapshot.child("hunter").getValue())) { //Hunters should only compare themselves to runners
                 return false;
@@ -434,12 +501,17 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         return true;
     }
 
-    boolean doubleBackToExitPressedOnce = false;
-
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
+        if (doubleBackToExitPressedOnce && globalPlayer.isLeader()) { //If the user is the leader and is leaving, prepare to close the game
+            lobbyRef.child("disconnected").setValue(true);
             startActivity(new Intent(Game.this, Start.class));
+            finish();
+            return;
+        }
+        else if(doubleBackToExitPressedOnce && !globalPlayer.isLeader()){ //Otherwise just remove the user
+            startActivity(new Intent(Game.this, Start.class));
+            finish();
             return;
         }
 

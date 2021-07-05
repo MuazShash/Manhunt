@@ -23,7 +23,7 @@
 
     <View
         android:id="@+id/view"
-        android:layout_width="393dp"
+        android:layout_width="match_parent"
         android:layout_height="116dp"
         android:background="@color/background_1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,18 +52,18 @@
 
     <Button
         android:id="@+id/btnScan"
-        android:layout_width="82dp"
-        android:layout_height="48dp"
+        android:layout_width="89dp"
+        android:layout_height="47dp"
         android:layout_gravity="right|bottom"
         android:backgroundTint="@color/button_accent"
         android:text="scan"
         android:textColor="@color/button_text_color"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.948"
+        app:layout_constraintHorizontal_bias="0.965"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.911"></Button>
+        app:layout_constraintVertical_bias="0.898"></Button>
 
     <Button
         android:id="@+id/btnPlayers"
@@ -124,13 +124,11 @@
         android:id="@+id/txtScan"
         android:layout_width="25dp"
         android:layout_height="22dp"
-        android:layout_marginStart="260dp"
-        android:layout_marginLeft="260dp"
-        android:layout_marginBottom="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.858" />
+        android:layout_marginTop="72dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.712"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

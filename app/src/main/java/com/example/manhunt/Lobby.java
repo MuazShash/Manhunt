@@ -29,7 +29,8 @@ public class Lobby extends AppCompatActivity {
 
     //database reference
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference();
+    DatabaseReference lobbyRef;
+    ValueEventListener dcListener, startListener, usersListener;
     // Write a string when this client loses connection
 
 
@@ -52,17 +53,23 @@ public class Lobby extends AppCompatActivity {
         // getting global variables to check which lobby was chosen
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         lobbyChosen = globalPlayer.getLobbyChosen();
+        
+        lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
+    }
+
+    protected void onStart(){
+        super.onStart();
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
-            myRef.child("lobbies").child(lobbyChosen).child("disconnected").onDisconnect().setValue(true);
-            myRef.child("lobbies").child(lobbyChosen).onDisconnect().removeValue();
+            lobbyRef.child("disconnected").onDisconnect().setValue(true);
+            lobbyRef.onDisconnect().removeValue();
         } else {
-            myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).onDisconnect().removeValue();
+            lobbyRef.child("users").child(globalPlayer.getName()).onDisconnect().removeValue();
         }
 
         // Updating listview of players in the lobby
-        myRef.child("lobbies").child(lobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
+        lobbyRef.child("users").addValueEventListener(usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ShowPlayers(dataSnapshot);
@@ -74,13 +81,14 @@ public class Lobby extends AppCompatActivity {
         });
 
         // Move players back to start page
-        myRef.child("lobbies").child(lobbyChosen).child("disconnected").addValueEventListener(new ValueEventListener() {
+        lobbyRef.child("disconnected").addValueEventListener(dcListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if ((boolean) dataSnapshot.getValue()) {
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
                     Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
                     startActivity(backToStart);
+                    finish();
                 }
             }
 
@@ -101,7 +109,7 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) { // on click of hunter
 
                 // set the user to be hunter (hunter = true)
-                myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(true);
+                lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").setValue(true);
                 globalPlayer.setHunter(true);
                 Status.setText("You are a: Hunter");
             }
@@ -112,7 +120,7 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) { // on click of runner
 
                 // set the user to be runner (hunter = false)
-                myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
+                lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
                 globalPlayer.setHunter(false);
                 Status.setText("You are a: Runner");
             }
@@ -145,17 +153,17 @@ public class Lobby extends AppCompatActivity {
         Start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myRef.child("lobbies").child(lobbyChosen).child("start").setValue(true);
+                lobbyRef.child("start").setValue(true);
             }
         });
 
 
         //putting every user into the game now
-        myRef.child("lobbies").child(lobbyChosen).child("start").addValueEventListener(new ValueEventListener() {
+        lobbyRef.child("start").addValueEventListener(startListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    myRef.child("lobbies").child(lobbyChosen).child("settings").addValueEventListener(new ValueEventListener() {
+                    lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
                             int i = 0;
@@ -167,6 +175,7 @@ public class Lobby extends AppCompatActivity {
                         public void onCancelled(DatabaseError error) {}
                     });
                     startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    finish();
                 }
             }
 
@@ -175,20 +184,30 @@ public class Lobby extends AppCompatActivity {
 
             }
         });
+        
+    }
 
+    protected void onStop(){
+        super.onStop();
+
+        lobbyRef.child("start").removeEventListener(startListener);
+        lobbyRef.child("disconnected").removeEventListener(dcListener);
+        lobbyRef.child("users").removeEventListener(usersListener);
     }
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         if (globalPlayer.isLeader()) {
-            myRef.child("lobbies").child(lobbyChosen).child("disconnect").setValue(true);
-            myRef.child("lobbies").child(lobbyChosen).removeValue();
+            lobbyRef.child("disconnect").setValue(true);
+            lobbyRef.removeValue();
         } else {
-            myRef.child("lobbies").child(lobbyChosen).child("users").child(globalPlayer.getName()).removeValue();
+            lobbyRef.child("users").child(globalPlayer.getName()).removeValue();
         }
 
         globalPlayer.setLobbyChosen("");
-        super.onBackPressed();
+        startActivity(new Intent(Lobby.this, Start.class));
+        finish();
     }
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {
