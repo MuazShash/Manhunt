@@ -539,7 +539,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 else if(distanceInMeters > 30 || distanceInMeters < globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
                     mpApproaching.stop();
                 }
-                else{
+                else if (distanceInMeters < 30 && distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters+1)), 0);
                 }
             }
