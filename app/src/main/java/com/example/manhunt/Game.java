@@ -185,6 +185,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
                     dcSound();
                     startActivity(backToStart);
+                    finish();
                 }
             }
 
@@ -227,7 +228,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onDataChange(DataSnapshot hunterSnapshot) {
                 //  Block of code to try
-                if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
+                if((boolean) hunterSnapshot.getValue()){ //If they are now seen as hunter on the database
                     globalPlayer.setHunter(true); //They are hunter on their device
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
                     caughtSound();
@@ -358,13 +359,17 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 }
 
                 //Button enabled/disabled on cooldown
-                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 && globalPlayer.isHunter()) {
+                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 && globalPlayer.isHunter() && ready) {
                     scan.setEnabled(true);
                     txtScan.setText("");
                 }
                 else if (globalPlayer.isHunter()){
                     scan.setEnabled(false);
                     txtScan.setText(globalPlayer.getSettings(1) - (System.currentTimeMillis() - cooldownTimer)/1000 + "s");
+                }
+                else if(!ready){
+                    scan.setEnabled(false);
+                    txtScan.setText("");
                 }
 
                 // Do your work here
@@ -549,7 +554,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 hunterLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
-
+                System.out.println("***********This person is " + distanceInMeters + " meters away");
                 if (distanceInMeters <= 30 && distanceInMeters > globalPlayer.getSettings(2) && !mpApproaching.isPlaying()) { //If the runner is within 10 meters from a hunter
                     approachingSound();
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
