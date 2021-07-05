@@ -59,7 +59,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private GlobalPlayerClass globalPlayer;
     private TextView txtTimer, txtScan;
     final Handler handler = new Handler();
-    private Runnable myRunnable;
     MediaPlayer mpCaught, mpScan, mpDC, mpApproaching;
     AudioManager am;
     private ValueEventListener dcListener, scanListener, usersListener, usersScanListener, hunterListener;
@@ -295,7 +294,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         // constants
         final int delay = 200;
 
-        handler.postDelayed(myRunnable = new Runnable() {
+        handler.postDelayed(new Runnable() {
             @SuppressLint("MissingPermission")
             public void run() {
                 //Updates the database with the user's current location
@@ -400,17 +399,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(hunterListener); //Update their status as hunter in game if they are hunter on the database
         }
 
-
-
-        final int delay2 = 200;
-        handler.postDelayed(myRunnable = new Runnable(){
-                    @SuppressLint("MissingPermission")
-                    public void run() {
-                        handler.postDelayed(this,delay2);
-                    }
-
-        }, delay2);
-
         if(gameEnd){
             startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
             finish(); //kills game activity
@@ -430,7 +418,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         lobbyRef.child("users").removeEventListener(usersListener);
         lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
         lobbyRef.child("users").removeEventListener(usersScanListener);
-        handler.removeCallbacks(myRunnable);
+        handler.removeCallbacksAndMessages(null);
     }
 
     protected void onStop(){
@@ -493,8 +481,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void approachingSound(){
-        mpApproaching.start();
+        mpApproaching.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mpApproaching.start();
+            }
+        });
     }
+
+
 
     //Draws a filled circle and moves the players camera and zoom centered at the start location
     private void showBoundary(){
@@ -555,7 +550,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
                 System.out.println("***********This person is " + distanceInMeters + " meters away");
-                if (distanceInMeters <= 30 && distanceInMeters > globalPlayer.getSettings(2) && !mpApproaching.isPlaying()) { //If the runner is within 10 meters from a hunter
+                if ( distanceInMeters > globalPlayer.getSettings(2) && !mpApproaching.isPlaying()) { //If the runner is within 10 meters from a hunter
                     approachingSound();
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
                 }
