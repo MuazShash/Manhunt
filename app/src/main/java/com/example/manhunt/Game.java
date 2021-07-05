@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,7 +65,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private Runnable myRunnable;
     private ValueEventListener dcListener, scanListener, usersListener, hunterListener;
     private Button scan, players;
-    boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false;
+    boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap;
     long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
     int zoom;
@@ -182,20 +185,22 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         scanListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot scanSnapshot) {
-                if ((boolean) scanSnapshot.getValue()) { //If a hunter has pressed the scan button
-                    lobbyRef.child("users").addValueEventListener(new ValueEventListener() { //Look at all user locations
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
+                updateMap = (boolean) scanSnapshot.getValue();
+                lobbyRef.child("users").addValueEventListener(new ValueEventListener() { //Look at all user locations
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) { // on data change of a runner's coordinates
+                        if(updateMap){
                             mMap.clear(); // clear map
                             MarkLocation(snapshot); // redraw the map with new locations
+                            updateMap = false;
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                        }
-                    });
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                    }
+                });
 
-                }
             }
             @Override
             public void onCancelled(DatabaseError error) {}
@@ -351,6 +356,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             public void onClick(View v) {
                 lobbyRef.child("scan").setValue(true); //sets scan object to true now the locations of the runners become available
                 cooldownTimer = System.currentTimeMillis();
+                caughtSound();
             }
         });
 
@@ -431,9 +437,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             return;
         }
         mMap.setMyLocationEnabled(true);
+    }
 
-
-
+    private Ringtone caughtSound(){
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r.play();
+        long startTime = System.currentTimeMillis();
+        return r;
     }
 
     //Draws a filled circle and moves the players camera and zoom centered at the start location
