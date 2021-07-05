@@ -371,6 +371,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtScan.setText("");
                 }
 
+                System.out.println("GAAAAAMMEMEMEMEMEMEE ENNNNNNNNDDD" + gameEnd);
+                if(gameEnd){
+                    startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
+                    finish(); //kills game activity
+                }
                 // Do your work here
                 handler.postDelayed(this, delay);
             }
@@ -399,10 +404,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(hunterListener); //Update their status as hunter in game if they are hunter on the database
         }
 
-        if(gameEnd){
-            startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
-            finish(); //kills game activity
-        }
     }
 
 /*************************************************************************************************************************************
