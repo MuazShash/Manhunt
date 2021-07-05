@@ -212,10 +212,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             scanSound();
                         }
                     }
-
                     @Override
-                    public void onCancelled(DatabaseError error) {
-                    }
+                    public void onCancelled(DatabaseError error) {}
                 });
 
             }
@@ -235,7 +233,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     showStatus("hunter", Color.RED);
                     ShowButton();
                 }
-
             }
 
             @Override
@@ -371,7 +368,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     txtScan.setText("");
                 }
 
-                System.out.println("GAAAAAMMEMEMEMEMEMEE ENNNNNNNNDDD" + gameEnd);
                 if(gameEnd){
                     startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
                     finish(); //kills game activity
@@ -482,12 +478,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void approachingSound(){
-        mpApproaching.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mpApproaching.start();
-            }
-        });
+        mpApproaching.start();
     }
 
 
@@ -551,15 +542,17 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
                 System.out.println("***********This person is " + distanceInMeters + " meters away");
-                if ( distanceInMeters > globalPlayer.getSettings(2) && !mpApproaching.isPlaying()) { //If the runner is within 10 meters from a hunter
+                if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(2)){ //If the runner is within 10 meters from a hunter
                     approachingSound();
+                    System.out.println("Intensity = " + 0.5);
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
                 }
-                else if(distanceInMeters > 30 || distanceInMeters < globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
-                    mpApproaching.stop();
+                else if (distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
+                    System.out.println("Intensity = " + am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters+1));
+                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
                 }
-                else if (distanceInMeters < 30 && distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters+1)), 0);
+                else if(distanceInMeters > 40){
+                    mpApproaching.stop();
                 }
             }
         }
