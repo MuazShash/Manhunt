@@ -181,7 +181,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if ((boolean) dataSnapshot.getValue()) {
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
                     Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
                     dcSound();
                     startActivity(backToStart);
                     finish();
@@ -208,7 +208,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             updateMap = false;
                         }
                         else if(updateMap && !globalPlayer.isHunter()){
-                            am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+                            am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
                             scanSound();
                         }
                     }
@@ -542,17 +542,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
                 System.out.println("***********This person is " + distanceInMeters + " meters away");
-                if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(2)){ //If the runner is within 10 meters from a hunter
+                if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(2) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     approachingSound();
-                    System.out.println("Intensity = " + 0.5);
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
-                }
-                else if (distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying()){
-                    System.out.println("Intensity = " + am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters+1));
                     am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
                 }
-                else if(distanceInMeters > 40){
-                    mpApproaching.stop();
+                else if (distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying() && !mpScan.isPlaying()){
+                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
+                }
+                else if(mpScan.isPlaying() || distanceInMeters > 40 || distanceInMeters < globalPlayer.getSettings(2) || gameEnd){
+                    mpApproaching.pause();
                 }
             }
         }
@@ -570,7 +568,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce && globalPlayer.isLeader()) { //If the user is the leader and is leaving, prepare to close the game
+        if (doubleBackToExitPressedOnce && globalPlayer.isLeader() ) { //If the user is the leader and is leaving, prepare to close the game
             lobbyRef.child("disconnected").setValue(true);
             startActivity(new Intent(Game.this, Start.class));
             finish();

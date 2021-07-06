@@ -79,6 +79,8 @@ public class CreateGamePopup extends AppCompatActivity {
                     Toast.makeText(CreateGamePopup.this, "Lobby name taken, please use a new name for your lobby", Toast.LENGTH_SHORT).show();
                 }
                 else if(!isDuplicateLobby && ready) {
+
+
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext(); //Global player object
                     globalPlayer.setLobbyChosen(LobbyName.getText().toString()); //set global lobby name to the EditText input
 

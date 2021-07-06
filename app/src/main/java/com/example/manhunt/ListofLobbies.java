@@ -89,6 +89,7 @@ public class ListofLobbies extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+
                     LobbyChosen = arrayAdapter.getItem(position).toString();
                     username = globalPlayer.getName();
                     globalPlayer.setLobbyChosen(LobbyChosen);
