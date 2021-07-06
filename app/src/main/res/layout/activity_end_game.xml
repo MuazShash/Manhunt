@@ -12,14 +12,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="498dp"
         android:layout_marginBottom="185dp"
+        android:backgroundTint="@color/button_accent"
         android:text="Back to Start"
+        android:textColor="@color/button_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="@color/button_accent"
-        android:textColor="@color/button_text_color"/>
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/gameOver"
@@ -64,36 +65,22 @@
         android:textSize="48sp"
         app:layout_constraintBottom_toTopOf="@+id/backToStart"
         app:layout_constraintEnd_toStartOf="@+id/textWin"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gameOver"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/txtDistanceTravelled"
-        android:layout_width="201dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="129dp"
-        android:layout_marginBottom="143dp"
-        android:text="Distance Travelled:"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/backToStart"
-        app:layout_constraintEnd_toStartOf="@+id/distanceTravelled"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/winnerType"
         app:layout_constraintVertical_bias="1.0" />
 
-    <TextView
-        android:id="@+id/distanceTravelled"
-        android:layout_width="82dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="134dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginRight="60dp"
-        android:layout_marginBottom="387dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ListView
+        android:id="@+id/endPlayers"
+        android:layout_width="311dp"
+        android:layout_height="271dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:smoothScrollbar="true"
+        app:layout_constraintBottom_toTopOf="@+id/backToStart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textWin"
-        app:layout_constraintVertical_bias="0.312" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gameOver"
+        app:layout_constraintVertical_bias="0.891" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

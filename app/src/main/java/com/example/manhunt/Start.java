@@ -47,7 +47,6 @@ public class Start extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                 String username = usernameInput.getText().toString(); // storing username
 
                 // if username is blank, they need to make one before advancing

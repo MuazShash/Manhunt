@@ -99,6 +99,7 @@ public class CreateGamePopup extends AppCompatActivity {
 
                     //setting default user attributes on firebase
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("caught").setValue(false);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(0.0);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(0.0);

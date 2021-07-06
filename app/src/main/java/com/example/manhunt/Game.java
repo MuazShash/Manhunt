@@ -64,7 +64,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private ValueEventListener dcListener, scanListener, usersListener, usersScanListener, hunterListener;
     private Button scan, players;
     boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap;
-    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
+    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(), gameEndTime; //Stores information for round start and out of bounds timers
     double startLat, startLng; //Stores starting latitude and longitude
     int zoom;
 
@@ -369,8 +369,13 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 }
 
                 if(gameEnd){
-                    startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
-                    finish(); //kills game activity
+                    if(System.currentTimeMillis() - gameEndTime > 7000) {
+                        startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
+                        finish(); //kills game activity
+                    }
+                }
+                else{
+                    gameEndTime = System.currentTimeMillis();
                 }
                 // Do your work here
                 handler.postDelayed(this, delay);
@@ -420,11 +425,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     protected void onStop(){
         super.onStop();
-        if(globalPlayer.isLeader()) {
+        if(globalPlayer.isLeader() && !gameEnd) {
             lobbyRef.setValue(null);
         }
-        else{
-            lobbyRef.child("users").setValue(null);
+        else if (!globalPlayer.isLeader() && !gameEnd){
+            lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
 
     }
@@ -532,6 +537,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 if (distanceInMeters <= globalPlayer.getSettings(2)) { //If the runner is within 10 meters from a hunter
                     lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
+                    lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
                 }
 
             }

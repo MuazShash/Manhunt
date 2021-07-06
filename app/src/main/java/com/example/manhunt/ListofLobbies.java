@@ -1,11 +1,7 @@
 package com.example.manhunt;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -23,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class ListofLobbies extends AppCompatActivity {
 
@@ -63,7 +57,7 @@ public class ListofLobbies extends AppCompatActivity {
     }
 
     private void ShowLobbies(DataSnapshot dataSnapshot) {
-        LobbyListView = (ListView) findViewById(R.id.lobbies);//the list view is the lobbies list view
+        LobbyListView = (ListView) findViewById(R.id.endPlayers);//the list view is the lobbies list view
 
         ArrayList<String> lobbies = new ArrayList<>();
 
@@ -112,6 +106,7 @@ public class ListofLobbies extends AppCompatActivity {
                             if(!isDuplicateUser && ready){
                                 //write username to database here with some defaults
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
+                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("caught").setValue(false);
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
                                 myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);
