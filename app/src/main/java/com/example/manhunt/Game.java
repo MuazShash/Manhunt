@@ -102,13 +102,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
         am = (AudioManager) getSystemService(this.AUDIO_SERVICE);
         mpCaught = MediaPlayer.create(this, R.raw.caught_sound);
-        mpCaught.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mpCaught.setVolume(1.0f, 1.0f);
+        //mpCaught.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpScan = MediaPlayer.create(this, R.raw.scan_sound);
-        mpScan.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mpScan.setVolume(1.0f, 1.0f);
+        //mpScan.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpDC= MediaPlayer.create(this, R.raw.dc_sound);
-        mpDC.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mpDC.setVolume(1.0f, 1.0f);
+        //mpDC.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpApproaching = MediaPlayer.create(this, R.raw.approaching_sound);
-        mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        //mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         //Setting zoom level for scan button
         if(globalPlayer.getSettings(0) <= 1000){
@@ -181,7 +184,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if ((boolean) dataSnapshot.getValue()) {
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
                     Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
+                    //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
                     dcSound();
                     startActivity(backToStart);
                     finish();
@@ -203,12 +206,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         if(updateMap && globalPlayer.isHunter()){
                             mMap.clear(); // clear map
                             MarkLocation(snapshot); // redraw the map with new locations
-                            am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+                            //am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
                             scanSound();
                             updateMap = false;
                         }
                         else if(updateMap && !globalPlayer.isHunter()){
-                            am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
+                            //mVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
                             scanSound();
                         }
                     }
@@ -227,7 +230,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 //  Block of code to try
                 if((boolean) hunterSnapshot.getValue()){ //If they are now seen as hunter on the database
                     globalPlayer.setHunter(true); //They are hunter on their device
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
+                    //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
+                    mpCaught.setVolume(0.1f,0.1f);
                     caughtSound();
                     showToast("You have been caught by a hunter!");
                     showStatus("hunter", Color.RED);
@@ -550,10 +554,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 System.out.println("***********This person is " + distanceInMeters + " meters away");
                 if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(2) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     approachingSound();
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
+                    //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
+                    mpApproaching.setVolume((float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), (float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)));
                 }
                 else if (distanceInMeters > globalPlayer.getSettings(2) && mpApproaching.isPlaying() && !mpScan.isPlaying()){
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
+                    //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
+                    mpApproaching.setVolume((float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), (float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)));
                 }
                 else if(mpScan.isPlaying() || distanceInMeters > 40 || distanceInMeters < globalPlayer.getSettings(2) || gameEnd){
                     mpApproaching.pause();
