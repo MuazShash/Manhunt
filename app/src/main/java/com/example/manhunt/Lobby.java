@@ -32,7 +32,6 @@ public class Lobby extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference lobbyRef;
     ValueEventListener dcListener, startListener, usersListener;
-    MediaPlayer mpTheme;
 
     // Write a string when this client loses connection
 
