@@ -42,13 +42,14 @@ public class ListOfPlayers extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
         int width = dimensions.widthPixels;
         int height = dimensions.heightPixels;
-        getWindow().setLayout((int)(width*.6),(int)(height*.7));
+        getWindow().setLayout((int) (width * .6), (int) (height * .7));
 
         myRef.child("lobbies").child(lobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 showPlayers(dataSnapshot);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -60,14 +61,13 @@ public class ListOfPlayers extends AppCompatActivity {
 
         ArrayList<String> players = new ArrayList<>();
 
-        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,players); //creating an arrayadapter for the listview
+        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
         playerListView.setAdapter(arrayAdapter2); //setting the views adapter to array adapter
 
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            if((boolean) snapshot.child("hunter").getValue()){
+            if ((boolean) snapshot.child("hunter").getValue()) {
                 players.add(snapshot.getKey() + ": Hunter");
-            }
-            else {
+            } else {
                 players.add(snapshot.getKey() + ": Runner");
             }
         }

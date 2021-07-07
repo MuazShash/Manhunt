@@ -38,7 +38,7 @@ public class CreateGamePopup extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
         int width = dimensions.widthPixels;
         int height = dimensions.heightPixels;
-        getWindow().setLayout((int)(width*.8),(int)(height*.4));
+        getWindow().setLayout((int) (width * .8), (int) (height * .4));
 
 
     }
@@ -72,13 +72,11 @@ public class CreateGamePopup extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(LobbyName.getText().toString().equals("")){
+                if (LobbyName.getText().toString().equals("")) {
                     Toast.makeText(CreateGamePopup.this, "Please enter a LobbyName", Toast.LENGTH_SHORT).show();
-                }
-                else if(isDuplicateLobby && ready){
+                } else if (isDuplicateLobby && ready) {
                     Toast.makeText(CreateGamePopup.this, "Lobby name taken, please use a new name for your lobby", Toast.LENGTH_SHORT).show();
-                }
-                else if(!isDuplicateLobby && ready) {
+                } else if (!isDuplicateLobby && ready) {
 
 
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext(); //Global player object

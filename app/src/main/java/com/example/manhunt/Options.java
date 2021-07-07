@@ -27,7 +27,7 @@ public class Options extends AppCompatActivity {
     Button back, save;
     String lobby;
 
-    public Options(){
+    public Options() {
         intBoundary = 0;    // radius from starting position
         intCD = 0;          // cooldown on hunter scan ability
         intDistance = 0;    // how close a hunter needs to be to catch a runner
@@ -112,6 +112,7 @@ public class Options extends AppCompatActivity {
             }
         });
     }
+
     SeekBar.OnSeekBarChangeListener seekCDChange = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -225,15 +226,14 @@ public class Options extends AppCompatActivity {
         }
     };
 
-    private void getCD(){
+    private void getCD() {
         myRef.child("lobbies").child(lobby).child("settings").child("cooldown").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting cooldown failed");
                     intCD = 60;
-                }
-                else {
+                } else {
                     intCD = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                 }
                 txtCD.setText("Cooldown duration: " + intCD + " s");
@@ -242,15 +242,14 @@ public class Options extends AppCompatActivity {
         });
     }
 
-    private void getDistance(){
+    private void getDistance() {
         myRef.child("lobbies").child(lobby).child("settings").child("distance").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intDistance = 2;
-                }
-                else {
+                } else {
                     intDistance = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                 }
                 txtDistance.setText("Capture distance: " + intDistance + " m");
@@ -259,15 +258,14 @@ public class Options extends AppCompatActivity {
         });
     }
 
-    private void getBoundary(){
+    private void getBoundary() {
         myRef.child("lobbies").child(lobby).child("settings").child("boundary").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intBoundary = 500;
-                }
-                else {
+                } else {
                     intBoundary = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                 }
                 txtBoundary.setText("Map boundaries (radius): " + intBoundary + " m");
@@ -276,15 +274,14 @@ public class Options extends AppCompatActivity {
         });
     }
 
-    private void getTimer(){
+    private void getTimer() {
         myRef.child("lobbies").child(lobby).child("settings").child("timer").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intTimer = 30;
-                }
-                else {
+                } else {
                     intTimer = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                 }
                 txtTimer.setText("Hunt start timer: " + intTimer + " s");
@@ -293,14 +290,13 @@ public class Options extends AppCompatActivity {
         });
     }
 
-    private void getHunters(){
+    private void getHunters() {
         myRef.child("lobbies").child(lobby).child("settings").child("hunters").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
-                }
-                else {
+                } else {
                     intHunters = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                     txtHunters.setText("Starting hunters: " + intHunters);
                     seekHunters.setProgress(intHunters);
@@ -309,15 +305,14 @@ public class Options extends AppCompatActivity {
         });
     }
 
-    private void getTimeLimit(){
+    private void getTimeLimit() {
         myRef.child("lobbies").child(lobby).child("settings").child("time_limit").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intTimeLimit = 60;
-                }
-                else {
+                } else {
                     intTimeLimit = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                 }
                 txtTimeLimit.setText("Game Time Limit: " + intTimeLimit + " mins");

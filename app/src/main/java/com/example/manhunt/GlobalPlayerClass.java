@@ -19,11 +19,14 @@ public class GlobalPlayerClass extends Application {
     public boolean isHunterWins() {
         return hunterWins;
     }
-    public void setHunterWins(boolean hunterWins){
+
+    public void setHunterWins(boolean hunterWins) {
         this.hunterWins = true;
     }
 
-    public String getLobbyChosen() { return lobbyChosen; }
+    public String getLobbyChosen() {
+        return lobbyChosen;
+    }
 
     public void setLobbyChosen(String lobbychosen) {
         this.lobbyChosen = lobbychosen;
@@ -37,7 +40,9 @@ public class GlobalPlayerClass extends Application {
         latitude = Latitude;
     }
 
-    public double getLongitude() { return longitude; }
+    public double getLongitude() {
+        return longitude;
+    }
 
     public void setLongitude(double Longitude) {
         longitude = Longitude;
@@ -67,21 +72,29 @@ public class GlobalPlayerClass extends Application {
         this.name = name;
     }
 
-    public int getSettings(int index){ return settings[index]; }
+    public int getSettings(int index) {
+        return settings[index];
+    }
 
-    public void setSettings(int index, int value){ settings[index] = value;}
+    public void setSettings(int index, int value) {
+        settings[index] = value;
+    }
 
-    public double getUserStat(int index){ return userStats[index]; }
+    public double getUserStat(int index) {
+        return userStats[index];
+    }
 
-    public void setUserStat(int index, double value){ userStats[index] = value;}
+    public void setUserStat(int index, double value) {
+        userStats[index] = value;
+    }
 
-    public void startTheme(Context context){
+    public void startTheme(Context context) {
         mpTheme = MediaPlayer.create(context, R.raw.main_theme);
         mpTheme.setLooping(true);
         mpTheme.start();
     }
 
-    public void stopTheme(){
+    public void stopTheme() {
         mpTheme.setLooping(false);
         mpTheme.stop();
     }

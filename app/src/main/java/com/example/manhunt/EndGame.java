@@ -1,5 +1,7 @@
 package com.example.manhunt;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,10 +42,9 @@ public class EndGame extends AppCompatActivity {
         txtWinner = (TextView) findViewById(R.id.winnerType);
         //back to start button
         backToStart = (Button) findViewById(R.id.backToStart);
-
     }
 
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
 
         usersListener = new ValueEventListener() {
@@ -51,6 +52,7 @@ public class EndGame extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 showPlayers(dataSnapshot);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -58,9 +60,8 @@ public class EndGame extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-
 
         backToStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,35 +74,28 @@ public class EndGame extends AppCompatActivity {
         lobbyRef.child("users").addValueEventListener(usersListener);
 
 
-        if(globalPlayer.isHunterWins()){
+        if (globalPlayer.isHunterWins()) {
             txtWinner.setText("Hunters");
-        }
-        else if(!globalPlayer.isHunterWins()){
+        } else if (!globalPlayer.isHunterWins()) {
             txtWinner.setText("Runners");
         }
-
-
     }
 
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
 
         lobbyRef.child("users").removeEventListener(usersListener);
-
     }
 
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
 
-        if(globalPlayer.isLeader()) {
+        if (globalPlayer.isLeader()) {
             lobbyRef.setValue(null);
-        }
-        else if (!globalPlayer.isLeader()){
+        } else if (!globalPlayer.isLeader()) {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
-
     }
-
 
 
     private void showPlayers(DataSnapshot dataSnapshot) {
@@ -109,20 +103,17 @@ public class EndGame extends AppCompatActivity {
 
         ArrayList<String> players = new ArrayList<>();
 
-        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1,players); //creating an arrayadapter for the listview
+        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
         playerListView.setAdapter(arrayAdapter2); //setting the views adapter to array adapter
 
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            if((boolean) snapshot.child("hunter").getValue()){
+            if ((boolean) snapshot.child("hunter").getValue()) {
                 players.add(snapshot.getKey() + ": Hunter");
-            }
-            else if((boolean) snapshot.child("caught").getValue()){
+            } else if ((boolean) snapshot.child("caught").getValue()) {
                 players.add(snapshot.getKey() + ": Caught");
-            }
-            else {
+            } else {
                 players.add(snapshot.getKey() + ": Escaped");
             }
         }
     }
-
 }

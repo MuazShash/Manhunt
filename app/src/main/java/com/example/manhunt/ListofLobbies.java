@@ -40,7 +40,7 @@ public class ListofLobbies extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
         int width = dimensions.widthPixels;
         int height = dimensions.heightPixels;
-        getWindow().setLayout((int)(width*.8),(int)(height*.75));
+        getWindow().setLayout((int) (width * .8), (int) (height * .75));
 
 
         myRef.child("lobbies").addValueEventListener(new ValueEventListener() {
@@ -49,6 +49,7 @@ public class ListofLobbies extends AppCompatActivity {
                 ShowLobbies(dataSnapshot);
 
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -61,69 +62,66 @@ public class ListofLobbies extends AppCompatActivity {
 
         ArrayList<String> lobbies = new ArrayList<>();
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,lobbies); //creating an array adapter for the listview
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lobbies); //creating an array adapter for the listview
         LobbyListView.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                if(snapshot.child("start").getValue() != null){
-                    if((boolean) snapshot.child("start").getValue()){
-                        //do nothing
-                    }
-                    else{
-                        lobbies.add(snapshot.getKey()); //add lobby to the list of lobbies
-                    }
+            if (snapshot.child("start").getValue() != null) {
+                if ((boolean) snapshot.child("start").getValue()) {
+                    //do nothing
+                } else {
+                    lobbies.add(snapshot.getKey()); //add lobby to the list of lobbies
                 }
-
+            }
 
 
         }
-
 
         LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+                GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
-                    LobbyChosen = arrayAdapter.getItem(position).toString();
-                    username = globalPlayer.getName();
-                    globalPlayer.setLobbyChosen(LobbyChosen);
-                    globalPlayer.setLatitude(0.0);
-                    globalPlayer.setLongitude(0.0);
+                LobbyChosen = arrayAdapter.getItem(position).toString();
+                username = globalPlayer.getName();
+                globalPlayer.setLobbyChosen(LobbyChosen);
+                globalPlayer.setLatitude(0.0);
+                globalPlayer.setLongitude(0.0);
 
-                    myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                if(username.equals(dataSnapshot.getKey())){
-                                    isDuplicateUser = true;
-                                }
+                myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            if (username.equals(dataSnapshot.getKey())) {
+                                isDuplicateUser = true;
                             }
-                            ready = true;
+                        }
+                        ready = true;
 
-                            if(isDuplicateUser && ready){
-                                Toast.makeText(ListofLobbies.this, "Username taken, please use a different username", Toast.LENGTH_SHORT).show();
-                            }
-                            if(!isDuplicateUser && ready){
-                                //write username to database here with some defaults
-                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
-                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("caught").setValue(false);
-                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
-                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
-                                myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);
+                        if (isDuplicateUser && ready) {
+                            Toast.makeText(ListofLobbies.this, "Username taken, please use a different username", Toast.LENGTH_SHORT).show();
+                        }
+                        if (!isDuplicateUser && ready) {
+                            //write username to database here with some defaults
+                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
+                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("caught").setValue(false);
+                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
+                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
+                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);
 
-                                //Bringing user to the lobby screen
-                                startActivity(new Intent(ListofLobbies.this,Lobby.class));
-                                finish();
-                            }
-
-
+                            //Bringing user to the lobby screen
+                            startActivity(new Intent(ListofLobbies.this, Lobby.class));
+                            finish();
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
 
-                        }
-                    });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                    }
+                });
 
             }
         });

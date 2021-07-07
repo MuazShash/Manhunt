@@ -34,13 +34,6 @@ public class Lobby extends AppCompatActivity {
     ValueEventListener dcListener, startListener, usersListener;
 
     // Write a string when this client loses connection
-
-
-    // listener for start of game maybe?
-
-    /* also is game going to work through a lobby or through a game object?
-     * would lobby just be a waiting room then for the game to start?
-     */
     ListView listOfPlayers;
     GlobalPlayerClass globalPlayer;
     String lobbyChosen;
@@ -58,9 +51,8 @@ public class Lobby extends AppCompatActivity {
         lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
     }
 
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
-
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
             lobbyRef.child("disconnected").onDisconnect().setValue(true);
@@ -100,11 +92,9 @@ public class Lobby extends AppCompatActivity {
         });
 
         // hunter, runner and start button IDs
-
         final Button Hunter = (Button) findViewById(R.id.selectHunter);
         final Button Runner = (Button) findViewById(R.id.selectRunner);
         final TextView Status = (TextView) findViewById(R.id.lobbyView2);
-
 
         Hunter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,7 +149,6 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-
         //putting every user into the game now
         lobbyRef.child("start").addValueEventListener(startListener = new ValueEventListener() {
             @Override
@@ -173,8 +162,10 @@ public class Lobby extends AppCompatActivity {
                                 globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
                             }
                         }
+
                         @Override
-                        public void onCancelled(DatabaseError error) {}
+                        public void onCancelled(DatabaseError error) {
+                        }
                     });
                     startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
                     globalPlayer.stopTheme();
@@ -187,10 +178,9 @@ public class Lobby extends AppCompatActivity {
 
             }
         });
-        
     }
 
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
 
         lobbyRef.child("start").removeEventListener(startListener);

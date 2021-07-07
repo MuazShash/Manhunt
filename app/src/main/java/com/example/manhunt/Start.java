@@ -39,7 +39,7 @@ public class Start extends AppCompatActivity {
 
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
-        final TextInputEditText usernameInput = (TextInputEditText)findViewById(R.id.NameTextInput);
+        final TextInputEditText usernameInput = (TextInputEditText) findViewById(R.id.NameTextInput);
 
         globalPlayer.startTheme(this);
 
@@ -50,7 +50,7 @@ public class Start extends AppCompatActivity {
                 String username = usernameInput.getText().toString(); // storing username
 
                 // if username is blank, they need to make one before advancing
-                if(username.equals("")) {
+                if (username.equals("")) {
                     // popup asking for username
                     Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
 
@@ -70,7 +70,7 @@ public class Start extends AppCompatActivity {
                 String username = usernameInput.getText().toString(); // storing username
 
                 // if username is blank, they need to make one before advancing
-                if(username.equals("")) {
+                if (username.equals("")) {
 
                     // popup asking for username
                     Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
@@ -123,7 +123,7 @@ public class Start extends AppCompatActivity {
 
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }
