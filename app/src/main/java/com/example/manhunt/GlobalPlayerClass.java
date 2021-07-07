@@ -28,8 +28,8 @@ public class GlobalPlayerClass extends Application {
         return lobbyChosen;
     }
 
-    public void setLobbyChosen(String lobbychosen) {
-        this.lobbyChosen = lobbychosen;
+    public void setLobbyChosen(String lobbyChosen) {
+        this.lobbyChosen = lobbyChosen;
     }
 
     public double getLatitude() {
