@@ -65,10 +65,26 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private Runnable myRunnable;
     private ValueEventListener dcListener, scanListener, usersListener, hunterListener;
     private Button scan, players;
-    boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap;
-    long startTime = System.currentTimeMillis(), warningTimer = System.currentTimeMillis(), runTime, cooldownTimer = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
-    double startLat, startLng; //Stores starting latitude and longitude
+    private Location lastLocation;
+    boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap, initialLocation = true, caught = false;
+    long startTime = System.currentTimeMillis(), warningTimer, runTime, cooldownTimer = System.currentTimeMillis(), timeOfLastCatch = System.currentTimeMillis(); //Stores information for round start and out of bounds timers
+    double startLat, startLng, lastLat, lastLng; //Stores starting latitude and longitude
     int zoom;
+
+    double[] userStats = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    private final int DIST_TRAVELLED = 0;
+    private final int MAX_SPEED = 1;
+    private final int AVG_SPEED = 2;
+    private final int TIME_ALIVE = 3;
+    private final int RUNNERS_CAUGHT = 4;
+    private final int FIRST_CATCH_TIME = 5;
+    private final int QUICKEST_CATCH = 6;
+
+    private final int BOUNDARY = 0;
+    private final int SCAN_COOLDOWN = 1;
+    private final int CATCH_DIST = 2;
+    private final int GAME_TIME_LIMIT = 4;
+    private final int START_TIMER = 5;
 
 /*************************************************************************************************************************************
 //**************************************************ON CREATE*************************************************************************
@@ -103,11 +119,29 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
         
         //Setting zoom level for scan button
-        if(globalPlayer.getSettings(0) <= 1000){
+        if(globalPlayer.getSettings(BOUNDARY) <= 1000){
             zoom = 15;
         }
         else{
             zoom = 13;
+        }
+
+        // gets the initial location to use in player's stats
+        if(initialLocation) {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    //Updating starting coordinates
+                    lastLat = location.getLatitude();
+                    lastLng = location.getLongitude();
+
+                    //Initialising location
+                    lastLocation.setLatitude(lastLat);
+                    lastLocation.setLongitude(lastLng);
+
+                    initialLocation = false;
+                }
+            });
         }
 
         //Sets the start position to the leader's position when they press start game and updates the database
@@ -118,7 +152,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     //Updating starting coordinates
                     startLat = location.getLatitude();
                     startLng = location.getLongitude();
-                    LatLng startPosition = new LatLng(startLat, startLng);
+                    LatLng startPosition = new LatLng(startLat, startLng); // **** remove unused LatLng
 
                     //Updating database
                     lobbyRef.child("startLat").setValue(startLat);
@@ -210,7 +244,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onDataChange(DataSnapshot hunterSnapshot) {
                 //  Block of code to try
-                if((boolean) hunterSnapshot.getValue() == true){ //If they are now seen as hunter on the database
+                if((boolean) hunterSnapshot.getValue()){ //If they are now seen as hunter on the database
                     globalPlayer.setHunter(true); //They are hunter on their device
                     showToast("You have been caught by a hunter!");
                     ShowButton();
@@ -230,6 +264,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     if(runnersCaught(snapshot)){
                         txtTimer.setText("All runners have been caught! Hunters win!");
                         gameEnd = true;
+
+                        userStats[AVG_SPEED] = userStats[DIST_TRAVELLED] / ((System.currentTimeMillis() - startTime) / 1000.0);
                     }
                 }
             }
@@ -267,6 +303,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             lobbyRef.child("users").addValueEventListener(usersListener);
         }
 
+        //Updating user stat time alive
+        if(globalPlayer.isHunter() && !caught) {
+            if (System.currentTimeMillis() - startTime > globalPlayer.getSettings(START_TIMER) * 1000) // only considers catches made after the round start timer
+            {
+                userStats[TIME_ALIVE] = System.currentTimeMillis() - startTime;
+            }
+
+            caught = true;
+        }
+
         /* * * * * * * * * * * * * * * */
         // Handler for updating coordinates in real time below
 
@@ -298,52 +344,65 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         startLocation.setLatitude(startLat);
                         startLocation.setLongitude(startLng);
 
-                        if(myLocation.distanceTo(startLocation) <= globalPlayer.getSettings(0)){
+                        if(myLocation.distanceTo(startLocation) <= globalPlayer.getSettings(BOUNDARY)){
                             warningTimer = System.currentTimeMillis();
                             inBound = true;
                         }
                         else{
                             inBound = false;
-                            if(System.currentTimeMillis() - warningTimer >= 10000 && !globalPlayer.isHunter()){
+                            if(System.currentTimeMillis() - warningTimer >= (10 * 1000) && !globalPlayer.isHunter()){
                                 showToast("You have been out of bounds for too long and have been turned into a hunter!");
                                 lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
                             }
                             else if (!globalPlayer.isHunter()){
-                                txtTimer.setText("Return to game bounds in: " + (int) Math.floor((10000 - (System.currentTimeMillis()-warningTimer))/1000) + "s");
+                                txtTimer.setText("Return to game bounds in: " + (int) Math.floor(((10 * 1000) - (System.currentTimeMillis() - warningTimer)) / 1000) + "s");
                             }
                         }
+
+                        // updates the player's stats
+                        float distanceTravelled = myLocation.distanceTo(lastLocation);
+
+                        userStats[DIST_TRAVELLED] += distanceTravelled;
+
+                        if((distanceTravelled / delay) > userStats[MAX_SPEED]) {
+                            userStats[MAX_SPEED] = distanceTravelled / delay;
+                        }
+
+                        lastLocation.set(myLocation);
                     }
                 });
 
                 //checks if the game is ready to start
-                if(System.currentTimeMillis() - startTime >= globalPlayer.getSettings(5)*1000 && !ready){ //Checks if the start timer is complete
+                if(System.currentTimeMillis() - startTime >= globalPlayer.getSettings(START_TIMER)*1000 && !ready){ //Checks if the start timer is complete
                     ready = true;
                     runTime = System.currentTimeMillis();
                 }
                 else if(!ready){
-                    txtTimer.setText("Round starts in: " + (int) Math.floor((globalPlayer.getSettings(5)*1000 - (System.currentTimeMillis() - startTime))/1000) + "s");
+                    txtTimer.setText("Round starts in: " + (int) Math.floor((globalPlayer.getSettings(START_TIMER)*1000 - (System.currentTimeMillis() - startTime))/1000) + "s");
                 }
 
                 //checks if the game has reached the end of its time
-                if(!gameEnd && ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 < 300 && (globalPlayer.getSettings(4)*1000- (System.currentTimeMillis() - runTime))/1000 > 0){
-                    txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000) + "s");
+                if (!gameEnd && ready && inBound && (globalPlayer.getSettings(GAME_TIME_LIMIT) * (60 * 1000) - (System.currentTimeMillis() - runTime)) / 1000 < 300 && (globalPlayer.getSettings(GAME_TIME_LIMIT) * 1000 - (System.currentTimeMillis() - runTime)) / 1000 > 0) {
+                    txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(GAME_TIME_LIMIT) * (60 * 1000) - (System.currentTimeMillis() - runTime)) / 1000) + "s");
                 }
-                else if (!gameEnd && ready && inBound && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/1000 > 300){
-                    txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime))/60000) + " mins");
+                else if (!gameEnd && ready && inBound && (globalPlayer.getSettings(GAME_TIME_LIMIT) * (60 * 1000) - (System.currentTimeMillis() - runTime)) / 1000 > 300) {
+                    txtTimer.setText("Round ends in: " + (int) Math.floor((globalPlayer.getSettings(GAME_TIME_LIMIT) * (60 * 1000) - (System.currentTimeMillis() - runTime)) / (60 * 1000)) + " mins");
                 }
-                else if(!gameEnd && ready && (globalPlayer.getSettings(4)*60000- (System.currentTimeMillis() - runTime)) < 0){
+                else if (!gameEnd && ready && (globalPlayer.getSettings(GAME_TIME_LIMIT) * (60 * 1000) - (System.currentTimeMillis() - runTime)) < 0) {
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                     gameEnd = true;
+
+                    userStats[AVG_SPEED] = userStats[DIST_TRAVELLED] / ((System.currentTimeMillis() - startTime) / 1000.0);
                 }
 
                 //Button enabled/disabled on cooldown
-                if(System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(1)*1000 && globalPlayer.isHunter()) {
+                if (System.currentTimeMillis() - cooldownTimer > globalPlayer.getSettings(SCAN_COOLDOWN) * 1000 && globalPlayer.isHunter()) {
                     scan.setEnabled(true);
                     txtScan.setText("");
                 }
-                else if (globalPlayer.isHunter()){
+                else if (globalPlayer.isHunter()) {
                     scan.setEnabled(false);
-                    txtScan.setText(globalPlayer.getSettings(1) - (System.currentTimeMillis() - cooldownTimer)/1000 + "s");
+                    txtScan.setText(globalPlayer.getSettings(SCAN_COOLDOWN) - (System.currentTimeMillis() - cooldownTimer) / 1000 + "s");
                 }
 
                 // Do your work here
@@ -452,7 +511,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private void showBoundary(){
         LatLng startPosition = new LatLng(startLat, startLng);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, zoom));
-        CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED).fillColor(Color.argb(50,200,4,4));
+        CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(BOUNDARY)).strokeColor(Color.RED).fillColor(Color.argb(50,200,4,4));
         mMap.addCircle(boundary);
     }
 
@@ -495,8 +554,22 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
 
-                if (distanceInMeters <= globalPlayer.getSettings(2)) { //If the runner is within 10 meters from a hunter
+                if (distanceInMeters <= globalPlayer.getSettings(CATCH_DIST)) { //If the runner is within 10 meters from a hunter
                     lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
+
+                    // updating user's stats
+                    userStats[RUNNERS_CAUGHT]++;
+
+                    if(userStats[FIRST_CATCH_TIME] == 0) {
+                        userStats[QUICKEST_CATCH] = System.currentTimeMillis() - userStats[TIME_ALIVE];
+                        userStats[FIRST_CATCH_TIME] = System.currentTimeMillis() - userStats[TIME_ALIVE];
+                    }
+                    else if (System.currentTimeMillis() - timeOfLastCatch < userStats[QUICKEST_CATCH]) {
+                        userStats[QUICKEST_CATCH] = System.currentTimeMillis() - timeOfLastCatch;
+                    }
+
+                    timeOfLastCatch = System.currentTimeMillis();
+
                 }
 
             }

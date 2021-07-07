@@ -28,12 +28,12 @@ public class Options extends AppCompatActivity {
     String lobby;
 
     public Options(){
-        intCD = 0;
-        intDistance = 0;
-        intTimer = 0;
-        intTimeLimit = 0;
-        intHunters = 0;
-        intBoundary = 0;
+        intBoundary = 0;    // radius from starting position
+        intCD = 0;          // cooldown on hunter scan ability
+        intDistance = 0;    // how close a hunter needs to be to catch a runner
+        intHunters = 0;     // total hunters in the game
+        intTimeLimit = 0;   // maximum time the game is allowed to run for
+        intTimer = 0;       // game start timer (where runners can get a head start)
     }
 
     @Override
@@ -232,14 +232,12 @@ public class Options extends AppCompatActivity {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting cooldown failed");
                     intCD = 60;
-                    txtCD.setText("Cooldown duration: " + intCD + " s");
-                    seekCD.setProgress(intCD);
                 }
                 else {
                     intCD = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtCD.setText("Cooldown duration: " + intCD + " s");
-                    seekCD.setProgress(intCD);
                 }
+                txtCD.setText("Cooldown duration: " + intCD + " s");
+                seekCD.setProgress(intCD);
             }
         });
     }
@@ -251,14 +249,12 @@ public class Options extends AppCompatActivity {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intDistance = 2;
-                    txtDistance.setText("Capture distance: " + intDistance + " m");
-                    seekDistance.setProgress(intDistance);
                 }
                 else {
-                  intDistance = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                  txtDistance.setText("Capture distnace: " + intDistance + " s");
-                  seekDistance.setProgress(intDistance);
+                    intDistance = Integer.parseInt(String.valueOf(task.getResult().getValue()));
                 }
+                txtDistance.setText("Capture distance: " + intDistance + " m");
+                seekDistance.setProgress(intDistance);
             }
         });
     }
@@ -270,14 +266,12 @@ public class Options extends AppCompatActivity {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intBoundary = 500;
-                    txtBoundary.setText("Cooldown duration: " + intBoundary + " s");
-                    seekBoundary.setProgress(intBoundary);
                 }
                 else {
                     intBoundary = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtBoundary.setText("Map boundaries (radius): " + intBoundary + " m");
-                    seekBoundary.setProgress(intBoundary);
                 }
+                txtBoundary.setText("Map boundaries (radius): " + intBoundary + " m");
+                seekBoundary.setProgress(intBoundary);
             }
         });
     }
@@ -289,14 +283,12 @@ public class Options extends AppCompatActivity {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intTimer = 30;
-                    txtTimer.setText("Cooldown duration: " + intTimer + " s");
-                    seekTimer.setProgress(intTimer);
                 }
                 else {
                     intTimer = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtTimer.setText("Hunt start timer: " + intTimer + " s");
-                    seekTimer.setProgress(intTimer);
                 }
+                txtTimer.setText("Hunt start timer: " + intTimer + " s");
+                seekTimer.setProgress(intTimer);
             }
         });
     }
