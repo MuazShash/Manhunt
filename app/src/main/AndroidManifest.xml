@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".GlobalPlayerClass"
@@ -67,6 +68,8 @@
             android:name=".ListofLobbies"
             android:label="Lobbies"
             android:theme="@style/Theme.AppCompat.popupTheme" />
+
+        <service android:name=".BackgroundLocationService"></service> //declaring service
     </application>
 
 </manifest>

@@ -42,4 +42,5 @@
         <item name="colorControlActivated">@color/button_accent</item>
         <item name="color">@color/button_accent</item>
     </style>
+
 </resources>
