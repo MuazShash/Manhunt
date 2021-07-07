@@ -316,14 +316,12 @@ public class Options extends AppCompatActivity {
                 if (!task.isSuccessful()) {
                     System.out.println("Getting data failed");
                     intTimeLimit = 60;
-                    txtTimeLimit.setText("Cooldown duration: " + intTimeLimit + " s");
-                    seekTimeLimit.setProgress(intTimeLimit);
                 }
                 else {
                     intTimeLimit = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                    txtTimeLimit.setText("Game Time Limit: " + intTimeLimit + " mins");
-                    seekTimeLimit.setProgress(intTimeLimit);
                 }
+                txtTimeLimit.setText("Game Time Limit: " + intTimeLimit + " mins");
+                seekTimeLimit.setProgress(intTimeLimit);
             }
         });
     }
