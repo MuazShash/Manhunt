@@ -11,6 +11,7 @@ public class GlobalPlayerClass extends Application {
     private double longitude;
     private double latitude;
     int[] settings = new int[6];
+    double[] userStats = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     private String lobbyChosen = "";
     private boolean hunterWins = true;
     private MediaPlayer mpTheme;
@@ -69,6 +70,10 @@ public class GlobalPlayerClass extends Application {
     public int getSettings(int index){ return settings[index]; }
 
     public void setSettings(int index, int value){ settings[index] = value;}
+
+    public double getUserStat(int index){ return userStats[index]; }
+
+    public void setUserStat(int index, double value){ userStats[index] = value;}
 
     public void startTheme(Context context){
         mpTheme = MediaPlayer.create(context, R.raw.main_theme);
