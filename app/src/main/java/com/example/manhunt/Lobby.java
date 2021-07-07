@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -31,6 +32,7 @@ public class Lobby extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference lobbyRef;
     ValueEventListener dcListener, startListener, usersListener;
+
     // Write a string when this client loses connection
 
 
@@ -53,7 +55,6 @@ public class Lobby extends AppCompatActivity {
         // getting global variables to check which lobby was chosen
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         lobbyChosen = globalPlayer.getLobbyChosen();
-        
         lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
     }
 
@@ -88,6 +89,7 @@ public class Lobby extends AppCompatActivity {
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
                     Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
                     startActivity(backToStart);
+                    globalPlayer.stopTheme();
                     finish();
                 }
             }
@@ -175,6 +177,7 @@ public class Lobby extends AppCompatActivity {
                         public void onCancelled(DatabaseError error) {}
                     });
                     startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    globalPlayer.stopTheme();
                     finish();
                 }
             }

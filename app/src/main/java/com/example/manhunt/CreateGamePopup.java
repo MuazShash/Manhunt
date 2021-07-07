@@ -79,6 +79,8 @@ public class CreateGamePopup extends AppCompatActivity {
                     Toast.makeText(CreateGamePopup.this, "Lobby name taken, please use a new name for your lobby", Toast.LENGTH_SHORT).show();
                 }
                 else if(!isDuplicateLobby && ready) {
+
+
                     GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext(); //Global player object
                     globalPlayer.setLobbyChosen(LobbyName.getText().toString()); //set global lobby name to the EditText input
 
@@ -97,6 +99,7 @@ public class CreateGamePopup extends AppCompatActivity {
 
                     //setting default user attributes on firebase
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("caught").setValue(false);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(0.0);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(0.0);
@@ -110,7 +113,7 @@ public class CreateGamePopup extends AppCompatActivity {
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("cooldown").setValue(5);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("distance").setValue(5);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("time_limit").setValue(60);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("timer").setValue(30);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("timer").setValue(5);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("hunters").setValue(1);
 
                     startActivity(new Intent(CreateGamePopup.this, Lobby.class)); //open lobby activity

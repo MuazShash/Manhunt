@@ -5,6 +5,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -23,11 +25,12 @@ public class Start extends AppCompatActivity {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
+    GlobalPlayerClass globalPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
@@ -37,6 +40,8 @@ public class Start extends AppCompatActivity {
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
         final TextInputEditText usernameInput = (TextInputEditText)findViewById(R.id.NameTextInput);
+
+        globalPlayer.startTheme(this);
 
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,10 +55,9 @@ public class Start extends AppCompatActivity {
                     Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
 
                 } else { // once they have a username
-
                     // set username
                     globalPlayer.setName(username);
-                    globalPlayer.setLeader(true); // setting them leader for creating the game
+                    globalPlayer.setLeader(true); //setting them leader for creating the game
                     // display available lobbies
                     startActivity(new Intent(Start.this, CreateGamePopup.class));
                 }
@@ -63,7 +67,6 @@ public class Start extends AppCompatActivity {
         JoinGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String username = usernameInput.getText().toString(); // storing username
 
                 // if username is blank, they need to make one before advancing
@@ -101,12 +104,15 @@ public class Start extends AppCompatActivity {
         });
     }
 
+
     boolean doubleBackToExitPressedOnce = false;
 
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
+
+            globalPlayer.stopTheme();
             return;
         }
 

@@ -14,7 +14,10 @@
         <!-- Customize your theme here. -->
     </style>
 
-
+    <style name="Theme.Manhunt.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
     <style name="Theme.AppCompat.popupTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>

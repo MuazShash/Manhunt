@@ -11,13 +11,15 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card_view:cardCornerRadius="16dp"
+        card_view:cardCornerRadius="32dp"
         app:cardBackgroundColor="@color/background_1"
-        android:background="@drawable/layout_bg_popups">
+        android:background="@drawable/layout_bg_popups"
+        card_view:cardBackgroundColor="@color/background_2_dark"
+        card_view:cardElevation="0dp">
 
         <ListView
-            android:id="@+id/lobbies"
-            android:layout_width="wrap_content"
+            android:id="@+id/endPlayers"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"

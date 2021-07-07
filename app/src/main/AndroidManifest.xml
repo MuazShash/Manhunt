@@ -8,6 +8,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:name=".GlobalPlayerClass"
@@ -18,6 +19,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Manhunt"
         android:usesCleartextTraffic="true">
+        <activity android:name=".EndGame"
+            android:theme="@style/Theme.Manhunt.NoActionBar">
+
+        </activity>
+
         <activity
             android:name=".ListOfPlayers"
             android:label="@string/title_activity_list_of_players"
