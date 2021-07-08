@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -70,7 +71,7 @@ public class Lobby extends AppCompatActivity {
         }
 
         // Updating listview of players in the lobby
-        lobbyRef.child("users").addValueEventListener(usersListener = new ValueEventListener() {
+        usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ShowPlayers(dataSnapshot);
@@ -79,10 +80,10 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
-        });
+        };
 
         // Move players back to start page
-        lobbyRef.child("disconnected").addValueEventListener(dcListener = new ValueEventListener() {
+        dcListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if ((boolean) dataSnapshot.getValue()) {
@@ -97,7 +98,37 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
-        });
+        };
+
+        //putting every user into the game now
+        startListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if ((boolean) snapshot.getValue()) {
+                    lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            int i = 0;
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                        }
+                    });
+                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    globalPlayer.stopTheme();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        };
 
         Hunter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,52 +180,23 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        //putting every user into the game now
-        lobbyRef.child("start").addValueEventListener(startListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if ((boolean) snapshot.getValue()) {
-                    lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            int i = 0;
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                        }
-                    });
-                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
-                    globalPlayer.stopTheme();
-                    finish();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         globalPlayer.resumeTheme();
+        lobbyRef.child("users").addValueEventListener(usersListener);
+        lobbyRef.child("disconnected").addValueEventListener(dcListener);
+        lobbyRef.child("start").addValueEventListener(startListener);
+
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         globalPlayer.pauseTheme();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
 
         lobbyRef.child("start").removeEventListener(startListener);
         lobbyRef.child("disconnected").removeEventListener(dcListener);
@@ -202,19 +204,41 @@ public class Lobby extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onStop() {
+        super.onStop();
+
         if (globalPlayer.isLeader()) {
             lobbyRef.child("disconnect").setValue(true);
-            lobbyRef.removeValue();
+            lobbyRef.setValue("");
+
         } else {
             lobbyRef.child("users").child(globalPlayer.getName()).removeValue();
         }
-
-        globalPlayer.setLobbyChosen("");
-        startActivity(new Intent(Lobby.this, Start.class));
-        finish();
     }
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            globalPlayer.setLobbyChosen("");
+            startActivity(new Intent(Lobby.this, Start.class));
+            finish();
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
+    }
+
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {
         listOfPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view

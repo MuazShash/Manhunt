@@ -2,11 +2,14 @@
 package com.example.manhunt;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -27,6 +30,7 @@ public class Start extends AppCompatActivity {
     DatabaseReference myRef = database.getReference();
     GlobalPlayerClass globalPlayer;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,6 +40,7 @@ public class Start extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
+        System.out.println("**" + this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_RTT));
 
     }
 
@@ -93,16 +98,6 @@ public class Start extends AppCompatActivity {
             }
         });
 
-        usernameInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
-            @Override
-            public void afterTextChanged(Editable s) { }
-        });
     }
 
     @Override
