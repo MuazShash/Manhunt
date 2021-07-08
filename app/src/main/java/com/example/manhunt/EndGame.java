@@ -91,14 +91,14 @@ public class EndGame extends AppCompatActivity {
         }
 
         // setting game stats text
-        gameStats.setText("Performance statistics:\n"
-                + "Distance travelled: " + globalPlayer.userStats[DIST_TRAVELLED] + "m"
-                + "Max speed:          " + globalPlayer.userStats[MAX_SPEED] * 1000 + "m/s"
-                + "Average speed:      " + globalPlayer.userStats[AVG_SPEED] + "m/s"
-                + "Time alive:         " + globalPlayer.userStats[TIME_ALIVE] / 1000 + "s"
-                + "Runners caught:     " + globalPlayer.userStats[RUNNERS_CAUGHT]
-                + "First catch:        " + globalPlayer.userStats[FIRST_CATCH_TIME] / 1000 + "s"
-                + "Quickest catch:     " + globalPlayer.userStats[QUICKEST_CATCH] / 1000 + "s"
+        gameStats.setText(new StringBuilder().append("Performance statistics:\n")
+                .append("Distance travelled: ").append(globalPlayer.userStats[DIST_TRAVELLED]).append("m\n")
+                .append("Max speed:          ").append(globalPlayer.userStats[MAX_SPEED] * 1000).append("m/s\n")
+                .append("Average speed:      ").append(globalPlayer.userStats[AVG_SPEED]).append("m/s\n")
+                .append("Time alive:         ").append(globalPlayer.userStats[TIME_ALIVE] / 1000).append("s\n")
+                .append("Runners caught:     ").append(globalPlayer.userStats[RUNNERS_CAUGHT]).append("\n")
+                .append("First catch:        ").append(globalPlayer.userStats[FIRST_CATCH_TIME] / 1000).append("s\n")
+                .append("Quickest catch:     ").append(globalPlayer.userStats[QUICKEST_CATCH] / 1000).append("s\n").toString()
         );
     }
 
