@@ -1,22 +1,69 @@
 package com.example.manhunt;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-public class BackgroundLocationService extends Service {
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+public class BackgroundLocationService extends Service{
+
+    final Handler handler = new Handler();
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private Location location;
+    Criteria criteria = new Criteria();
+    LocationListener locationListener;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         createNotificationChannel();
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                /*globalPlayer.setLongitude(location.getLongitude());
+                globalPlayer.setLatitude(location.getLatitude());
+
+                lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());*/
+
+
+                System.out.println(location.getLatitude() + "location listener is working" + location.getLongitude());
+
+            }
+        };
+
+
+
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
+
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), (long) 1000, (float) 1, locationListener);
+
 
 
         Intent intent1 = new Intent(this, Game.class);
@@ -64,4 +111,5 @@ public class BackgroundLocationService extends Service {
         super.onDestroy();
 
     }
+
 }

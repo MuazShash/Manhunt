@@ -133,6 +133,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         mpApproaching = MediaPlayer.create(this, R.raw.approaching_sound);
         //mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
+
+
+        Intent intent = new Intent(this, BackgroundLocationService.class);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(intent);
+        }
+        else{
+            startService(intent);
+        }
+
         //Setting zoom level for scan button
         if (globalPlayer.getSettings(BOUNDARY) <= 1000) {
             zoom = 15;
@@ -332,7 +342,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
                 lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
-                System.out.println("*******************LKocation listener is working");
             }
         };
     }
