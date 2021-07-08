@@ -3,21 +3,17 @@ package com.example.manhunt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -39,6 +35,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,7 +61,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     final Handler handler = new Handler();
     MediaPlayer mpCaught, mpScan, mpDC, mpApproaching;
     AudioManager am;
+    LocationManager lm;
     private ValueEventListener dcListener, scanListener, usersListener, usersScanListener, hunterListener;
+    LocationListener locationListener;
+    Marker player;
     private Button scan, players;
     private Location lastLocation = new Location("");
     boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap, initialLocation = true, caught = false;
@@ -96,18 +96,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(this, BackgroundLocationService.class);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(intent);
-        }
-        else{
-            startService(intent);
-        }
-
-        ContextCompat.startForegroundService(this, intent);
-
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        lm = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
+
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
@@ -159,6 +150,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onSuccess(Location location) {
                     //Updating starting coordinates
+                    lastLocation = location;
+
                     lastLat = location.getLatitude();
                     lastLng = location.getLongitude();
 
@@ -184,6 +177,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     lobbyRef.child("startLat").setValue(startLat);
                     lobbyRef.child("startLng").setValue(startLng);
 
+                    globalPlayer.setLongitude(location.getLongitude());
+                    globalPlayer.setLatitude(location.getLatitude());
+
+                    lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                    lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+
                     showBoundary();
                     booting = false;
                 }
@@ -202,6 +201,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
                     startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            globalPlayer.setLongitude(location.getLongitude());
+                            globalPlayer.setLatitude(location.getLatitude());
+
+                            lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                            lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+                        }
+                    });
                     showBoundary();
                     booting = false;
                 }
@@ -313,6 +322,19 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             public void onCancelled(DatabaseError error) {
             }
         };
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                globalPlayer.setLongitude(location.getLongitude());
+                globalPlayer.setLatitude(location.getLatitude());
+
+                lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+
+                System.out.println("*******************LKocation listener is working");
+            }
+        };
     }
 
     /*************************************************************************************************************************************
@@ -351,6 +373,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         }
 
         lobbyRef.child("users").addValueEventListener(usersListener);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
+
+        lm.requestLocationUpdates(lm.getBestProvider(criteria, true), (long) 1000, (float) 0.25, locationListener);
 
         /* * * * * * * * * * * * * * * */
         // Handler for updating coordinates in real time below
@@ -362,38 +389,33 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @SuppressLint("MissingPermission")
             public void run() {
                 //Updates the database with the user's current location
-                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
 
-                    @Override
-                    public void onSuccess(Location location) {
+                //Checks if the user is out of bounds
+                Location myLocation = new Location("");
+                myLocation.setLatitude(globalPlayer.getLatitude());
+                myLocation.setLongitude(globalPlayer.getLongitude());
 
-                        globalPlayer.setLongitude(location.getLongitude());
-                        globalPlayer.setLatitude(location.getLatitude());
+                Location startLocation = new Location("");
+                startLocation.setLatitude(startLat);
+                startLocation.setLongitude(startLng);
 
-                        lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                        lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+                //mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(180)).position(new LatLng(globalPlayer.getLatitude(), globalPlayer.getLongitude())).title("YOU"));
 
-                        //Checks if the user is out of bounds
-                        Location myLocation = new Location("");
-                        myLocation.setLatitude(globalPlayer.getLatitude());
-                        myLocation.setLongitude(globalPlayer.getLongitude());
 
-                        Location startLocation = new Location("");
-                        startLocation.setLatitude(startLat);
-                        startLocation.setLongitude(startLng);
-
-                        if (myLocation.distanceTo(startLocation) <= globalPlayer.getSettings(BOUNDARY)) {
-                            warningTimer = System.currentTimeMillis();
-                            inBound = true;
-                        } else {
-                            inBound = false;
-                            if (System.currentTimeMillis() - warningTimer >= (10 * 1000) && !globalPlayer.isHunter()) {
-                                showToast("You have been out of bounds for too long and have been turned into a hunter!");
-                                lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
-                            } else if (!globalPlayer.isHunter()) {
-                                txtTimer.setText("Return to game bounds in: " + (int) Math.floor(((10 * 1000) - (System.currentTimeMillis() - warningTimer)) / 1000) + "s");
-                            }
-                        }
+                if(myLocation.distanceTo(startLocation) <= globalPlayer.getSettings(BOUNDARY)){
+                    warningTimer = System.currentTimeMillis();
+                    inBound = true;
+                }
+                else{
+                    inBound = false;
+                    if(System.currentTimeMillis() - warningTimer >= (30*1000) && !globalPlayer.isHunter()){
+                        showToast("You have been out of bounds for too long and have been turned into a hunter!");
+                        lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").setValue(true); //Convert the runner to a hunter
+                    }
+                    else if (!globalPlayer.isHunter()){
+                        txtTimer.setText("Return to game bounds in: " + (int) Math.floor(((30*1000) - (System.currentTimeMillis()-warningTimer))/1000) + "s");
+                    }
+                }
 
                         // updates the player's stats
                         float distanceTravelled = myLocation.distanceTo(lastLocation);
@@ -403,10 +425,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                         if ((distanceTravelled / delay) > globalPlayer.getUserStat(MAX_SPEED)) {
                             globalPlayer.setUserStat(MAX_SPEED, distanceTravelled / delay);
                         }
-
                         lastLocation.set(myLocation);
-                    }
-                });
 
                 //checks if the game is ready to start
                 if (System.currentTimeMillis() - startTime >= globalPlayer.getSettings(START_TIMER) * 1000 && !ready) { //Checks if the start timer is complete
@@ -538,28 +557,30 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        //player = mMap.addMarker(new MarkerOptions().position(new LatLng(globalPlayer.getLatitude(), globalPlayer.getLongitude())).title("YOU"));
         mMap.setMyLocationEnabled(true);
     }
 
-    private void caughtSound() {
+    private void caughtSound(){
         mpCaught.start();
     }
 
-    private void scanSound() {
+    private void scanSound(){
         mpScan.start();
     }
 
-    private void dcSound() {
+    private void dcSound(){
         mpDC.start();
     }
 
-    private void approachingSound() {
+    private void approachingSound(){
         mpApproaching.start();
     }
 
 
+
     //Draws a filled circle and moves the players camera and zoom centered at the start location
-    private void showBoundary() {
+    private void showBoundary(){
         LatLng startPosition = new LatLng(startLat, startLng);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, zoom));
         CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED).fillColor(Color.argb(50, 200, 4, 4));
@@ -629,14 +650,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
                 System.out.println("***********This person is " + distanceInMeters + " meters away");
-                if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && !mpScan.isPlaying()) { //If the runner is within 10 meters from a hunter
+                if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     approachingSound();
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
-                    mpApproaching.setVolume((float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 1 / (distanceInMeters / 15 + 1)), (float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 1 / (distanceInMeters / 15 + 1)));
-                } else if (distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && mpApproaching.isPlaying() && !mpScan.isPlaying()) {
+                    mpApproaching.setVolume((float) am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1), (float) am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1));
+                }
+                else if (distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && mpApproaching.isPlaying() && !mpScan.isPlaying()){
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
-                    mpApproaching.setVolume((float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 1 / (distanceInMeters / 15 + 1)), (float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 1 / (distanceInMeters / 15 + 1)));
-                } else if (mpScan.isPlaying() || distanceInMeters > 40 || distanceInMeters < globalPlayer.getSettings(2) || gameEnd) {
+                    mpApproaching.setVolume((float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), (float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)));
+                }
+                else if(mpScan.isPlaying() || distanceInMeters > 40 || distanceInMeters < globalPlayer.getSettings(2) || gameEnd){
                     mpApproaching.pause();
                 }
             }
@@ -660,7 +683,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             startActivity(new Intent(Game.this, Start.class));
             finish();
             return;
-        } else if (doubleBackToExitPressedOnce && !globalPlayer.isLeader()) { //Otherwise just remove the user
+        }
+        else if(doubleBackToExitPressedOnce && !globalPlayer.isLeader()){ //Otherwise just remove the user
             startActivity(new Intent(Game.this, Start.class));
             finish();
             return;
@@ -675,8 +699,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             public void run() {
                 doubleBackToExitPressedOnce = false;
             }
-        }, (2 * 1000));
-    }
+        }, (2*1000));    }
 
     private void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
