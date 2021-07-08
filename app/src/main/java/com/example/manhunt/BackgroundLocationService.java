@@ -50,6 +50,7 @@ public class BackgroundLocationService extends Service{
 
         // application player object
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        globalPlayer.setRunningInBackground(true);
         username = globalPlayer.getName();
         lobbyChosen = globalPlayer.getLobbyChosen();
 

@@ -207,11 +207,11 @@ public class Lobby extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        if (globalPlayer.isLeader()) {
+        if (globalPlayer.isLeader() && !globalPlayer.isRunningInBackground()) {
             lobbyRef.child("disconnect").setValue(true);
-            lobbyRef.setValue("");
+            lobbyRef.removeValue();
 
-        } else {
+        } else if(!globalPlayer.isRunningInBackground()){
             lobbyRef.child("users").child(globalPlayer.getName()).removeValue();
         }
     }
