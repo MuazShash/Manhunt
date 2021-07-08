@@ -24,32 +24,47 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class BackgroundLocationService extends Service{
 
-    final Handler handler = new Handler();
-    private FusedLocationProviderClient fusedLocationClient;
+    //firebase database reference
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef;
 
-    private Location location;
+
+    private GlobalPlayerClass globalPlayer;
+
+    final Handler handler = new Handler();
+    private String username, lobbyChosen;
+
+    //location listener and criteria
     Criteria criteria = new Criteria();
     LocationListener locationListener;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         createNotificationChannel();
+
+        // application player object
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        username = globalPlayer.getName();
+        lobbyChosen = globalPlayer.getLobbyChosen();
+
+        //Defining database reference location
+        myRef = database.getReference().child("lobbies").child(lobbyChosen);
 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
 
-                /*globalPlayer.setLongitude(location.getLongitude());
+                globalPlayer.setLongitude(location.getLongitude());
                 globalPlayer.setLatitude(location.getLatitude());
 
-                lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());*/
-
+                myRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                myRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
                 System.out.println(location.getLatitude() + "location listener is working" + location.getLongitude());
 
@@ -96,6 +111,8 @@ public class BackgroundLocationService extends Service{
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+
+
         return null;
     }
 
