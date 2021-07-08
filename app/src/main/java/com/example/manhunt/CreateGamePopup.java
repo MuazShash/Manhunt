@@ -43,9 +43,9 @@ public class CreateGamePopup extends AppCompatActivity {
         int height = dimensions.heightPixels;
         getWindow().setLayout((int) (width * .8), (int) (height * .4));
 
-
     }
 
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -124,15 +124,19 @@ public class CreateGamePopup extends AppCompatActivity {
         });
     }
 
+    @Override
     protected void onResume(){
         super.onResume();
         globalPlayer.resumeTheme();
     }
 
+    @Override
     protected void onPause(){
         super.onPause();
         globalPlayer.pauseTheme();
     }
+
+    @Override
     protected void onStop() {
         super.onStop();
         myRef.removeEventListener(lobbies);

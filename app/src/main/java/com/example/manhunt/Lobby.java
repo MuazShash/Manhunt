@@ -29,7 +29,6 @@ import java.util.ArrayList;
 public class Lobby extends AppCompatActivity {
 
     //database reference
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference lobbyRef;
     ValueEventListener dcListener, startListener, usersListener;
 
@@ -48,11 +47,19 @@ public class Lobby extends AppCompatActivity {
         // getting global variables to check which lobby was chosen
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         lobbyChosen = globalPlayer.getLobbyChosen();
-        lobbyRef = database.getReference().child("lobbies").child(lobbyChosen);
+        lobbyRef = FirebaseDatabase.getInstance().getReference().child("lobbies").child(lobbyChosen);
     }
 
+    @Override
     protected void onStart() {
         super.onStart();
+
+        // hunter, runner and start button IDs
+        final Button Hunter = (Button) findViewById(R.id.selectHunter);
+        final Button Runner = (Button) findViewById(R.id.selectRunner);
+        final TextView Status = (TextView) findViewById(R.id.lobbyView2);
+        final Button Start = (Button) findViewById(R.id.btnStart);
+        final ImageButton button = findViewById(R.id.settings);
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
@@ -92,11 +99,6 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        // hunter, runner and start button IDs
-        final Button Hunter = (Button) findViewById(R.id.selectHunter);
-        final Button Runner = (Button) findViewById(R.id.selectRunner);
-        final TextView Status = (TextView) findViewById(R.id.lobbyView2);
-
         Hunter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { // on click of hunter
@@ -119,8 +121,6 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        // settings button
-        final ImageButton button = findViewById(R.id.settings);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,8 +133,7 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        //start button
-        final Button Start = (Button) findViewById(R.id.btnStart);
+
 
         //limiting start button visibility to only lobby leader
         View StartVisibility = findViewById(R.id.btnStart);
@@ -181,16 +180,19 @@ public class Lobby extends AppCompatActivity {
         });
     }
 
+    @Override
     protected void onResume(){
         super.onResume();
         globalPlayer.resumeTheme();
     }
 
+    @Override
     protected void onPause(){
         super.onPause();
         globalPlayer.pauseTheme();
     }
 
+    @Override
     protected void onStop() {
         super.onStop();
 
@@ -222,7 +224,13 @@ public class Lobby extends AppCompatActivity {
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
         listOfPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            players.add(snapshot.getKey());
+            if((boolean) snapshot.child("hunter").getValue()){
+                players.add(snapshot.getKey() + ": hunter");
+            }
+            else{
+                players.add(snapshot.getKey() + ": runner" );
+            }
+
         }
     }
 

@@ -24,8 +24,7 @@ public class ListofLobbies extends AppCompatActivity {
     String SHARED_PREFS = "sharedPrefs";
     private String username = "";
     String LobbyChosen;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference();
+    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
     GlobalPlayerClass globalPlayer;
     boolean ready = false;
     boolean isDuplicateUser = false;
@@ -43,7 +42,11 @@ public class ListofLobbies extends AppCompatActivity {
         int height = dimensions.heightPixels;
         getWindow().setLayout((int) (width * .8), (int) (height * .75));
 
+    }
 
+    @Override
+    protected void onStart(){
+        super.onStart();
         myRef.child("lobbies").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -55,20 +58,22 @@ public class ListofLobbies extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
     }
 
+    @Override
     protected void onResume(){
         super.onResume();
 
         globalPlayer.resumeTheme();
     }
 
+    @Override
     protected void onPause(){
         super.onPause();
 
         globalPlayer.pauseTheme();
     }
+
     private void ShowLobbies(DataSnapshot dataSnapshot) {
         LobbyListView = (ListView) findViewById(R.id.endPlayers);//the list view is the lobbies list view
 

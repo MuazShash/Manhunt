@@ -13,7 +13,7 @@ public class GlobalPlayerClass extends Application {
     int[] settings = new int[6];
     double[] userStats = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     private String lobbyChosen = "";
-    private boolean hunterWins = true;
+    private boolean hunterWins = true, runningInBackground = false;
     private MediaPlayer mpTheme;
 
     public boolean isHunterWins() {
@@ -105,5 +105,13 @@ public class GlobalPlayerClass extends Application {
     public void stopTheme() {
         mpTheme.setLooping(false);
         mpTheme.stop();
+    }
+
+    public boolean isRunningInBackground(){
+        return runningInBackground;
+    }
+
+    public void setRunningInBackground(boolean flag){
+        runningInBackground = flag;
     }
 }

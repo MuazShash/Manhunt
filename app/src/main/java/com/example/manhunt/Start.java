@@ -37,11 +37,18 @@ public class Start extends AppCompatActivity {
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
 
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        globalPlayer.startTheme(this);
+
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
         final TextInputEditText usernameInput = (TextInputEditText) findViewById(R.id.NameTextInput);
 
-        globalPlayer.startTheme(this);
 
         CreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,26 +95,23 @@ public class Start extends AppCompatActivity {
 
         usernameInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) { }
         });
     }
+
+    @Override
     protected void onResume(){
         super.onResume();
         globalPlayer.resumeTheme();
     }
 
+    @Override
     protected void onPause(){
         super.onPause();
         globalPlayer.pauseTheme();

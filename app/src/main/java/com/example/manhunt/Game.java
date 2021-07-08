@@ -241,6 +241,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
      //**************************************************ON START***************************************************************************
      This area creates the listeners needed to read from the database such as disconnect, scan, hunter status and other information.
      //************************************************************************************************************************************/
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -513,28 +514,28 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
      These methods are called when the activity is getting ready to close. Removes listeners and deletes the lobby from the database if they are a leader
      or deletes their user from the lobby if they are not.
      *************************************************************************************************************************************/
-    /*
     protected void onPause() {
         super.onPause();
-        lobbyRef.child("disconnected").removeEventListener(dcListener);
-        lobbyRef.child("scan").removeEventListener(scanListener);
-        lobbyRef.child("users").removeEventListener(usersListener);
-        lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
-        lobbyRef.child("users").removeEventListener(usersScanListener);
-        handler.removeCallbacksAndMessages(null);
+        if(!globalPlayer.isRunningInBackground()){
+            lobbyRef.child("disconnected").removeEventListener(dcListener);
+            lobbyRef.child("scan").removeEventListener(scanListener);
+            lobbyRef.child("users").removeEventListener(usersListener);
+            lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
+            lobbyRef.child("users").removeEventListener(usersScanListener);
+            handler.removeCallbacksAndMessages(null);
+        }
     }
 
     protected void onStop() {
         super.onStop();
-        if (globalPlayer.isLeader() && !gameEnd) {
+        if (globalPlayer.isLeader() && !gameEnd && !globalPlayer.isRunningInBackground()) {
             lobbyRef.setValue(null);
-        } else if (!globalPlayer.isLeader() && !gameEnd) {
+        } else if (!globalPlayer.isLeader() && !gameEnd && !globalPlayer.isRunningInBackground()) {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
 
     }
 
-     */
     //Updates the map with markers of all player's locations
     private void MarkLocation(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
