@@ -90,6 +90,8 @@ public class Options extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        globalPlayer.resumeTheme();
+
         save.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -319,5 +321,11 @@ public class Options extends AppCompatActivity {
                 seekTimeLimit.setProgress(intTimeLimit);
             }
         });
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        globalPlayer.pauseTheme();
     }
 }
