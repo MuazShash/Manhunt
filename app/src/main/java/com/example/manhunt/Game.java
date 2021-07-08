@@ -513,6 +513,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
      These methods are called when the activity is getting ready to close. Removes listeners and deletes the lobby from the database if they are a leader
      or deletes their user from the lobby if they are not.
      *************************************************************************************************************************************/
+    /*
     protected void onPause() {
         super.onPause();
         lobbyRef.child("disconnected").removeEventListener(dcListener);
@@ -533,6 +534,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
+     */
     //Updates the map with markers of all player's locations
     private void MarkLocation(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {

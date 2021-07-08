@@ -53,6 +53,7 @@ public class Lobby extends AppCompatActivity {
 
     protected void onStart() {
         super.onStart();
+
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
             lobbyRef.child("disconnected").onDisconnect().setValue(true);
@@ -178,6 +179,16 @@ public class Lobby extends AppCompatActivity {
 
             }
         });
+    }
+
+    protected void onResume(){
+        super.onResume();
+        globalPlayer.resumeTheme();
+    }
+
+    protected void onPause(){
+        super.onPause();
+        globalPlayer.pauseTheme();
     }
 
     protected void onStop() {

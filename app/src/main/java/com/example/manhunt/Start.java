@@ -103,6 +103,15 @@ public class Start extends AppCompatActivity {
             }
         });
     }
+    protected void onResume(){
+        super.onResume();
+        globalPlayer.resumeTheme();
+    }
+
+    protected void onPause(){
+        super.onPause();
+        globalPlayer.pauseTheme();
+    }
 
 
     boolean doubleBackToExitPressedOnce = false;

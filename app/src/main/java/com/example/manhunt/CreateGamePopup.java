@@ -23,6 +23,8 @@ public class CreateGamePopup extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference().child("lobbies");
     ValueEventListener lobbies;
+    GlobalPlayerClass globalPlayer;
+
     boolean isDuplicateLobby = false;
     boolean ready = false;
 
@@ -31,6 +33,7 @@ public class CreateGamePopup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_game_popup);
 
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
         //getActionBar().hide();//hiding the action bar
 
         //setting the metrics for the popus window
@@ -121,9 +124,17 @@ public class CreateGamePopup extends AppCompatActivity {
         });
     }
 
+    protected void onResume(){
+        super.onResume();
+        globalPlayer.resumeTheme();
+    }
+
+    protected void onPause(){
+        super.onPause();
+        globalPlayer.pauseTheme();
+    }
     protected void onStop() {
         super.onStop();
-
         myRef.removeEventListener(lobbies);
     }
 

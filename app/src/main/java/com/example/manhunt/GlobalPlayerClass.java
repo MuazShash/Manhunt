@@ -94,6 +94,14 @@ public class GlobalPlayerClass extends Application {
         mpTheme.start();
     }
 
+    public void pauseTheme(){
+        mpTheme.pause();
+    }
+
+    public void resumeTheme(){
+        mpTheme.start();
+    }
+
     public void stopTheme() {
         mpTheme.setLooping(false);
         mpTheme.stop();

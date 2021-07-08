@@ -26,6 +26,7 @@ public class ListofLobbies extends AppCompatActivity {
     String LobbyChosen;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
+    GlobalPlayerClass globalPlayer;
     boolean ready = false;
     boolean isDuplicateUser = false;
     ListView LobbyListView; //listview variable
@@ -34,7 +35,7 @@ public class ListofLobbies extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        globalPlayer = (GlobalPlayerClass) getApplicationContext();
         setContentView(R.layout.listoflobbies);
         DisplayMetrics dimensions = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
@@ -57,6 +58,17 @@ public class ListofLobbies extends AppCompatActivity {
 
     }
 
+    protected void onResume(){
+        super.onResume();
+
+        globalPlayer.resumeTheme();
+    }
+
+    protected void onPause(){
+        super.onPause();
+
+        globalPlayer.pauseTheme();
+    }
     private void ShowLobbies(DataSnapshot dataSnapshot) {
         LobbyListView = (ListView) findViewById(R.id.endPlayers);//the list view is the lobbies list view
 
