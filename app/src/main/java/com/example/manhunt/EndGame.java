@@ -24,12 +24,20 @@ import java.util.ArrayList;
 public class EndGame extends AppCompatActivity {
 
     private GlobalPlayerClass globalPlayer;
-    private TextView txtWinner;
+    private TextView txtWinner, gameStats;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference lobbyRef;
     ListView playerListView; //listview variable
     ValueEventListener usersListener;
     Button backToStart;
+
+    private final int DIST_TRAVELLED = 0;
+    private final int MAX_SPEED = 1;
+    private final int AVG_SPEED = 2;
+    private final int TIME_ALIVE = 3;
+    private final int RUNNERS_CAUGHT = 4;
+    private final int FIRST_CATCH_TIME = 5;
+    private final int QUICKEST_CATCH = 6;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -40,6 +48,8 @@ public class EndGame extends AppCompatActivity {
         lobbyRef = database.getReference().child("lobbies").child(globalPlayer.getLobbyChosen());
         //showing whether hunters or runners have won in the textview
         txtWinner = (TextView) findViewById(R.id.winnerType);
+        gameStats = (TextView) findViewById(R.id.gameStats);
+
         //back to start button
         backToStart = (Button) findViewById(R.id.backToStart);
     }
@@ -79,6 +89,17 @@ public class EndGame extends AppCompatActivity {
         } else if (!globalPlayer.isHunterWins()) {
             txtWinner.setText("Runners");
         }
+
+        // setting game stats text
+        gameStats.setText("Performance statistics:\n"
+                + "Distance travelled: " + globalPlayer.userStats[DIST_TRAVELLED] + "m"
+                + "Max speed:          " + globalPlayer.userStats[MAX_SPEED] * 1000 + "m/s"
+                + "Average speed:      " + globalPlayer.userStats[AVG_SPEED] + "m/s"
+                + "Time alive:         " + globalPlayer.userStats[TIME_ALIVE] / 1000 + "s"
+                + "Runners caught:     " + globalPlayer.userStats[RUNNERS_CAUGHT]
+                + "First catch:        " + globalPlayer.userStats[FIRST_CATCH_TIME] / 1000 + "s"
+                + "Quickest catch:     " + globalPlayer.userStats[QUICKEST_CATCH] / 1000 + "s"
+        );
     }
 
     protected void onPause() {
