@@ -31,14 +31,6 @@ public class EndGame extends AppCompatActivity {
     ValueEventListener usersListener;
     Button backToStart;
 
-    private final int DIST_TRAVELLED = 0;
-    private final int MAX_SPEED = 1;
-    private final int AVG_SPEED = 2;
-    private final int TIME_ALIVE = 3;
-    private final int RUNNERS_CAUGHT = 4;
-    private final int FIRST_CATCH_TIME = 5;
-    private final int QUICKEST_CATCH = 6;
-
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +83,14 @@ public class EndGame extends AppCompatActivity {
         }
 
         // setting game stats text
+        int DIST_TRAVELLED      = 0;
+        int MAX_SPEED           = 1;
+        int AVG_SPEED           = 2;
+        int TIME_ALIVE          = 3;
+        int RUNNERS_CAUGHT      = 4;
+        int FIRST_CATCH_TIME    = 5;
+        int QUICKEST_CATCH      = 6;
+
         gameStats.setText(new StringBuilder().append("Performance statistics:\n")
                 .append("Distance travelled: ").append(globalPlayer.userStats[DIST_TRAVELLED]).append("m\n")
                 .append("Max speed:          ").append(globalPlayer.userStats[MAX_SPEED] * 1000).append("m/s\n")
