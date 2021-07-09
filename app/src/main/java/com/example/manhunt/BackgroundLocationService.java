@@ -146,6 +146,7 @@ public class BackgroundLocationService extends Service{
 
     @Override
     public void onDestroy() {
+        globalPlayer.setRunningInBackground(false);
         stopForeground(true);
         stopSelf();
         super.onDestroy();

@@ -44,6 +44,7 @@ public class Options extends AppCompatActivity {
         getWindow().setNavigationBarColor(getResources().getColor(R.color.accent_2));
 
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
+        globalPlayer.setRunningInBackground(true);
         //System.out.println("************************lobby name: " + globalPlayer.getLobbychosen());
         lobby = globalPlayer.getLobbyChosen();
 
@@ -328,4 +329,11 @@ public class Options extends AppCompatActivity {
         super.onPause();
         globalPlayer.pauseTheme();
     }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        globalPlayer.setRunningInBackground(false);
+    }
+
 }
