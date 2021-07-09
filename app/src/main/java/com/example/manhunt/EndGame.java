@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class EndGame extends AppCompatActivity {
 
     private GlobalPlayerClass globalPlayer;
-    private TextView txtWinner;
+    private TextView txtWinner, gameStats;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference lobbyRef;
     ListView playerListView; //listview variable
@@ -40,6 +40,8 @@ public class EndGame extends AppCompatActivity {
         lobbyRef = database.getReference().child("lobbies").child(globalPlayer.getLobbyChosen());
         //showing whether hunters or runners have won in the textview
         txtWinner = (TextView) findViewById(R.id.winnerType);
+        gameStats = (TextView) findViewById(R.id.gameStats);
+
         //back to start button
         backToStart = (Button) findViewById(R.id.backToStart);
     }
@@ -79,6 +81,25 @@ public class EndGame extends AppCompatActivity {
         } else if (!globalPlayer.isHunterWins()) {
             txtWinner.setText("Runners");
         }
+
+        // setting game stats text
+        int DIST_TRAVELLED      = 0;
+        int MAX_SPEED           = 1;
+        int AVG_SPEED           = 2;
+        int TIME_ALIVE          = 3;
+        int RUNNERS_CAUGHT      = 4;
+        int FIRST_CATCH_TIME    = 5;
+        int QUICKEST_CATCH      = 6;
+
+        gameStats.setText(new StringBuilder().append("Performance statistics:\n")
+                .append("Distance travelled: ").append(globalPlayer.userStats[DIST_TRAVELLED]).append("m\n")
+                .append("Max speed:          ").append(globalPlayer.userStats[MAX_SPEED] * 1000).append("m/s\n")
+                .append("Average speed:      ").append(globalPlayer.userStats[AVG_SPEED]).append("m/s\n")
+                .append("Time alive:         ").append(globalPlayer.userStats[TIME_ALIVE] / 1000).append("s\n")
+                .append("Runners caught:     ").append(globalPlayer.userStats[RUNNERS_CAUGHT]).append("\n")
+                .append("First catch:        ").append(globalPlayer.userStats[FIRST_CATCH_TIME] / 1000).append("s\n")
+                .append("Quickest catch:     ").append(globalPlayer.userStats[QUICKEST_CATCH] / 1000).append("s\n").toString()
+        );
     }
 
     protected void onPause() {
