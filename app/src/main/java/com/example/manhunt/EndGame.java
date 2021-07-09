@@ -52,7 +52,7 @@ public class EndGame extends AppCompatActivity {
         usersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                showPlayers(dataSnapshot);
+                //showPlayers(dataSnapshot);
             }
 
             @Override
