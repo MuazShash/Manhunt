@@ -61,6 +61,7 @@ public class EndGame extends AppCompatActivity {
         };
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onResume() {
         super.onResume();
@@ -75,12 +76,15 @@ public class EndGame extends AppCompatActivity {
 
         lobbyRef.child("users").addValueEventListener(usersListener);
 
+        String winner;
 
         if (globalPlayer.isHunterWins()) {
-            txtWinner.setText("Hunters");
-        } else if (!globalPlayer.isHunterWins()) {
-            txtWinner.setText("Runners");
+            winner = "Hunters";
+        } else {
+            winner = "Runners";
         }
+
+        txtWinner.setText(new StringBuilder().append(winner).append(" win!"));
 
         // setting game stats text
         int DIST_TRAVELLED      = 0;
@@ -91,14 +95,16 @@ public class EndGame extends AppCompatActivity {
         int FIRST_CATCH_TIME    = 5;
         int QUICKEST_CATCH      = 6;
 
-        gameStats.setText(new StringBuilder().append("Performance statistics:\n")
-                .append("Distance travelled: ").append(globalPlayer.userStats[DIST_TRAVELLED]).append("m\n")
-                .append("Max speed:          ").append(globalPlayer.userStats[MAX_SPEED] * 1000).append("m/s\n")
-                .append("Average speed:      ").append(globalPlayer.userStats[AVG_SPEED]).append("m/s\n")
-                .append("Time alive:         ").append(globalPlayer.userStats[TIME_ALIVE] / 1000).append("s\n")
-                .append("Runners caught:     ").append(globalPlayer.userStats[RUNNERS_CAUGHT]).append("\n")
-                .append("First catch:        ").append(globalPlayer.userStats[FIRST_CATCH_TIME] / 1000).append("s\n")
-                .append("Quickest catch:     ").append(globalPlayer.userStats[QUICKEST_CATCH] / 1000).append("s\n").toString()
+        /* DO NOT TOUCH FORMATTING */
+        /* * * * * * * * * * * * * */
+        gameStats.setText(new StringBuilder().append("Performance statistics:\n\n")
+                .append("Distance travelled:     ").append(String.format("%.1f" , globalPlayer.userStats[DIST_TRAVELLED])).append(" m\n")
+                .append("Max speed:                  ").append(String.format("%.1f" , globalPlayer.userStats[MAX_SPEED] * 1000)).append(" m/s\n")
+                .append("Average speed:           ").append(String.format("%.1f" , globalPlayer.userStats[AVG_SPEED])).append(" m/s\n")
+                .append("Time alive:                   ").append(String.format("%.1f" , globalPlayer.userStats[TIME_ALIVE] / 1000)).append(" s\n")
+                .append("Runners caught:         ").append(String.format("%.0f" , globalPlayer.userStats[RUNNERS_CAUGHT])).append("\n")
+                .append("First catch:                  ").append(String.format("%.1f" , globalPlayer.userStats[FIRST_CATCH_TIME] / 1000)).append(" s\n")
+                .append("Quickest catch:           ").append(String.format("%.1f" , globalPlayer.userStats[QUICKEST_CATCH] / 1000)).append(" s").toString()
         );
     }
 
