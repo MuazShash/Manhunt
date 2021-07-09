@@ -41,7 +41,7 @@ public class Start extends AppCompatActivity {
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
         System.out.println("**" + this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_RTT));
-
+        System.out.println("***" + this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE));
     }
 
     @Override
