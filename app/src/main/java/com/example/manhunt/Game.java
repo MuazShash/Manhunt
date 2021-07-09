@@ -489,6 +489,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if (gameEnd) {
                     if (System.currentTimeMillis() - gameEndTime > (7 * 1000)) {
                         startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
+                        globalPlayer.setRunningInBackground(false);
                         finish(); //kills game activity
                     }
                 } else {
