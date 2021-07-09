@@ -97,14 +97,12 @@ public class BackgroundLocationService extends Service{
         PendingIntent quitPending = PendingIntent.getBroadcast(this, (int)
                 System.currentTimeMillis(), quit, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-
         Notification notification = new NotificationCompat.Builder(this, "ChannelId1")
                 .setContentTitle("Manhunt")
                 .setContentText("APP RUNNING")
                 .setSmallIcon(R.drawable.m_icon_colorised3)
                 .setContentIntent(pendingIntent)
-                .addAction(R.drawable.m_icon_colorised3, "Quit",
+                .addAction(R.drawable.m_icon_colorised3, "QUIT",
                         quitPending)
                 .build();
 
