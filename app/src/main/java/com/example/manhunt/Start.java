@@ -5,10 +5,15 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.wifi.aware.WifiAwareManager;
+import android.net.wifi.aware.WifiAwareSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +34,8 @@ public class Start extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
     GlobalPlayerClass globalPlayer;
+    BroadcastReceiver myReceiver;
+    WifiAwareManager mWifiAwareManager;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -44,9 +51,32 @@ public class Start extends AppCompatActivity {
         System.out.println("***" + this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onStart(){
         super.onStart();
+
+        mWifiAwareManager = (WifiAwareManager) this.getSystemService(Context.WIFI_AWARE_SERVICE);
+
+        IntentFilter filter = new IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED);
+
+        BroadcastReceiver myReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // discard current sessions
+            }
+        };
+
+        this.registerReceiver(myReceiver, filter);
+        /* This broadcast is not sticky, using the isAvailable()
+         * API after registering the broadcast to check the current
+         * state of Wi-Fi Aware. */
+        if (mWifiAwareManager.isAvailable()) {
+            System.out.println("Wi-Fi Aware is available");
+        } else {
+            System.out.println("Wi-Fi Aware NOT available!");
+        }
+
 
         globalPlayer.startTheme(this);
 
@@ -110,8 +140,8 @@ public class Start extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         globalPlayer.pauseTheme();
+        unregisterReceiver(myReceiver);
     }
-
 
     boolean doubleBackToExitPressedOnce = false;
 
