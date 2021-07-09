@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -31,12 +32,15 @@ public class CreateGamePopup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_game_popup);
+        setContentView(R.layout.activity_create_game_popup); //setting content view
+
+        //for rounded edges
+        this.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         //getActionBar().hide();//hiding the action bar
 
-        //setting the metrics for the popus window
+        //setting the metrics for the popup window
         DisplayMetrics dimensions = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dimensions);
         int width = dimensions.widthPixels;
