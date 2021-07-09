@@ -88,6 +88,8 @@ public class BackgroundLocationService extends Service{
         locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), (long) 1000, (float) 1, locationListener);
 
 
+
+
         //game intent
         Intent intent1 = new Intent(this, Game.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, 0);
@@ -97,8 +99,12 @@ public class BackgroundLocationService extends Service{
         PendingIntent quitPending = PendingIntent.getBroadcast(this, (int)
                 System.currentTimeMillis(), quit, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this, "ChannelId1")
-                .setContentTitle("Manhunt")
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+
+        builder.setAutoCancel(true);
+
+        Notification notification = builder.setContentTitle("Manhunt")
                 .setContentText("APP RUNNING")
                 .setSmallIcon(R.drawable.m_icon_colorised3)
                 .setContentIntent(pendingIntent)
