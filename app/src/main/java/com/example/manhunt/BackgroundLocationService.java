@@ -19,6 +19,7 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -42,6 +43,12 @@ public class BackgroundLocationService extends Service{
     //location listener and criteria
     Criteria criteria = new Criteria();
     LocationListener locationListener;
+
+    String CHANNEL_ID = "ManhuntNotif";
+    String channel_name = "Manhunt";
+    String channel_description = "APP IN USE";
+
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -81,15 +88,25 @@ public class BackgroundLocationService extends Service{
         locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), (long) 1000, (float) 1, locationListener);
 
 
-
+        //game intent
         Intent intent1 = new Intent(this, Game.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, 0);
+
+        //quit intent
+        Intent quit = new Intent("close_app");
+        PendingIntent quitPending = PendingIntent.getBroadcast(this, (int)
+                System.currentTimeMillis(), quit, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
 
         Notification notification = new NotificationCompat.Builder(this, "ChannelId1")
                 .setContentTitle("Manhunt")
                 .setContentText("APP RUNNING")
                 .setSmallIcon(R.drawable.m_icon_colorised3)
-                .setContentIntent(pendingIntent).build();
+                .setContentIntent(pendingIntent)
+                .addAction(R.drawable.m_icon_colorised3, "Quit",
+                        quitPending)
+                .build();
 
         startForeground(1, notification);
 
@@ -97,15 +114,16 @@ public class BackgroundLocationService extends Service{
     }
 
     private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    "ChannelId1", "Foreground notification", NotificationManager.IMPORTANCE_HIGH);
-
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(notificationChannel);
-
-
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = channel_name;
+            String description = channel_description;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 

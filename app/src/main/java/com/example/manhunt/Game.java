@@ -7,7 +7,10 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
@@ -86,6 +89,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private final int GAME_TIME_LIMIT = 4;
     private final int START_TIMER = 5;
 
+    //broadcast Receiver
+    private BroadcastReceiver mReceiver;
     /*************************************************************************************************************************************
      //**************************************************ON CREATE*************************************************************************
      This area handles the graphics and initializes values that will be used later on.
@@ -133,6 +138,18 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         mpApproaching = MediaPlayer.create(this, R.raw.approaching_sound);
         //mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
+        //to enable to function for pendingIntent
+
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                finish();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("close_app");
+        this.registerReceiver(mReceiver, filter);
 
 
         Intent intent = new Intent(this, BackgroundLocationService.class);
@@ -241,7 +258,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
      //**************************************************ON START***************************************************************************
      This area creates the listeners needed to read from the database such as disconnect, scan, hunter status and other information.
      //************************************************************************************************************************************/
-    @Override
     protected void onStart() {
         super.onStart();
 
@@ -514,27 +530,29 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
      These methods are called when the activity is getting ready to close. Removes listeners and deletes the lobby from the database if they are a leader
      or deletes their user from the lobby if they are not.
      *************************************************************************************************************************************/
+
     protected void onPause() {
         super.onPause();
-        if(!globalPlayer.isRunningInBackground()){
-            lobbyRef.child("disconnected").removeEventListener(dcListener);
-            lobbyRef.child("scan").removeEventListener(scanListener);
-            lobbyRef.child("users").removeEventListener(usersListener);
-            lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
-            lobbyRef.child("users").removeEventListener(usersScanListener);
-            handler.removeCallbacksAndMessages(null);
-        }
+
+        unregisterReceiver(mReceiver);
+        /*lobbyRef.child("disconnected").removeEventListener(dcListener);
+        lobbyRef.child("scan").removeEventListener(scanListener);
+        lobbyRef.child("users").removeEventListener(usersListener);
+        lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
+        lobbyRef.child("users").removeEventListener(usersScanListener);
+        handler.removeCallbacksAndMessages(null);*/
     }
 
-    protected void onStop() {
+    /*protected void onStop() {
         super.onStop();
-        if (globalPlayer.isLeader() && !gameEnd && !globalPlayer.isRunningInBackground()) {
+        if (globalPlayer.isLeader() && !gameEnd) {
             lobbyRef.setValue(null);
-        } else if (!globalPlayer.isLeader() && !gameEnd && !globalPlayer.isRunningInBackground()) {
+        } else if (!globalPlayer.isLeader() && !gameEnd) {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
 
-    }
+    }*/
+
 
     //Updates the map with markers of all player's locations
     private void MarkLocation(DataSnapshot snapshot) {
