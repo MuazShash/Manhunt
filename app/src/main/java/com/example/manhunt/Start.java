@@ -35,7 +35,6 @@ public class Start extends AppCompatActivity {
     DatabaseReference myRef = database.getReference();
     GlobalPlayerClass globalPlayer;
     BroadcastReceiver myReceiver;
-    WifiAwareManager mWifiAwareManager;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -55,27 +54,6 @@ public class Start extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
-
-        mWifiAwareManager = (WifiAwareManager) this.getSystemService(Context.WIFI_AWARE_SERVICE);
-
-        IntentFilter filter = new IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED);
-
-        BroadcastReceiver myReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                // discard current sessions
-            }
-        };
-
-        this.registerReceiver(myReceiver, filter);
-        /* This broadcast is not sticky, using the isAvailable()
-         * API after registering the broadcast to check the current
-         * state of Wi-Fi Aware. */
-        if (mWifiAwareManager.isAvailable()) {
-            System.out.println("Wi-Fi Aware is available");
-        } else {
-            System.out.println("Wi-Fi Aware NOT available!");
-        }
 
 
         globalPlayer.startTheme(this);
@@ -140,7 +118,6 @@ public class Start extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         globalPlayer.pauseTheme();
-        unregisterReceiver(myReceiver);
     }
 
     boolean doubleBackToExitPressedOnce = false;
