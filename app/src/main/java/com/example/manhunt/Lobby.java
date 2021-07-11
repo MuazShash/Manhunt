@@ -1,17 +1,15 @@
 package com.example.manhunt;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
-import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 
 public class Lobby extends AppCompatActivity {
@@ -37,8 +34,9 @@ public class Lobby extends AppCompatActivity {
     ListView listOfPlayers;
     GlobalPlayerClass globalPlayer;
     String lobbyChosen;
-    boolean zeroHunters;
+    int hunters = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +59,7 @@ public class Lobby extends AppCompatActivity {
         final Button Runner = (Button) findViewById(R.id.selectRunner);
         final TextView Status = (TextView) findViewById(R.id.lobbyView2);
         final Button Start = (Button) findViewById(R.id.btnStart);
-        final ImageButton button = findViewById(R.id.settings);
+        final ImageButton settings = findViewById(R.id.settings);
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
@@ -76,7 +74,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ShowPlayers(dataSnapshot);
-                zeroHunters = countHunters(dataSnapshot);
+                hunters = countHunters(dataSnapshot);
             }
 
             @Override
@@ -107,33 +105,26 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    if(zeroHunters) {
-                        showToast("Minimum 1 hunter required to start game");
-                    } else {
-                        lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                int i = 0;
-                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                    globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
-                                }
+                    lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            int i = 0;
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
                             }
+                        }
 
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                            }
-                        });
-                        startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
-                        globalPlayer.stopTheme();
-                        finish();
-                    }
+                        @Override
+                        public void onCancelled(DatabaseError error) { }
+                    });
+                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                    globalPlayer.stopTheme();
+                    finish();
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
+            public void onCancelled(DatabaseError error) { }
         };
 
         Hunter.setOnClickListener(new View.OnClickListener() {
@@ -158,7 +149,7 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
+        settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (globalPlayer.isLeader()) { // only the leader can change game settings
@@ -171,7 +162,6 @@ public class Lobby extends AppCompatActivity {
         });
 
 
-
         //limiting start button visibility to only lobby leader
         View StartVisibility = findViewById(R.id.btnStart);
         if (!globalPlayer.isLeader()) {
@@ -182,7 +172,16 @@ public class Lobby extends AppCompatActivity {
         Start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lobbyRef.child("start").setValue(true);
+                System.out.println(hunters+ " HUNTERS " + globalPlayer.getSettings(3) + " SETTINGS");
+                if(hunters == globalPlayer.getSettings(3)){
+                    lobbyRef.child("start").setValue(true);
+                }
+                else if (hunters > globalPlayer.getSettings(3)){
+                    showToast("You have too many hunters!");
+                }
+                else{
+                    showToast("You need " + globalPlayer.getSettings(3) + " hunters to start the game!");
+                }
             }
         });
 
@@ -264,13 +263,15 @@ public class Lobby extends AppCompatActivity {
         }
     }
 
-    private boolean countHunters(DataSnapshot dataSnapshot) {
+    private int countHunters(DataSnapshot dataSnapshot) {
+        int numOfHunters = 0;
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             if((boolean) snapshot.child("hunter").getValue()) {
-                return false;
+                numOfHunters++;
             }
         }
-        return true;
+        System.out.println(numOfHunters + " HUNTERS");
+        return numOfHunters;
     }
 
     private void showToast(String text) {

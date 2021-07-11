@@ -1,8 +1,10 @@
 package com.example.manhunt;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +38,7 @@ public class Options extends AppCompatActivity {
         intTimer = 0;       // game start timer (where runners can get a head start)
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +105,7 @@ public class Options extends AppCompatActivity {
                 myRef.child("lobbies").child(lobby).child("settings").child("timer").setValue(intTimer);
                 myRef.child("lobbies").child(lobby).child("settings").child("time_limit").setValue(intTimeLimit);
                 myRef.child("lobbies").child(lobby).child("settings").child("hunters").setValue(intHunters);
+                globalPlayer.setSettings(3, intHunters);
                 myRef.child("lobbies").child(lobby).child("settings").child("distance").setValue(intDistance);
                 System.out.println("Hunters = " + intHunters);
             }

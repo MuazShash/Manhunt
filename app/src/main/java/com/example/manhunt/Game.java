@@ -8,12 +8,15 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -68,6 +71,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     LocationManager lm;
     private ValueEventListener dcListener, scanListener, usersListener, usersScanListener, hunterListener;
     LocationListener locationListener;
+    private SensorEventListener bearingListener;
+    private SensorManager sensorManager;
+    float[] mgravity = new float[3], mGeomagnetic = new float[3];
+    float azimuth = 0f;
+
     Marker player;
     private Button scan, players;
     private Location lastLocation = new Location("");
@@ -75,6 +83,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     long startTime = System.currentTimeMillis(), warningTimer, runTime, cooldownTimer = System.currentTimeMillis(), timeOfLastCatch = System.currentTimeMillis(), gameEndTime; //Stores information for round start and out of bounds timers
     double startLat, startLng, lastLat, lastLng; //Stores starting latitude and longitude
     int zoom;
+
+
+
+
 
     private final int DIST_TRAVELLED = 0;
     private final int MAX_SPEED = 1;
@@ -90,8 +102,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private final int GAME_TIME_LIMIT = 4;
     private final int START_TIMER = 5;
 
-    //broadcast Receiver
-    private BroadcastReceiver mReceiver;
+
     /*************************************************************************************************************************************
      //**************************************************ON CREATE*************************************************************************
      This area handles the graphics and initializes values that will be used later on.
@@ -104,6 +115,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         lm = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -138,19 +150,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         //mpDC.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mpApproaching = MediaPlayer.create(this, R.raw.approaching_sound);
         //mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        //to enable to function for pendingIntent
-
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                finish();
-            }
-        };
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("close_app");
-        this.registerReceiver(mReceiver, filter);
 
 
         Intent intent = new Intent(this, BackgroundLocationService.class);
@@ -370,6 +369,40 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
             }
         };
+
+        bearingListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float alpha = 0.97f;
+
+                if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    mgravity[0] = alpha * mgravity[0] + (1 - alpha) * event.values[0];
+                    mgravity[1] = alpha * mgravity[0] + (1 - alpha) * event.values[1];
+                    mgravity[2] = alpha * mgravity[0] + (1 - alpha) * event.values[2];
+                }
+                if(event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                    mGeomagnetic[0] = alpha * mGeomagnetic[0] + (1 - alpha) * event.values[0];
+                    mGeomagnetic[1] = alpha * mGeomagnetic[1] + (1 - alpha) * event.values[1];
+                    mGeomagnetic[2] = alpha * mGeomagnetic[2] + (1 - alpha) * event.values[2];
+                }
+
+                float R[] = new float[9];
+                float I[] = new float[9];
+
+                boolean success = SensorManager.getRotationMatrix(R,I,mgravity,mGeomagnetic);
+                if(success){
+                    float[] orientation = new float[3];
+                    SensorManager.getOrientation(R, orientation);
+                    azimuth = (float)Math.toDegrees(orientation[0]);
+                    player.setRotation(azimuth);
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
     }
 
     /*************************************************************************************************************************************
@@ -380,6 +413,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     @Override
     protected void onResume() {
         super.onResume();
+
+        sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
@@ -425,6 +461,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             public void run() {
                 //Updates the database with the user's current location
 
+                //mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(180)).position(new LatLng(globalPlayer.getLatitude(), globalPlayer.getLongitude())).title("you"));
                 //Checks if the user is out of bounds
                 Location myLocation = new Location("");
                 myLocation.setLatitude(globalPlayer.getLatitude());
@@ -533,8 +570,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     protected void onPause() {
         super.onPause();
 
-        unregisterReceiver(mReceiver);
         if(!globalPlayer.isRunningInBackground()) {
+            //sensorManager.unregisterListener((SensorEventListener) this);
             lobbyRef.child("disconnected").removeEventListener(dcListener);
             lobbyRef.child("scan").removeEventListener(scanListener);
             lobbyRef.child("users").removeEventListener(usersListener);
@@ -588,8 +625,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //player = mMap.addMarker(new MarkerOptions().position(new LatLng(globalPlayer.getLatitude(), globalPlayer.getLongitude())).title("YOU"));
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
     }
 
     private void caughtSound(){
@@ -616,6 +652,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startPosition, zoom));
         CircleOptions boundary = new CircleOptions().center(startPosition).radius(globalPlayer.getSettings(0)).strokeColor(Color.RED).fillColor(Color.argb(50, 200, 4, 4));
         mMap.addCircle(boundary);
+        player = mMap.addMarker(new MarkerOptions().position(new LatLng(globalPlayer.getLatitude(), globalPlayer.getLongitude())).title("YOU"));
     }
 
     //Updates the user's status as hunter or runner
