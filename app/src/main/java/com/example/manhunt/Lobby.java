@@ -37,6 +37,7 @@ public class Lobby extends AppCompatActivity {
     ListView listOfPlayers;
     GlobalPlayerClass globalPlayer;
     String lobbyChosen;
+    boolean zeroHunters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ShowPlayers(dataSnapshot);
+                zeroHunters = countHunters(dataSnapshot);
             }
 
             @Override
@@ -88,7 +90,7 @@ public class Lobby extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if ((boolean) dataSnapshot.getValue()) {
                     Intent backToStart = new Intent(getApplicationContext(), Start.class);
-                    Toast.makeText(getApplicationContext(), "Leader has left the game!", Toast.LENGTH_SHORT).show();
+                    showToast("Leader has left the game!");
                     startActivity(backToStart);
                     globalPlayer.stopTheme();
                     finish();
@@ -105,22 +107,26 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            int i = 0;
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
+                    if(zeroHunters) {
+                        showToast("Minimum 1 hunter required to start game");
+                    } else {
+                        lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                int i = 0;
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                        }
-                    });
-                    startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
-                    globalPlayer.stopTheme();
-                    finish();
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                            }
+                        });
+                        startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
+                        globalPlayer.stopTheme();
+                        finish();
+                    }
                 }
             }
 
@@ -256,6 +262,15 @@ public class Lobby extends AppCompatActivity {
             }
 
         }
+    }
+
+    private boolean countHunters(DataSnapshot dataSnapshot) {
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            if((boolean) snapshot.child("hunter").getValue()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void showToast(String text) {
