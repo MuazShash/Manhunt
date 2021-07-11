@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.manhunt">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -19,6 +20,7 @@
 
     <application
         android:name=".GlobalPlayerClass"
+        android:screenOrientation="sensorPortrait"
         android:allowBackup="true"
         android:icon="@drawable/m_icon_colorised3"
         android:label="@string/app_name"
@@ -27,22 +29,33 @@
         android:theme="@style/Theme.Manhunt"
         android:usesCleartextTraffic="true">
         <activity android:name=".EndGame"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.Manhunt.NoActionBar">
-
         </activity>
 
         <activity
             android:name=".ListOfPlayers"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:label="@string/title_activity_list_of_players"
             android:theme="@style/Theme.AppCompat.listOfPlayersTheme"></activity>
         <activity
             android:name=".CreateGamePopup"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.AppCompat.CreateGamePopup"></activity>
         <activity android:name=".Options"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
         <activity android:name=".Lobby"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
         <activity android:name=".Game"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
 
         <!--
@@ -62,6 +75,8 @@
 
         <activity
             android:name=".Start"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Manhunt.NoActionBar">
             <intent-filter>
@@ -72,6 +87,8 @@
     </activity>
         <activity
             android:name=".ListofLobbies"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
             android:label="Lobbies"
             android:theme="@style/Theme.AppCompat.popupTheme" />
 

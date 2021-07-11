@@ -340,8 +340,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     if (runnersCaught(snapshot)) {
                         txtTimer.setText("All runners have been caught! Hunters win!");
                         gameEnd = true;
-
-                        globalPlayer.setUserStat(AVG_SPEED, globalPlayer.getUserStat(DIST_TRAVELLED) / (System.currentTimeMillis() - startTime) / 1000.0); //userStats[AVG_SPEED] = userStats[DIST_TRAVELLED] / ((System.currentTimeMillis() - startTime) / 1000.0);
                     }
                 }
             }
@@ -359,6 +357,16 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
                 lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+
+                // updates the player's stats
+                float distanceTravelled = location.distanceTo(lastLocation);
+
+                globalPlayer.setUserStat(DIST_TRAVELLED, globalPlayer.getUserStat(DIST_TRAVELLED) + distanceTravelled);
+
+                if (distanceTravelled > globalPlayer.getUserStat(MAX_SPEED)) {
+                    globalPlayer.setUserStat(MAX_SPEED, distanceTravelled);
+                }
+                lastLocation.set(location);
 
             }
         };
@@ -444,16 +452,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     }
                 }
 
-                        // updates the player's stats
-                        float distanceTravelled = myLocation.distanceTo(lastLocation);
-
-                        globalPlayer.setUserStat(DIST_TRAVELLED, globalPlayer.getUserStat(DIST_TRAVELLED) + distanceTravelled);
-
-                        if ((distanceTravelled / delay) > globalPlayer.getUserStat(MAX_SPEED)) {
-                            globalPlayer.setUserStat(MAX_SPEED, distanceTravelled / delay);
-                        }
-                        lastLocation.set(myLocation);
-
                 //checks if the game is ready to start
                 if (System.currentTimeMillis() - startTime >= globalPlayer.getSettings(START_TIMER) * 1000 && !ready) { //Checks if the start timer is complete
                     ready = true;
@@ -471,8 +469,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     globalPlayer.setHunterWins(false);
                     txtTimer.setText("Hunters failed to catch all runners in time! Runners win!");
                     gameEnd = true;
-
-                    globalPlayer.setUserStat(AVG_SPEED, globalPlayer.getUserStat(DIST_TRAVELLED) / ((System.currentTimeMillis() - startTime) / 1000.0));
                 }
 
                 //Button enabled/disabled on cooldown
@@ -489,6 +485,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 if (gameEnd) {
                     if (System.currentTimeMillis() - gameEndTime > (7 * 1000)) {
+                        globalPlayer.setUserStat(AVG_SPEED, globalPlayer.getUserStat(DIST_TRAVELLED) / ((System.currentTimeMillis() - startTime) / 1000.0));
                         startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
                         globalPlayer.setRunningInBackground(false);
                         finish(); //kills game activity

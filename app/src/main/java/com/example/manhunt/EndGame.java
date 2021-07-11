@@ -99,7 +99,7 @@ public class EndGame extends AppCompatActivity {
         /* * * * * * * * * * * * * */
         gameStats.setText(new StringBuilder().append("Performance statistics:\n\n")
                 .append("Distance travelled:     ").append(String.format("%.1f" , globalPlayer.userStats[DIST_TRAVELLED])).append(" m\n")
-                .append("Max speed:                  ").append(String.format("%.1f" , globalPlayer.userStats[MAX_SPEED] * 1000)).append(" m/s\n")
+                .append("Max speed:                  ").append(String.format("%.1f" , globalPlayer.userStats[MAX_SPEED])).append(" m/s\n")
                 .append("Average speed:           ").append(String.format("%.1f" , globalPlayer.userStats[AVG_SPEED])).append(" m/s\n")
                 .append("Time alive:                   ").append(String.format("%.1f" , globalPlayer.userStats[TIME_ALIVE] / 1000)).append(" s\n")
                 .append("Runners caught:         ").append(String.format("%.0f" , globalPlayer.userStats[RUNNERS_CAUGHT])).append("\n")
