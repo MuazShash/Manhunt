@@ -33,14 +33,14 @@ public class CustomPlayerList extends ArrayAdapter{
         LayoutInflater inflater = context.getLayoutInflater();
         if(convertView==null)
             row = inflater.inflate(R.layout.row_design, null, true);
-        TextView textViewCountry = (TextView) row.findViewById(R.id.textViewCountry);
-        TextView textViewCapital = (TextView) row.findViewById(R.id.textViewCapital);
-        ImageView imageFlag = (ImageView) row.findViewById(R.id.imageViewFlag);
+        TextView textViewPlayerName = (TextView) row.findViewById(R.id.textViewPlayerName);
+        TextView textViewPlayerType = (TextView) row.findViewById(R.id.textViewPlayerType);
+        ImageView imageIcon = (ImageView) row.findViewById(R.id.imageViewIcon);
 
-        textViewCountry.setText(playerNames.get(position));
-        textViewCapital.setText(playerType.get(position));
-        imageFlag.setImageResource(imageId.get(position));
-        return  row;
+        textViewPlayerName.setText(playerNames.get(position));
+        textViewPlayerType.setText(playerType.get(position));
+        imageIcon.setImageResource(imageId.get(position));
+        return row;
     }
 
 }
