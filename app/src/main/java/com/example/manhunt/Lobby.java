@@ -246,12 +246,18 @@ public class Lobby extends AppCompatActivity {
 
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {
+
+
+
+
         listOfPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view
 
+        CustomPlayerList customPlayerList = new CustomPlayerList(this, listPlayers(dataSnapshot), listPlayerTypes(dataSnapshot), putPlayerIcons(dataSnapshot));
+        listOfPlayers.setAdapter(customPlayerList);
         ArrayList<String> players = new ArrayList<>();
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
-        listOfPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
+        //ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
+        //listOfPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             if((boolean) snapshot.child("hunter").getValue()){
                 players.add(snapshot.getKey() + ": hunter");
@@ -272,6 +278,43 @@ public class Lobby extends AppCompatActivity {
         }
         System.out.println(numOfHunters + " HUNTERS");
         return numOfHunters;
+    }
+    private ArrayList<String> listPlayers(DataSnapshot dataSnapshot){
+        ArrayList<String> listOfPlayers = new ArrayList<>();
+        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+            listOfPlayers.add(snapshot.getKey());
+        }
+
+        return listOfPlayers;
+    }
+    private ArrayList<String> listPlayerTypes(DataSnapshot dataSnapshot){
+        ArrayList<String> listOfPlayerTypes = new ArrayList<>();
+        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+            if((boolean) snapshot.child("hunter").getValue()){
+                listOfPlayerTypes.add("hunter");
+            }
+            else{
+                listOfPlayerTypes.add("runner");
+            }
+
+        }
+
+        return listOfPlayerTypes;
+    }
+
+    private ArrayList<Integer> putPlayerIcons(DataSnapshot dataSnapshot){
+        ArrayList<Integer> playerIcons = new ArrayList<>();
+        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+            if((boolean) snapshot.child("hunter").getValue()){
+                playerIcons.add(R.drawable.hunter_icon);
+            }
+            else{
+                playerIcons.add(R.drawable.runner_icon);
+            }
+
+        }
+
+        return playerIcons;
     }
 
     private void showToast(String text) {

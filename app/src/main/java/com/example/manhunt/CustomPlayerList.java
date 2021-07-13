@@ -9,14 +9,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class CustomPlayerList extends ArrayAdapter{
-    private String[] playerNames;
-    private String[] playerType;
-    private Integer[] imageId;
+    private ArrayList<String> playerNames;
+    private ArrayList<String> playerType;
+    private ArrayList<Integer> imageId;
     private Activity context;
 
 
-    public CustomPlayerList(Activity context, String[] playerNames, String[] playerType, Integer[] imageId){
+    public CustomPlayerList(Activity context, ArrayList<String> playerNames, ArrayList<String> playerType, ArrayList<Integer> imageId){
         super(context, R.layout.row_design, playerNames);
         this.context = context;
         this.playerNames = playerNames;
@@ -35,9 +37,9 @@ public class CustomPlayerList extends ArrayAdapter{
         TextView textViewCapital = (TextView) row.findViewById(R.id.textViewCapital);
         ImageView imageFlag = (ImageView) row.findViewById(R.id.imageViewFlag);
 
-        textViewCountry.setText(playerNames[position]);
-        textViewCapital.setText(playerType[position]);
-        imageFlag.setImageResource(imageId[position]);
+        textViewCountry.setText(playerNames.get(position));
+        textViewCapital.setText(playerType.get(position));
+        imageFlag.setImageResource(imageId.get(position));
         return  row;
     }
 
