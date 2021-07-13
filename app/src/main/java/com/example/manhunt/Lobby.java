@@ -248,25 +248,11 @@ public class Lobby extends AppCompatActivity {
     private void ShowPlayers(DataSnapshot dataSnapshot) {
 
 
-
-
         listOfPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view
-
         CustomPlayerList customPlayerList = new CustomPlayerList(this, listPlayers(dataSnapshot), listPlayerTypes(dataSnapshot), putPlayerIcons(dataSnapshot));
         listOfPlayers.setAdapter(customPlayerList);
         ArrayList<String> players = new ArrayList<>();
 
-        //ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
-        //listOfPlayers.setAdapter(arrayAdapter); //setting the views adapter to array adapter
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            if((boolean) snapshot.child("hunter").getValue()){
-                players.add(snapshot.getKey() + ": hunter");
-            }
-            else{
-                players.add(snapshot.getKey() + ": runner" );
-            }
-
-        }
     }
 
     private int countHunters(DataSnapshot dataSnapshot) {
@@ -279,6 +265,7 @@ public class Lobby extends AppCompatActivity {
         System.out.println(numOfHunters + " HUNTERS");
         return numOfHunters;
     }
+
     private ArrayList<String> listPlayers(DataSnapshot dataSnapshot){
         ArrayList<String> listOfPlayers = new ArrayList<>();
         for(DataSnapshot snapshot: dataSnapshot.getChildren()){
