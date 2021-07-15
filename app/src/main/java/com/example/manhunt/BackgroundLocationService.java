@@ -47,8 +47,8 @@ public class BackgroundLocationService extends Service{
     String CHANNEL_ID = "ManhuntNotif";
     String channel_name = "Manhunt";
     String channel_description = "APP IN USE";
-
-
+    Notification notification;
+    NotificationCompat.Builder builder;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -75,7 +75,7 @@ public class BackgroundLocationService extends Service{
                 myRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
 
                 System.out.println(location.getLatitude() + "location listener is working" + location.getLongitude());
-
+                builder.setContentText(globalPlayer.getMessage());
             }
         };
 
@@ -100,11 +100,11 @@ public class BackgroundLocationService extends Service{
                 System.currentTimeMillis(), quit, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
         builder.setAutoCancel(true);
 
-        Notification notification = builder.setContentTitle("Manhunt")
+        notification = builder.setContentTitle("Manhunt")
                 .setContentText("APP RUNNING")
                 .setSmallIcon(R.drawable.m_icon_colorised3)
                 .setContentIntent(pendingIntent)

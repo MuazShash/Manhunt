@@ -15,7 +15,7 @@ public class GlobalPlayerClass extends Application {
     private String lobbyChosen = "";
     private boolean hunterWins = true, runningInBackground = false;
     private MediaPlayer mpTheme;
-
+    private String notificationMessage;
     public boolean isHunterWins() {
         return hunterWins;
     }
@@ -114,4 +114,13 @@ public class GlobalPlayerClass extends Application {
     public void setRunningInBackground(boolean flag){
         runningInBackground = flag;
     }
+
+    public void setMessage(String message){
+        notificationMessage = message;
+    }
+
+    public String getMessage(){
+        return notificationMessage;
+    }
+
 }

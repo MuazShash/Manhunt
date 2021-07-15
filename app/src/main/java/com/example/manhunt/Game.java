@@ -292,14 +292,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             mMap.clear(); // clear map
                             MarkLocation(snapshot); // redraw the map with new locations
                             //am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-                            mpApproaching.pause();
-                            mpBounds.pause();
                             mpScan.start();
                             updateMap = false;
                         } else if (updateMap && !globalPlayer.isHunter()) {
                             //mVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
-                            mpApproaching.pause();
-                            mpBounds.pause();
                             mpScan.start();
                         }
                     }
@@ -483,13 +479,13 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if(myLocation.distanceTo(startLocation) <= globalPlayer.getSettings(BOUNDARY) && ready){
                     warningTimer = System.currentTimeMillis();
                     inBound = true;
-                    mpBounds.pause();
+                    if(mpBounds.isPlaying()){
+                        mpBounds.pause();
+                    }
                 }
                 else if (ready){
                     inBound = false;
                     if(!mpBounds.isPlaying()){
-                        mpApproaching.pause();
-                        mpScan.pause();
                         mpBounds.start();
                     }
                     if(System.currentTimeMillis() - warningTimer >= (30*1000) && !globalPlayer.isHunter()){
@@ -690,6 +686,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
 
+                globalPlayer.setMessage("He is " + distanceInMeters + " meters away!");
                 if (distanceInMeters <= globalPlayer.getSettings(CATCH_DIST)) { //If the runner is within 10 meters from a hunter
                     lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                     lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
@@ -713,7 +710,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 hunterLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
-                System.out.println("***********This person is " + distanceInMeters + " meters away");
+                globalPlayer.setMessage("He is " + distanceInMeters + " meters away!");
                 if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     mpApproaching.start();
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
