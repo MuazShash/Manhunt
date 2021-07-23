@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -101,6 +102,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private final int GAME_TIME_LIMIT = 4;
     private final int START_TIMER = 5;
 
+    //broadcast recievers
+    private BroadcastReceiver mReciever;
+
+
 
     /*************************************************************************************************************************************
      //**************************************************ON CREATE*************************************************************************
@@ -177,17 +182,19 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    //Updating starting coordinates
-                    lastLocation = location;
+                        //Updating starting coordinates
+                        lastLocation = location;
 
-                    lastLat = location.getLatitude();
-                    lastLng = location.getLongitude();
+                        lastLat = location.getLatitude();
+                        lastLng = location.getLongitude();
 
-                    //Initialising location
-                    lastLocation.setLatitude(lastLat);
-                    lastLocation.setLongitude(lastLng);
+                        //Initialising location
+                        lastLocation.setLatitude(lastLat);
+                        lastLocation.setLongitude(lastLng);
 
-                    initialLocation = false;
+                        initialLocation = false;
+
+
                 }
             });
         }
@@ -417,6 +424,21 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     @Override
     protected void onResume() {
         super.onResume();
+
+        //adding function to pending intent for the background location service
+        mReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //stopping the background service and finishing this activity
+                Intent backgroundServiceIntent = new Intent(Game.this, BackgroundLocationService.class);
+                stopService(backgroundServiceIntent);
+                finish();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("close_app");
+        this.registerReceiver(mReciever,filter);
 
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
