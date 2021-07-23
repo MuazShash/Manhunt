@@ -153,12 +153,12 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         //mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
 
-        Intent intent = new Intent(this, BackgroundLocationService.class);
+        Intent backgroundServiceIntent = new Intent(this, BackgroundLocationService.class);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(intent);
+            startForegroundService(backgroundServiceIntent);
         }
         else{
-            startService(intent);
+            startService(backgroundServiceIntent);
         }
 
         //Setting zoom level for scan button
@@ -234,34 +234,35 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     protected void onStart() {
         super.onStart();
 
-        lobbyRef.child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
-                    startLat = Double.parseDouble(String.valueOf(task.getResult().getValue()));
-                }
-            }
-        });
-
-        lobbyRef.child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
-                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        globalPlayer.setLongitude(location.getLongitude());
-                        globalPlayer.setLatitude(location.getLatitude());
-
-                        lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                        lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+        if(!globalPlayer.isLeader() && booting) {
+            lobbyRef.child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        startLat = Double.parseDouble(String.valueOf(task.getResult().getValue()));
                     }
-                });
-                showBoundary();
-                booting = false;
-            }
-        });
+                }
+            });
 
+            lobbyRef.child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            globalPlayer.setLongitude(location.getLongitude());
+                            globalPlayer.setLatitude(location.getLatitude());
+
+                            lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
+                            lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
+                        }
+                    });
+                    showBoundary();
+                    booting = false;
+                }
+            });
+        }
         //Declaring listeners
         dcListener = new ValueEventListener() {
             @Override
@@ -396,7 +397,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                     float[] orientation = new float[3];
                     SensorManager.getOrientation(R, orientation);
                     azimuth = (float)Math.toDegrees(orientation[0]);
-                    System.out.println(azimuth + " AZIMUTH");
+                    //System.out.println(azimuth + " AZIMUTH");
                     player.setRotation(azimuth);
                 }
             }
@@ -531,6 +532,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if (gameEnd) {
                     if (System.currentTimeMillis() - gameEndTime > (7 * 1000)) {
                         globalPlayer.setUserStat(AVG_SPEED, globalPlayer.getUserStat(DIST_TRAVELLED) / ((System.currentTimeMillis() - startTime) / 1000.0));
+                        Intent backgroundServiceIntent = new Intent(Game.this, BackgroundLocationService.class);
+                        stopService(backgroundServiceIntent);
                         startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
                         globalPlayer.setRunningInBackground(false);
                         finish(); //kills game activity
@@ -591,6 +594,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
     protected void onStop() {
         super.onStop();
+
         if (globalPlayer.isLeader() && !gameEnd && !globalPlayer.isRunningInBackground() ) {
             lobbyRef.setValue(null);
         } else if (!globalPlayer.isLeader() && !gameEnd && !globalPlayer.isRunningInBackground()) {
@@ -685,8 +689,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 playerLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
-
-                globalPlayer.setMessage("He is " + distanceInMeters + " meters away!");
+                System.out.println("He is " + distanceInMeters + " meters away!");
                 if (distanceInMeters <= globalPlayer.getSettings(CATCH_DIST)) { //If the runner is within 10 meters from a hunter
                     lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                     lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
@@ -710,7 +713,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 hunterLocation.setLongitude(Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue())));
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
-                globalPlayer.setMessage("He is " + distanceInMeters + " meters away!");
+                System.out.println("He is " + distanceInMeters + " meters away!");
                 if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     mpApproaching.start();
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
@@ -742,11 +745,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         if (doubleBackToExitPressedOnce && globalPlayer.isLeader()) { //If the user is the leader and is leaving, prepare to close the game
             lobbyRef.child("disconnected").setValue(true);
             startActivity(new Intent(Game.this, Start.class));
+            Intent backgroundServiceIntent = new Intent(this, BackgroundLocationService.class);
+            stopService(backgroundServiceIntent);
             finish();
             return;
         }
         else if(doubleBackToExitPressedOnce && !globalPlayer.isLeader()){ //Otherwise just remove the user
             startActivity(new Intent(Game.this, Start.class));
+            Intent backgroundServiceIntent = new Intent(this, BackgroundLocationService.class);
+            stopService(backgroundServiceIntent);
             finish();
             return;
         }
