@@ -58,47 +58,14 @@ public class BackgroundLocationService extends Service{
         // application player object
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         globalPlayer.setRunningInBackground(true);
-        username = globalPlayer.getName();
-        lobbyChosen = globalPlayer.getLobbyChosen();
-
-        //Defining database reference location
-        myRef = database.getReference().child("lobbies").child(lobbyChosen);
-
-        /*
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-                globalPlayer.setLongitude(location.getLongitude());
-                globalPlayer.setLatitude(location.getLatitude());
-
-                myRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                myRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
-
-                System.out.println(location.getLatitude() + "location listener is working" + location.getLongitude());
-                builder.setContentText(globalPlayer.getMessage());
-            }
-        };
-
-
-
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
-
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), (long) 1000, (float) 1, locationListener);
-        */
 
         if(intent.getAction().equals("start_service")){
             builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
-            builder.setAutoCancel(true);
-
-
-
             notification = builder.setContentTitle("Manhunt")
-                    .setContentText("APP RUNNING")
+                    .setContentText("APP RUNNING???")
                     .setSmallIcon(R.drawable.m_icon_colorised3)
+                    .setAutoCancel(true)
                     .build();
 
             startForeground(1, notification);
@@ -108,7 +75,6 @@ public class BackgroundLocationService extends Service{
             stopForeground(true);
             stopSelf();
         }
-
 
 
 
@@ -139,8 +105,7 @@ public class BackgroundLocationService extends Service{
 
     @Override
     public void onCreate() {
-
-
+        //this.startForeground();
         super.onCreate();
     }
 
@@ -150,5 +115,6 @@ public class BackgroundLocationService extends Service{
         super.onDestroy();
 
     }
+
 
 }

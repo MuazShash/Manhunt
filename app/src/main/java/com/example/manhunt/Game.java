@@ -3,10 +3,13 @@ package com.example.manhunt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -332,8 +335,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if (ready) { //Checks if the start timer is complete
                     checkCaught(snapshot); //Checks if the runner/hunter are close enough to each other
                     if (runnersCaught(snapshot)) {
-                        txtTimer.setText("All runners have been caught! Hunters win!");
-                        gameEnd = true;
+                        //txtTimer.setText("All runners have been caught! Hunters win!");
+                        //gameEnd = true;
                     }
                 }
             }
@@ -453,7 +456,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         if (globalPlayer.isHunter() && !caught) {
             if (System.currentTimeMillis() - startTime > globalPlayer.getSettings(START_TIMER) * 1000) // only considers catches made after the round start timer
             {
-                globalPlayer.setUserStat(TIME_ALIVE, (System.currentTimeMillis() - startTime)/1000);
+                globalPlayer.setUserStat(TIME_ALIVE, System.currentTimeMillis() - startTime);
             }
 
             caught = true;
@@ -582,7 +585,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         if (!globalPlayer.isHunter()) { //Only runners should have to update their hunter status to hunter once they are caught
             lobbyRef.child("users").child(globalPlayer.getName()).child("hunter").addValueEventListener(hunterListener); //Update their status as hunter in game if they are hunter on the database
         }
-
     }
 
     /*************************************************************************************************************************************
@@ -708,6 +710,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         Location myLocation = new Location(""); //Saves the hunter's current location
         myLocation.setLatitude(globalPlayer.getLatitude());
         myLocation.setLongitude(globalPlayer.getLongitude());
+        float shortestDistance = 9999f;
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             if (!((boolean) dataSnapshot.child("hunter").getValue()) && globalPlayer.isHunter()) { //Hunters should only compare themselves to runners
@@ -719,6 +722,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(playerLocation); //Compare the distance between the device hunter and some runner in the database
                 System.out.println("He is " + distanceInMeters + " meters away!");
+                if(distanceInMeters < shortestDistance){
+                    shortestDistance = distanceInMeters;
+                }
                 if (distanceInMeters <= globalPlayer.getSettings(CATCH_DIST)) { //If the runner is within 10 meters from a hunter
                     lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
                     lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
@@ -743,6 +749,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 float distanceInMeters = myLocation.distanceTo(hunterLocation); //Compare the distance between the device hunter and some runner in the database
                 System.out.println("He is " + distanceInMeters + " meters away!");
+                if(distanceInMeters < shortestDistance){
+                    shortestDistance = distanceInMeters;
+                }
                 if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     mpApproaching.start();
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
@@ -757,6 +766,14 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 }
             }
         }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(Game.this, "ManhuntNotif");
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(1, builder.setContentTitle("Manhunt")
+                .setContentText("someone is " + (int) shortestDistance + " meters away...")
+                .setSmallIcon(R.drawable.m_icon_colorised3)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .build());
     }
 
     //Checks if there are any runners remaining signaling a game end. Called whenever a user moves in the database.
