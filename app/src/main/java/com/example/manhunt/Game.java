@@ -248,8 +248,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    startLat = (Double) snapshot.child("startLat").getValue();
-                    startLng = (Double) snapshot.child("startLng").getValue();
+                    startLat = (long) snapshot.child("startLat").getValue();
+                    startLng = (long) snapshot.child("startLng").getValue();
                     showBoundary();
                     booting = false;
                 }
