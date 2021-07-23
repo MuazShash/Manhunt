@@ -7,7 +7,6 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the "MyLocation" functionality.
     -->
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -15,49 +14,50 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:name=".GlobalPlayerClass"
-        android:screenOrientation="sensorPortrait"
         android:allowBackup="true"
         android:icon="@drawable/m_icon_colorised3"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.Manhunt"
         android:usesCleartextTraffic="true">
-        <activity android:name=".EndGame"
+        <activity
+            android:name=".EndGame"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-            android:theme="@style/Theme.Manhunt.NoActionBar">
-        </activity>
-
+            android:theme="@style/Theme.Manhunt.NoActionBar"
+            tools:ignore="LockedOrientationActivity"></activity>
         <activity
             android:name=".ListOfPlayers"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
             android:label="@string/title_activity_list_of_players"
-            android:theme="@style/Theme.AppCompat.listOfPlayersTheme"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.listOfPlayersTheme"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".CreateGamePopup"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-            android:theme="@style/Theme.AppCompat.CreateGamePopup"></activity>
-        <activity android:name=".Options"
+            android:theme="@style/Theme.AppCompat.CreateGamePopup"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Options"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-            android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
-        <activity android:name=".Lobby"
+            android:theme="@style/Theme.Manhunt.NoActionBar"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Lobby"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-            android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
-        <activity android:name=".Game"
+            android:theme="@style/Theme.Manhunt.NoActionBar"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Game"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-            android:theme="@style/Theme.Manhunt.NoActionBar"></activity>
-
+            android:theme="@style/Theme.Manhunt.NoActionBar"
+            tools:ignore="LockedOrientationActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -75,24 +75,24 @@
 
         <activity
             android:name=".Start"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Manhunt.NoActionBar">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Manhunt.NoActionBar"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-    </activity>
+        </activity>
         <activity
             android:name=".ListofLobbies"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
             android:label="Lobbies"
-            android:theme="@style/Theme.AppCompat.popupTheme" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.popupTheme"
+            tools:ignore="LockedOrientationActivity" />
 
-        <service android:name=".BackgroundLocationService"></service> //declaring service
+        <service android:name=".BackgroundLocationService" />
     </application>
 
 </manifest>

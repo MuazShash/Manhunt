@@ -70,7 +70,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     MediaPlayer mpCaught, mpScan, mpDC, mpApproaching, mpBounds;
     AudioManager am;
     LocationManager lm;
-    private ValueEventListener dcListener, scanListener, usersListener, usersScanListener, hunterListener;
+    private ValueEventListener dcListener, scanListener, usersListener, usersScanListener, hunterListener, startLocationListener;
     LocationListener locationListener;
     private SensorEventListener bearingListener;
     private SensorManager sensorManager;
@@ -158,13 +158,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         //mpApproaching.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
 
-        Intent backgroundServiceIntent = new Intent(this, BackgroundLocationService.class);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(backgroundServiceIntent);
-        }
-        else{
-            startService(backgroundServiceIntent);
-        }
+        Intent startIntent = new Intent(this, BackgroundLocationService.class);
+        startIntent.setAction("start_service");
+        startService(startIntent);
+
 
         //Setting zoom level for scan button
         if (globalPlayer.getSettings(BOUNDARY) <= 1000) {
@@ -241,36 +238,25 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     protected void onStart() {
         super.onStart();
 
+        //Declaring listeners
+
         if(!globalPlayer.isLeader() && booting) {
-            lobbyRef.child("startLat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        startLat = Double.parseDouble(String.valueOf(task.getResult().getValue()));
-                    }
-                }
-            });
+            startLocationListener = new ValueEventListener(){
 
-            lobbyRef.child("startLng").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    startLng = Double.parseDouble(String.valueOf(task.getResult().getValue()));
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            globalPlayer.setLongitude(location.getLongitude());
-                            globalPlayer.setLatitude(location.getLatitude());
-
-                            lobbyRef.child("users").child(username).child("latitude").setValue((Double) globalPlayer.getLatitude());
-                            lobbyRef.child("users").child(username).child("longitude").setValue((Double) globalPlayer.getLongitude());
-                        }
-                    });
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    startLat = (Double) snapshot.child("startLat").getValue();
+                    startLng = (Double) snapshot.child("startLng").getValue();
                     showBoundary();
                     booting = false;
                 }
-            });
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {}
+            };
         }
-        //Declaring listeners
+
+
         dcListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -443,6 +429,10 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
+        if(!globalPlayer.isLeader()){
+            lobbyRef.addValueEventListener(startLocationListener);
+        }
+
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
             lobbyRef.child("disconnected").onDisconnect().setValue(true);
@@ -463,13 +453,15 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         if (globalPlayer.isHunter() && !caught) {
             if (System.currentTimeMillis() - startTime > globalPlayer.getSettings(START_TIMER) * 1000) // only considers catches made after the round start timer
             {
-                globalPlayer.setUserStat(TIME_ALIVE, System.currentTimeMillis() - startTime);
+                globalPlayer.setUserStat(TIME_ALIVE, (System.currentTimeMillis() - startTime)/1000);
             }
 
             caught = true;
         }
 
         lobbyRef.child("users").addValueEventListener(usersListener);
+
+
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
@@ -610,6 +602,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             lobbyRef.child("users").removeEventListener(usersListener);
             lobbyRef.child("users").child(username).child("hunter").removeEventListener(hunterListener);
             lobbyRef.child("users").removeEventListener(usersScanListener);
+            lobbyRef.removeEventListener(startLocationListener);
             handler.removeCallbacksAndMessages(null);
         }
     }
@@ -623,6 +616,20 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
 
+    }
+
+    protected void onDestroy(){
+        super.onDestroy();
+
+        if (globalPlayer.isLeader()) {
+            lobbyRef.setValue(null);
+        } else if (!globalPlayer.isLeader()) {
+            lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
+        }
+
+        Intent stopIntent = new Intent(this, BackgroundLocationService.class);
+        stopIntent.setAction("stop_service");
+        startService(stopIntent);
     }
 
 

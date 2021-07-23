@@ -64,6 +64,7 @@ public class BackgroundLocationService extends Service{
         //Defining database reference location
         myRef = database.getReference().child("lobbies").child(lobbyChosen);
 
+        /*
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -86,33 +87,30 @@ public class BackgroundLocationService extends Service{
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), (long) 1000, (float) 1, locationListener);
+        */
+
+        if(intent.getAction().equals("start_service")){
+            builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+
+            builder.setAutoCancel(true);
 
 
 
+            notification = builder.setContentTitle("Manhunt")
+                    .setContentText("APP RUNNING")
+                    .setSmallIcon(R.drawable.m_icon_colorised3)
+                    .build();
 
-        //game intent
-        Intent intent1 = new Intent(this, Game.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, 0);
+            startForeground(1, notification);
+        }
+        else if(intent.getAction().equals("stop_service")){
+            globalPlayer.setRunningInBackground(false);
+            stopForeground(true);
+            stopSelf();
+        }
 
-        //quit intent
-        Intent quit = new Intent("close_app");
-        PendingIntent quitPending = PendingIntent.getBroadcast(this, (int)
-                System.currentTimeMillis(), quit, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-
-        builder.setAutoCancel(true);
-
-        notification = builder.setContentTitle("Manhunt")
-                .setContentText("APP RUNNING")
-                .setSmallIcon(R.drawable.m_icon_colorised3)
-                .setContentIntent(pendingIntent)
-                .addAction(R.drawable.m_icon_colorised3, "QUIT",
-                        quitPending)
-                .build();
-
-        startForeground(1, notification);
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -121,7 +119,7 @@ public class BackgroundLocationService extends Service{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = channel_name;
             String description = channel_description;
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
@@ -141,14 +139,14 @@ public class BackgroundLocationService extends Service{
 
     @Override
     public void onCreate() {
+
+
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        globalPlayer.setRunningInBackground(false);
-        stopForeground(true);
-        stopSelf();
+
         super.onDestroy();
 
     }
