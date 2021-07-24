@@ -243,20 +243,21 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
         //Declaring listeners
 
-        if(!globalPlayer.isLeader() && booting) {
-            startLocationListener = new ValueEventListener(){
+        if(!globalPlayer.isLeader()) {
+            lobbyRef.addValueEventListener(new ValueEventListener(){
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    startLat = Double.parseDouble(String.valueOf(snapshot.child("startLat").getValue()));
-                    startLng = Double.parseDouble(String.valueOf(snapshot.child("startLng").getValue()));
-                    showBoundary();
-                    booting = false;
+                    if(Long.parseLong(String.valueOf(snapshot.child("startLat").getValue())) != 0.0 && Long.parseLong(String.valueOf(snapshot.child("startLng").getValue())) != 0.0){
+                        startLat = Double.parseDouble(String.valueOf(snapshot.child("startLat").getValue()));
+                        startLng = Double.parseDouble(String.valueOf(snapshot.child("startLng").getValue()));
+                        showBoundary();
+                    }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {}
-            };
+            });
         }
 
 
@@ -293,6 +294,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                             updateMap = false;
                         } else if (updateMap && !globalPlayer.isHunter()) {
                             //mVolume(AudioManager.STREAM_MUSIC, (int) Math.floor(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.6), 0);
+                            mMap.clear();
                             mpScan.start();
                         }
                     }
@@ -432,9 +434,6 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
-        if(!globalPlayer.isLeader()){
-            lobbyRef.addValueEventListener(startLocationListener);
-        }
 
         //If statement to delete the lobby or just their user data from the database depending on if they are lobby leader or not
         if (globalPlayer.isLeader()) {
