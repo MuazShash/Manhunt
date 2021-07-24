@@ -81,7 +81,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     float azimuth = 0f;
 
     Marker player;
-    private Button scan, players;
+    private Button scan, players, forfeit;
     private Location lastLocation = new Location("");
     boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap, initialLocation = true, caught = false;
     long startTime = System.currentTimeMillis(), warningTimer, runTime, cooldownTimer = System.currentTimeMillis(), timeOfLastCatch = System.currentTimeMillis(), gameEndTime; //Stores information for round start and out of bounds timers
@@ -90,7 +90,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
 
 
 
-
+    int quitCount = 0;
     private final int DIST_TRAVELLED = 0;
     private final int MAX_SPEED = 1;
     private final int AVG_SPEED = 2;
@@ -108,7 +108,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     //broadcast recievers
     private BroadcastReceiver mReciever;
 
-
+    private long lastTouchTime = 0;
+    private long currentTouchTime = 0;
 
     /*************************************************************************************************************************************
      //**************************************************ON CREATE*************************************************************************
@@ -135,6 +136,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
         scan = (Button) findViewById(R.id.btnScan); //scanner button for hunters
         players = (Button) findViewById(R.id.btnPlayers);
+        forfeit = (Button) findViewById(R.id.btnForfeit);
         txtTimer = (TextView) findViewById(R.id.txtTimer);
         txtScan = (TextView) findViewById(R.id.txtScan);
 
@@ -317,7 +319,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onDataChange(DataSnapshot hunterSnapshot) {
                 //  Block of code to try
-                if ((boolean) hunterSnapshot.getValue()) { //If they are now seen as hunter on the database
+
+                 if ((boolean) hunterSnapshot.getValue()) { //If they are now seen as hunter on the database
                     globalPlayer.setHunter(true); //They are hunter on their device
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.5), 0);
                     mpCaught.setVolume(0.1f, 0.1f);
@@ -562,6 +565,23 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 handler.postDelayed(this, delay);
             }
         }, delay);
+
+
+        // Forfeit match button listener
+        forfeit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lastTouchTime = currentTouchTime;
+                currentTouchTime = System.currentTimeMillis();
+                Toast.makeText(Game.this, "Press again to forfeit", Toast.LENGTH_SHORT).show();
+                if (currentTouchTime - lastTouchTime < 3000) {
+                    startActivity(new Intent(Game.this, Start.class));
+                    finish();
+                    lastTouchTime = 0;
+                    currentTouchTime = 0;
+                }
+            }
+        });
 
         // Listener for scan button when clicked by hunters
         scan.setOnClickListener(new View.OnClickListener() {
