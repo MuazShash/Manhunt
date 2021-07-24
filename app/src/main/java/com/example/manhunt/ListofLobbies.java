@@ -1,6 +1,9 @@
 package com.example.manhunt;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -9,7 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ListofLobbies extends AppCompatActivity {
 
@@ -29,6 +37,9 @@ public class ListofLobbies extends AppCompatActivity {
     boolean ready = false;
     boolean isDuplicateUser = false;
     ListView LobbyListView; //listview variable
+    private ArrayList<String> usernameList = new ArrayList<String>();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,25 +111,21 @@ public class ListofLobbies extends AppCompatActivity {
                 GlobalPlayerClass globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
                 LobbyChosen = arrayAdapter.getItem(position).toString();
-                username = globalPlayer.getName();
+                username = globalPlayer.getName().toString();
                 globalPlayer.setLobbyChosen(LobbyChosen);
                 globalPlayer.setLatitude(0.0);
                 globalPlayer.setLongitude(0.0);
 
-                myRef.child("lobbies").child(LobbyChosen).child("users").addValueEventListener(new ValueEventListener() {
+
+                myRef.child("lobbies").child(LobbyChosen).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            if (username.equals(dataSnapshot.getKey())) {
-                                isDuplicateUser = true;
-                            }
-                        }
-                        ready = true;
-
-                        if (isDuplicateUser && ready) {
+                        usernameList = listPlayers(snapshot);
+                        if(usernameList.contains(username)){
                             Toast.makeText(ListofLobbies.this, "Username taken, please use a different username", Toast.LENGTH_SHORT).show();
                         }
-                        if (!isDuplicateUser && ready) {
+                        else if (!usernameList.contains(username)){
+                            usernameList.clear();
                             //write username to database here with some defaults
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("caught").setValue(false);
@@ -131,7 +138,6 @@ public class ListofLobbies extends AppCompatActivity {
                             finish();
                         }
 
-
                     }
 
                     @Override
@@ -140,7 +146,17 @@ public class ListofLobbies extends AppCompatActivity {
                     }
                 });
 
+
             }
         });
+    }
+
+    private ArrayList<String> listPlayers(DataSnapshot dataSnapshot){
+        ArrayList<String> listOfPlayers = new ArrayList<>();
+        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+            listOfPlayers.add(snapshot.getKey());
+        }
+
+        return listOfPlayers;
     }
 }
