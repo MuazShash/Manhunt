@@ -88,8 +88,6 @@ public class EndGame extends AppCompatActivity {
 
         // setting game stats text
         int DIST_TRAVELLED      = 0;
-        int MAX_SPEED           = 1;
-        int AVG_SPEED           = 2;
         int TIME_ALIVE          = 3;
         int RUNNERS_CAUGHT      = 4;
         int FIRST_CATCH_TIME    = 5;
@@ -99,8 +97,6 @@ public class EndGame extends AppCompatActivity {
         /* * * * * * * * * * * * * */
         gameStats.setText(new StringBuilder().append("Performance statistics:\n\n")
                 .append("Distance travelled:     ").append(String.format("%.1f" , globalPlayer.userStats[DIST_TRAVELLED])).append(" m\n")
-                .append("Max speed:                  ").append(String.format("%.1f" , globalPlayer.userStats[MAX_SPEED])).append(" m/s\n")
-                .append("Average speed:           ").append(String.format("%.1f" , globalPlayer.userStats[AVG_SPEED])).append(" m/s\n")
                 .append("Time alive:                   ").append(String.format("%.1f" , globalPlayer.userStats[TIME_ALIVE] / 1000)).append(" s\n")
                 .append("Runners caught:         ").append(String.format("%.0f" , globalPlayer.userStats[RUNNERS_CAUGHT])).append("\n")
                 .append("First catch:                  ").append(String.format("%.1f" , globalPlayer.userStats[FIRST_CATCH_TIME] / 1000)).append(" s\n")
