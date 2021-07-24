@@ -61,10 +61,13 @@ public class BackgroundLocationService extends Service{
 
         if(intent.getAction().equals("start_service")){
             builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-
+            Intent quitIntent = new Intent("close_app");
+            PendingIntent pendingQuitIntent = PendingIntent.getBroadcast(this, (int) System.currentTimeMillis(), quitIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             notification = builder.setContentTitle("Manhunt")
                     .setContentText("APP RUNNING???")
                     .setSmallIcon(R.drawable.m_icon_colorised3)
+                    .addAction(R.drawable.m_icon_colorised3, "QUIT",
+                    pendingQuitIntent)
                     .setAutoCancel(true)
                     .build();
 
@@ -99,8 +102,8 @@ public class BackgroundLocationService extends Service{
     @Override
     public IBinder onBind(Intent intent) {
 
-
         return null;
+
     }
 
     @Override

@@ -30,6 +30,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Process;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -88,7 +89,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     double startLat, startLng, lastLat, lastLng; //Stores starting latitude and longitude
     int zoom;
 
-
+    private boolean quit = false;
 
     int quitCount = 0;
     private final int DIST_TRAVELLED = 0;
@@ -105,8 +106,8 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     private final int GAME_TIME_LIMIT = 4;
     private final int START_TIMER = 5;
 
-    //broadcast recievers
-    private BroadcastReceiver mReciever;
+    //broadcast receivers
+    private BroadcastReceiver mReceiver;
 
     private long lastTouchTime = 0;
     private long currentTouchTime = 0;
@@ -422,19 +423,21 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         super.onResume();
 
         //adding function to pending intent for the background location service
-        mReciever = new BroadcastReceiver() {
+        mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //stopping the background service and finishing this activity
+                quit = true;
                 Intent backgroundServiceIntent = new Intent(Game.this, BackgroundLocationService.class);
                 stopService(backgroundServiceIntent);
                 finish();
+
             }
         };
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("close_app");
-        this.registerReceiver(mReciever,filter);
+        this.registerReceiver(mReceiver,filter);
 
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(bearingListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
@@ -641,6 +644,9 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
     }
 
     protected void onDestroy(){
+        if(quit){
+            Process.killProcess(Process.myPid());
+        }
         super.onDestroy();
 
         if (globalPlayer.isLeader()) {
@@ -652,6 +658,7 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
         Intent stopIntent = new Intent(this, BackgroundLocationService.class);
         stopIntent.setAction("stop_service");
         startService(stopIntent);
+
     }
 
 
