@@ -1,5 +1,6 @@
 package com.example.manhunt;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -22,19 +24,28 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+
+
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Lobby extends AppCompatActivity {
 
     //database reference
     DatabaseReference lobbyRef;
-    ValueEventListener dcListener, startListener, usersListener;
+    ValueEventListener dcListener, startListener, usersListener, kickListener;
 
     // Write a string when this client loses connection
     ListView listOfPlayers;
     GlobalPlayerClass globalPlayer;
     String lobbyChosen;
     int hunters = 0;
+
+    private long lastTouchTime = 0;
+    private long currentTouchTime = 0;
+
+    private String kickPlayerName;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -186,6 +197,22 @@ public class Lobby extends AppCompatActivity {
         });
 
 
+        lobbyRef.child("users").child(globalPlayer.getName()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if((boolean) snapshot.child("kick").getValue()){
+                    showToast("You have been kicked by the leader");
+                    startActivity(new Intent(Lobby.this, Start.class));
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     @Override
@@ -247,11 +274,33 @@ public class Lobby extends AppCompatActivity {
 
     private void ShowPlayers(DataSnapshot dataSnapshot) {
 
-
         listOfPlayers = (ListView) findViewById(R.id.lstPlayers);//the list view is the lobbies list view
         CustomPlayerList customPlayerList = new CustomPlayerList(this, listPlayers(dataSnapshot), listPlayerTypes(dataSnapshot), putPlayerIcons(dataSnapshot));
         listOfPlayers.setAdapter(customPlayerList);
-        ArrayList<String> players = new ArrayList<>();
+
+
+            listOfPlayers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(globalPlayer.isLeader()){
+
+                        kickPlayerName = listPlayers(dataSnapshot).get(position);
+                        lastTouchTime = currentTouchTime;
+                        currentTouchTime = System.currentTimeMillis();
+                        Toast.makeText(Lobby.this, "Press again to Kick player", Toast.LENGTH_SHORT).show();
+
+                        if (currentTouchTime - lastTouchTime < 3000) {
+                            lobbyRef.child("users").child(kickPlayerName).child("kick").setValue(true);
+                            lastTouchTime = 0;
+                            currentTouchTime = 0;
+                        }
+
+                    }
+
+                }
+            });
+
+
 
     }
 

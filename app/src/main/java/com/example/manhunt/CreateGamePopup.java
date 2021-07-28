@@ -108,6 +108,7 @@ public class CreateGamePopup extends AppCompatActivity {
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(0.0);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(0.0);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("kick").setValue(false);
 
                     //updating global player attributes
                     globalPlayer.setHunter(false);

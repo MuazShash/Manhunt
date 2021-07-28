@@ -132,7 +132,7 @@ public class ListofLobbies extends AppCompatActivity {
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);
-
+                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("kick").setValue(false);
                             //Bringing user to the lobby screen
                             startActivity(new Intent(ListofLobbies.this, Lobby.class));
                             finish();
