@@ -782,11 +782,11 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if (!mpApproaching.isPlaying() && distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && !mpScan.isPlaying()){ //If the runner is within 10 meters from a hunter
                     mpApproaching.start();
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
-                    mpApproaching.setVolume((float) am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1), (float) am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1));
+                    mpApproaching.setVolume((float) 25/(distanceInMeters), (float) 25/(distanceInMeters));
                 }
                 else if (distanceInMeters > globalPlayer.getSettings(CATCH_DIST) && mpApproaching.isPlaying() && !mpScan.isPlaying()){
                     //am.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), 0);
-                    mpApproaching.setVolume((float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)), (float) Math.ceil(am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*1/(distanceInMeters/15+1)));
+                    mpApproaching.setVolume((float) 25/(distanceInMeters), (float) 25/(distanceInMeters));
                 }
                 else if(mpScan.isPlaying() || distanceInMeters > 40 || distanceInMeters < globalPlayer.getSettings(2) || gameEnd || mpBounds.isPlaying()){
                     mpApproaching.pause();
