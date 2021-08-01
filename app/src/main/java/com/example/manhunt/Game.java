@@ -29,6 +29,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Process;
 import android.view.View;
@@ -752,12 +753,25 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 if(distanceInMeters < shortestDistance){
                     shortestDistance = distanceInMeters;
                 }
-                if (distanceInMeters <= globalPlayer.getSettings(CATCH_DIST)) { //If the runner is within 10 meters from a hunter
-                    lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
-                    lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
+                if (distanceInMeters <= 6) { //If the runner is within 10 meters from a hunter
 
-                    // updating user's stats
-                    globalPlayer.setUserStat(RUNNERS_CAUGHT, globalPlayer.getUserStat(RUNNERS_CAUGHT) + 1.0);
+                    CountDownTimer countDown = new CountDownTimer(5000, 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            showToast("You will turn into a hunter within " + Long.toString(millisUntilFinished/10) + " seconds");
+                            System.out.println("You will turn into a hunter within" + Long.toString(millisUntilFinished/10) + "seconds");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
+                            lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
+                            // updating user's stats
+                            globalPlayer.setUserStat(RUNNERS_CAUGHT, globalPlayer.getUserStat(RUNNERS_CAUGHT) + 1.0);
+                        }
+                    }.start();
+
+
 
                     if (globalPlayer.getUserStat(FIRST_CATCH_TIME) == 0.0) {
                         globalPlayer.setUserStat(QUICKEST_CATCH, System.currentTimeMillis() - globalPlayer.getUserStat(TIME_ALIVE));
