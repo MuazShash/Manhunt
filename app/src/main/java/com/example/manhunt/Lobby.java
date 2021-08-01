@@ -197,7 +197,7 @@ public class Lobby extends AppCompatActivity {
         });
 
 
-        lobbyRef.child("users").child(globalPlayer.getName()).addValueEventListener(new ValueEventListener() {
+        kickListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if((boolean) snapshot.child("kick").getValue()){
@@ -211,7 +211,7 @@ public class Lobby extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
 
     }
 
@@ -222,7 +222,7 @@ public class Lobby extends AppCompatActivity {
         lobbyRef.child("users").addValueEventListener(usersListener);
         lobbyRef.child("disconnected").addValueEventListener(dcListener);
         lobbyRef.child("start").addValueEventListener(startListener);
-
+        lobbyRef.child("users").child(globalPlayer.getName()).addValueEventListener(kickListener);
     }
 
     @Override
@@ -233,6 +233,7 @@ public class Lobby extends AppCompatActivity {
         lobbyRef.child("start").removeEventListener(startListener);
         lobbyRef.child("disconnected").removeEventListener(dcListener);
         lobbyRef.child("users").removeEventListener(usersListener);
+        lobbyRef.child("users").child(globalPlayer.getName()).removeEventListener(kickListener);
     }
 
     @Override
