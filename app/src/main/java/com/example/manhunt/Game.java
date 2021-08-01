@@ -793,14 +793,26 @@ public class Game extends FragmentActivity implements OnMapReadyCallback {
                 }
             }
         }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(Game.this, "ManhuntNotif");
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, builder.setContentTitle("Manhunt")
-                .setContentText("someone is " + (int) shortestDistance + " meters away...")
-                .setSmallIcon(R.drawable.m_icon_colorised3)
-                .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                .build());
+        if(shortestDistance < 50){
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(Game.this, "ManhuntNotif");
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(1, builder.setContentTitle("Manhunt")
+                    .setContentText("someone is " + (int) shortestDistance + " meters away...")
+                    .setSmallIcon(R.drawable.m_icon_colorised3)
+                    .setAutoCancel(true)
+                    .setOnlyAlertOnce(true)
+                    .build());
+        }
+        else{
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(Game.this, "ManhuntNotif");
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(1, builder.setContentTitle("Manhunt")
+                    .setContentText("There is no one nearby...")
+                    .setSmallIcon(R.drawable.m_icon_colorised3)
+                    .setAutoCancel(true)
+                    .setOnlyAlertOnce(true)
+                    .build());
+        }
     }
 
     //Checks if there are any runners remaining signaling a game end. Called whenever a user moves in the database.
