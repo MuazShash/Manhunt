@@ -8,6 +8,7 @@ public class GlobalPlayerClass extends Application {
     private String name;
     private boolean hunter = false;
     private boolean leader = false;
+    private boolean locationPermissions = false;
     private double longitude;
     private double latitude;
     int[] settings = new int[6];
@@ -16,6 +17,18 @@ public class GlobalPlayerClass extends Application {
     private boolean hunterWins = true, runningInBackground = false;
     private MediaPlayer mpTheme;
     private String notificationMessage;
+
+
+
+    public boolean isLocationPermissions() {
+        return locationPermissions;
+    }
+
+    public void setLocationPermissions(boolean locationPermissions) {
+        this.locationPermissions = locationPermissions;
+    }
+
+
     public boolean isHunterWins() {
         return hunterWins;
     }
