@@ -12,7 +12,7 @@ public class GlobalPlayerClass extends Application {
     private double longitude;
     private double latitude;
     int[] settings = new int[6];
-    double[] userStats = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double[] userStats = {0.0, 0.0, 0.0};
     private String lobbyChosen = "";
     private boolean hunterWins = true, runningInBackground = false;
     private MediaPlayer mpTheme;

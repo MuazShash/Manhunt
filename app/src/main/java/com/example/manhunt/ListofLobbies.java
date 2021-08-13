@@ -128,7 +128,6 @@ public class ListofLobbies extends AppCompatActivity {
                             usernameList.clear();
                             //write username to database here with some defaults
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("hunter").setValue(false);
-                            myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("caught").setValue(false);
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("leader").setValue(false);
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("latitude").setValue(0.0);
                             myRef.child("lobbies").child(LobbyChosen).child("users").child(username).child("longitude").setValue(0.0);

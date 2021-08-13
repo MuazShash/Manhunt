@@ -1,11 +1,12 @@
 package com.example.manhunt;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.renderscript.Sampler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,8 +29,17 @@ public class EndGame extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference lobbyRef;
     ListView playerListView; //listview variable
-    ValueEventListener usersListener;
+    ValueEventListener usersListener, statsListener;
     Button backToStart;
+
+    private final int TIME_ALIVE = 0;
+    private final int RUNNERS_CAUGHT = 1;
+    private final int CLOSE_CALLS = 2;
+
+    private String[] awards = {"page 1", "page 2", "page 3", "page 4"};
+
+    ViewPager mViewPager;
+    ViewPagerAdapter mViewPagerAdapter;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -40,10 +50,14 @@ public class EndGame extends AppCompatActivity {
         lobbyRef = database.getReference().child("lobbies").child(globalPlayer.getLobbyChosen());
         //showing whether hunters or runners have won in the textview
         txtWinner = (TextView) findViewById(R.id.winnerType);
-        gameStats = (TextView) findViewById(R.id.gameStats);
 
         //back to start button
         backToStart = (Button) findViewById(R.id.backToStart);
+
+        mViewPager = (ViewPager)findViewById(R.id.viewPagerMain);
+        mViewPagerAdapter = new ViewPagerAdapter(EndGame.this, awards);
+        mViewPager.setAdapter(mViewPagerAdapter);
+
     }
 
     protected void onStart() {
@@ -59,6 +73,45 @@ public class EndGame extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
+
+        statsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(Double.parseDouble(String.valueOf(snapshot.child("best_runner").child("time_alive").getValue())) < globalPlayer.getUserStat(TIME_ALIVE)){
+                    lobbyRef.child("stats").child("best_runner").child("time_alive").setValue(globalPlayer.getUserStat(TIME_ALIVE));
+                    lobbyRef.child("stats").child("best_runner").child("name").setValue(globalPlayer.getName());
+                }
+
+                if((long) snapshot.child("best_hunter").child("catches").getValue() < globalPlayer.getUserStat(RUNNERS_CAUGHT)){
+                    lobbyRef.child("stats").child("best_hunter").child("catches").setValue(globalPlayer.getUserStat(RUNNERS_CAUGHT));
+                    lobbyRef.child("stats").child("best_hunter").child("name").setValue(globalPlayer.getName());
+                }
+
+                if((long) snapshot.child("most_evasive").child("close_calls").getValue() < globalPlayer.getUserStat(CLOSE_CALLS)){
+                    lobbyRef.child("stats").child("most_evasive").child("close_calls").setValue(globalPlayer.getUserStat(CLOSE_CALLS));
+                    lobbyRef.child("stats").child("most_evasive").child("name").setValue(globalPlayer.getName());
+                }
+
+                if((long) snapshot.child("first_caught").child("time_alive").getValue() > globalPlayer.getUserStat(TIME_ALIVE)){
+                    lobbyRef.child("stats").child("first_caught").child("time_alive").setValue(globalPlayer.getUserStat(TIME_ALIVE));
+                    lobbyRef.child("stats").child("first_caught").child("name").setValue(globalPlayer.getName());
+                }
+
+                awards[0] = "Best Runner\n" + String.valueOf(snapshot.child("best_runner").child("name").getValue()) + "\n" + String.valueOf(snapshot.child("best_runner").child("time_alive").getValue()) + " minutes spent running";
+                awards[1] = "Best Hunter\n" + String.valueOf(snapshot.child("best_hunter").child("name").getValue()) + "\n" + String.valueOf(snapshot.child("best_hunter").child("catches").getValue()) + " runners caught";
+                awards[2] = "Most Evasive\n" + String.valueOf(snapshot.child("most_evasive").child("name").getValue()) + "\n" + String.valueOf(snapshot.child("most_evasive").child("close_calls").getValue()) + " close calls";
+                awards[3] = "First Caught\n" + String.valueOf(snapshot.child("first_caught").child("name").getValue()) + "\ncaught in " +  String.valueOf(snapshot.child("first_caught").child("time_alive").getValue()) + " minutes";
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+
+
     }
 
     @SuppressLint("DefaultLocale")
@@ -75,7 +128,7 @@ public class EndGame extends AppCompatActivity {
         });
 
         lobbyRef.child("users").addValueEventListener(usersListener);
-
+        lobbyRef.child("stats").addValueEventListener(statsListener);
         String winner;
 
         if (globalPlayer.isHunterWins()) {
@@ -86,28 +139,16 @@ public class EndGame extends AppCompatActivity {
 
         txtWinner.setText(new StringBuilder().append(winner).append(" win!"));
 
-        // setting game stats text
-        int DIST_TRAVELLED      = 0;
-        int TIME_ALIVE          = 3;
-        int RUNNERS_CAUGHT      = 4;
-        int FIRST_CATCH_TIME    = 5;
-        int QUICKEST_CATCH      = 6;
-
         /* DO NOT TOUCH FORMATTING */
         /* * * * * * * * * * * * * */
-        gameStats.setText(new StringBuilder().append("Performance statistics:\n\n")
-                .append("Distance travelled:     ").append(String.format("%.1f" , globalPlayer.userStats[DIST_TRAVELLED])).append(" m\n")
-                .append("Time alive:                   ").append(String.format("%.1f" , globalPlayer.userStats[TIME_ALIVE] / 1000)).append(" s\n")
-                .append("Runners caught:         ").append(String.format("%.0f" , globalPlayer.userStats[RUNNERS_CAUGHT])).append("\n")
-                .append("First catch:                  ").append(String.format("%.1f" , globalPlayer.userStats[FIRST_CATCH_TIME] / 1000)).append(" s\n")
-                .append("Quickest catch:           ").append(String.format("%.1f" , globalPlayer.userStats[QUICKEST_CATCH] / 1000)).append(" s").toString()
-        );
+
     }
 
     protected void onPause() {
         super.onPause();
 
         lobbyRef.child("users").removeEventListener(usersListener);
+        lobbyRef.child("stats").removeEventListener(statsListener);
     }
 
     protected void onStop() {
@@ -117,26 +158,6 @@ public class EndGame extends AppCompatActivity {
             lobbyRef.setValue(null);
         } else if (!globalPlayer.isLeader()) {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
-        }
-    }
-
-
-    private void showPlayers(DataSnapshot dataSnapshot) {
-        playerListView = (ListView) findViewById(R.id.endPlayers);//the list view is the lobbies list view
-
-        ArrayList<String> players = new ArrayList<>();
-
-        ArrayAdapter arrayAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1, players); //creating an arrayadapter for the listview
-        playerListView.setAdapter(arrayAdapter2); //setting the views adapter to array adapter
-
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            if ((boolean) snapshot.child("hunter").getValue()) {
-                players.add(snapshot.getKey() + ": Hunter");
-            } else if ((boolean) snapshot.child("caught").getValue()) {
-                players.add(snapshot.getKey() + ": Caught");
-            } else {
-                players.add(snapshot.getKey() + ": Escaped");
-            }
         }
     }
 }

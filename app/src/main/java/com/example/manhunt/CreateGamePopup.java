@@ -104,7 +104,6 @@ public class CreateGamePopup extends AppCompatActivity {
 
                     //setting default user attributes on firebase
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("hunter").setValue(false);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("caught").setValue(false);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("leader").setValue(true);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("latitude").setValue(0.0);
                     myRef.child(globalPlayer.getLobbyChosen()).child("users").child(globalPlayer.getName()).child("longitude").setValue(0.0);
@@ -122,6 +121,16 @@ public class CreateGamePopup extends AppCompatActivity {
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("timer").setValue(5);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("hunters").setValue(1);
                     globalPlayer.setSettings(3, 1);
+
+                    //Stats
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_hunter").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_hunter").child("catches").setValue(0);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_runner").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_runner").child("time_alive").setValue(0);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("first_caught").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("first_caught").child("time_alive").setValue(0);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("most_evasive").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("most_evasive").child("close_calls").setValue(0);
 
                     startActivity(new Intent(CreateGamePopup.this, Lobby.class)); //open lobby activity
                     finish();
