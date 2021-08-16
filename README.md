@@ -1,7 +1,7 @@
 # Manhunt
 
 * [What is Manhunt?](https://github.com/MuazShash/Manhunt/blob/main/README.md#what-is-manhunt)
-* [How is works](https://github.com/MuazShash/Manhunt/blob/main/README.md#how-it-works)
+* [How it works](https://github.com/MuazShash/Manhunt/blob/main/README.md#how-it-works)
 * [How to play](https://github.com/MuazShash/Manhunt/blob/main/README.md#how-to-play)
 * [In-game settings](https://github.com/MuazShash/Manhunt/blob/main/README.md#in-game-settings)
 
