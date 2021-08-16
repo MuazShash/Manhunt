@@ -11,9 +11,9 @@
 Manhunt is an app made by three friends (Muaz, Omar, and Julian) to extend the experience of the classic game of manhunt.
 
 ### How it works:
-In the classic game of manhunt, one person – called the hunter – is it. When the hunter catches a runner, they are "it" with them. The last runner left wins the game.
+In the classic game of manhunt, one person – called the hunter – is "it". When the hunter catches a runner, they are "it" with them. The last runner left wins the game.
 
-With the Manhunt app, everyone playing can simultaneously join a game that will track their locations in real-time and lets hunters see the locations of runners at regular intervals. This opens the playing field for more unique strategies and tactics from the hunters as well as allows for more variety in where and when you can play.
+With the Manhunt app, everyone playing can simultaneously join a game that will track and let hunters see their locations in real-time. This opens the playing field for more unique strategies and tactics from the hunters as well as allows for more variety in where and when you can play.
 
 ### How to play:
 * Step 1: Make sure you have a internet or data connection enabled. Pick a unique name that can differentiate you from your fellow players.
