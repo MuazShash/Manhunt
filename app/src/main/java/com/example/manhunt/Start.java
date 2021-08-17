@@ -129,7 +129,6 @@ public class Start extends AppCompatActivity {
 
                 } else if (!username.equals("") && ContextCompat.checkSelfPermission(Start.this,
                         Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(Start.this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) { // once they have a username
                     // set username
                     globalPlayer.setName(username);
