@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.manhunt">
+    package="com.ThreeFriendsInc.manhunt">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
-        android:name=".GlobalPlayerClass"
+        android:name="com.ThreeFriendsInc.manhunt.GlobalPlayerClass"
         android:allowBackup="true"
         android:icon="@drawable/m_icon_colorised3"
         android:label="@string/app_name"
@@ -28,33 +28,33 @@
         android:theme="@style/Theme.Manhunt"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".EndGame"
+            android:name="com.ThreeFriendsInc.manhunt.EndGame"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Manhunt.NoActionBar"
             tools:ignore="LockedOrientationActivity"></activity>
         <activity
-            android:name=".ListOfPlayers"
+            android:name="com.ThreeFriendsInc.manhunt.ListOfPlayers"
             android:label="@string/title_activity_list_of_players"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.listOfPlayersTheme"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".CreateGamePopup"
+            android:name="com.ThreeFriendsInc.manhunt.CreateGamePopup"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.CreateGamePopup"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Options"
+            android:name="com.ThreeFriendsInc.manhunt.Options"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Manhunt.NoActionBar"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Lobby"
+            android:name="com.ThreeFriendsInc.manhunt.Lobby"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Manhunt.NoActionBar"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Game"
+            android:name="com.ThreeFriendsInc.manhunt.Game"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Manhunt.NoActionBar"
             tools:ignore="LockedOrientationActivity" />
@@ -74,7 +74,7 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:name=".Start"
+            android:name="com.ThreeFriendsInc.manhunt.Start"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Manhunt.NoActionBar"
@@ -86,13 +86,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ListofLobbies"
+            android:name="com.ThreeFriendsInc.manhunt.ListofLobbies"
             android:label="Lobbies"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.popupTheme"
             tools:ignore="LockedOrientationActivity" />
 
-        <service android:name=".BackgroundLocationService" />
+        <service android:name="com.ThreeFriendsInc.manhunt.BackgroundLocationService" />
     </application>
 
 </manifest>

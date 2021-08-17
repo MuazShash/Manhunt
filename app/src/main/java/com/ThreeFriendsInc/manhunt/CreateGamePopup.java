@@ -1,6 +1,5 @@
-package com.example.manhunt;
+package com.ThreeFriendsInc.manhunt;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;

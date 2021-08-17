@@ -1,4 +1,4 @@
-package com.example.manhunt;
+package com.ThreeFriendsInc.manhunt;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;

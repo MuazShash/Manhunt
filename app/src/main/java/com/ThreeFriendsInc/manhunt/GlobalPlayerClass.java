@@ -1,4 +1,4 @@
-package com.example.manhunt;
+package com.ThreeFriendsInc.manhunt;
 
 import android.app.Application;
 import android.content.Context;
