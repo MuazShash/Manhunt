@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:208386603631:android:166f1e850530fb8400eb9a",
+        "mobilesdk_app_id": "1:208386603631:android:e5214694d2c7573800eb9a",
         "android_client_info": {
-          "package_name": "com.example.manhunt"
+          "package_name": "com.ThreeFriendsInc.manhunt"
         }
       },
       "oauth_client": [
