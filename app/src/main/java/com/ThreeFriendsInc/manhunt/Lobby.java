@@ -1,4 +1,4 @@
-package com.example.manhunt;
+package com.ThreeFriendsInc.manhunt;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -28,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Lobby extends AppCompatActivity {
 
