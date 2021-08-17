@@ -115,9 +115,7 @@ public class Start extends AppCompatActivity {
                 //if location permissions have not ben granted, the user will not be able to move forward in the app
                 if (ContextCompat.checkSelfPermission(Start.this,
                         Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(Start.this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED) {
+                        != PackageManager.PERMISSION_GRANTED) {
 
                     Toast.makeText(Start.this, "Please allow location access to play Manhunt", Toast.LENGTH_SHORT).show();
                 }
