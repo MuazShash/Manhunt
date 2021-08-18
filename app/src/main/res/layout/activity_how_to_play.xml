@@ -8,15 +8,225 @@
     tools:context=".CreateGamePopup">
 
     <TextView
-        android:id="@+id/Instructions"
-        android:layout_width="302dp"
-        android:layout_height="360dp"
-        android:layout_marginTop="200dp"
-        android:ellipsize="none"
+        android:id="@+id/GitHyperlink"
+        android:layout_width="120dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="468dp"
         android:linksClickable="true"
         android:scrollHorizontally="false"
+        android:text="@string/hyperlink"
+        android:gravity="center"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions5"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="156dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="the game, they can select their starting role"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="80dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="1. Enter a username (must be unique)."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions2"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="136dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="3. Once everyone from your party has joined"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions4"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="176dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="(hunter/runner), the host can set the settings,"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions6"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="196dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="and the game is ready to begin."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions7"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="224dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="4. When the host clicks 'START GAME' all the"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions8"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="244dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="players will be put into the game. Runners have"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions9"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="264dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="a head start before Hunters can catch them."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions10"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="292dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="5. The goal for the runners is to evade capture."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions11"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="312dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="The goal for the hunters is to capture all the"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions12"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="332dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="runners. The Hunters can scan to see Runners "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions13"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="352dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="on the map."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions14"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="380dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="6. The game ends when all the Runners have"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions15"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="400dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="been caught, or when the time limit runs out."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions16"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="444dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="For more info and a full breakdown, check out"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtInstructions3"
+        android:layout_width="302dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="108dp"
+        android:linksClickable="true"
+        android:scrollHorizontally="false"
+        android:text="2. Create a new lobby, or join a friend's lobby."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.669"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,8 +234,9 @@
         android:id="@+id/HowToPlayTitle"
         android:layout_width="302dp"
         android:layout_height="50dp"
-        android:layout_marginTop="144dp"
+        android:layout_marginTop="10dp"
         android:text="How to play:"
+        android:gravity="center"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"

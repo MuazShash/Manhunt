@@ -42,7 +42,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="420dp"
         android:text="Game Time Limit (min):"
         android:textColor="@color/text_color"/>
 
@@ -53,7 +53,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="396dp"
+        android:layout_marginTop="416dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:max="120"
@@ -90,40 +90,13 @@
         android:thumb="@drawable/slider"/>
 
     <TextView
-        android:id="@+id/txtDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="160dp"
-        android:text="Capture Distance (m):"
-        android:textColor="@color/text_color"/>
-
-    <SeekBar
-        android:id="@+id/seekDistance"
-        android:layout_width="149dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="156dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
-        android:max="10"
-        android:min="1"
-        android:progressBackgroundTint="@color/accent_2"
-        android:progressTint="@color/button_accent"
-        android:thumb="@drawable/slider"/>
-
-    <TextView
         android:id="@+id/txtBoundary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="220dp"
+        android:layout_marginTop="180dp"
         android:text="Game Boundary Radius (m):"
         android:textColor="@color/text_color"/>
 
@@ -134,7 +107,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="176dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:max="5000"
@@ -150,7 +123,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="276dp"
+        android:layout_marginTop="256dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:max="60"
@@ -166,7 +139,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="260dp"
         android:text="Countdown Timer (s):"
         android:textColor="@color/text_color"/>
 

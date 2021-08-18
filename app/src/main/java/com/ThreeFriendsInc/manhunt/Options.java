@@ -57,10 +57,10 @@ public class Options extends AppCompatActivity {
         txtCD = findViewById(R.id.txtCD);
         getCD();
 
-        seekDistance = findViewById(R.id.seekDistance);
+        /*seekDistance = findViewById(R.id.seekDistance);
         txtDistance = findViewById(R.id.txtDistance);
         seekDistance.setOnSeekBarChangeListener(seekDistanceChange);
-        getDistance();
+        getDistance();*/
 
         seekBoundary = findViewById(R.id.seekBoundary);
         txtBoundary = findViewById(R.id.txtBoundary);
@@ -139,7 +139,7 @@ public class Options extends AppCompatActivity {
         }
     };
 
-    SeekBar.OnSeekBarChangeListener seekDistanceChange = new SeekBar.OnSeekBarChangeListener() {
+    /* SeekBar.OnSeekBarChangeListener seekDistanceChange = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             intDistance = progress;
@@ -156,7 +156,7 @@ public class Options extends AppCompatActivity {
         public void onStopTrackingTouch(SeekBar seekBar) {
 
         }
-    };
+    }; */
 
     SeekBar.OnSeekBarChangeListener seekBoundaryChange = new SeekBar.OnSeekBarChangeListener() {
         @Override

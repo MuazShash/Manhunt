@@ -113,11 +113,11 @@ public class CreateGamePopup extends AppCompatActivity {
                     globalPlayer.setLeader(true);
 
                     //setting default lobby settings on firebase
-                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("boundary").setValue(500);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("cooldown").setValue(5);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("boundary").setValue(1000);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("cooldown").setValue(60);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("distance").setValue(5);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("time_limit").setValue(60);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("timer").setValue(5);
+                    myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("timer").setValue(25);
                     myRef.child(globalPlayer.getLobbyChosen()).child("settings").child("hunters").setValue(1);
                     globalPlayer.setSettings(3, 1);
 
