@@ -20,9 +20,9 @@ public class HowToPlay extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
-        TextView link;
-        link = (TextView) findViewById(R.id.GitHyperlink);
         setContentView(R.layout.activity_how_to_play); //setting content view
+
+        TextView link = (TextView) findViewById(R.id.GitHyperlink);
 
         //for rounded edges
         this.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
