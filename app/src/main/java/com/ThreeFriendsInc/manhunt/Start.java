@@ -88,6 +88,7 @@ public class Start extends AppCompatActivity {
 
         final Button JoinGame = (Button) findViewById(R.id.joinGame);
         final Button CreateGame = (Button) findViewById(R.id.createGame);
+        final Button HowTo = (Button) findViewById(R.id.howToPlay);
         final TextInputEditText usernameInput = (TextInputEditText) findViewById(R.id.NameTextInput);
 
 
@@ -142,6 +143,13 @@ public class Start extends AppCompatActivity {
                     // display available lobbies
                     startActivity(new Intent(Start.this, ListofLobbies.class));
                 }
+            }
+        });
+
+        HowTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Start.this, HowToPlay.class));
             }
         });
 

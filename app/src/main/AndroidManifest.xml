@@ -44,6 +44,11 @@
             android:theme="@style/Theme.AppCompat.CreateGamePopup"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:name="com.ThreeFriendsInc.manhunt.HowToPlay"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.CreateGamePopup"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name="com.ThreeFriendsInc.manhunt.Options"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Manhunt.NoActionBar"
