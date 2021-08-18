@@ -39,6 +39,18 @@ public class HowToPlay extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        globalPlayer.resumeTheme();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        globalPlayer.pauseTheme();
+    }
+
+    @Override
     public void onBackPressed() {
         finish();
     }
