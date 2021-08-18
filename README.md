@@ -16,7 +16,7 @@ In the classic game of manhunt, one person – called the hunter – is "it". Wh
 With the Manhunt app, everyone playing can simultaneously join a game that will track and let hunters see their locations in real-time. This opens the playing field for more unique strategies and tactics from the hunters as well as allows for more variety in where and when you can play.
 
 ### How to play:
-* Step 1: Make sure you have a internet or data connection enabled. Pick a unique name that can differentiate you from your fellow players.
+* Step 1: Make sure you have an internet or data connection enabled. Pick a unique name that can differentiate you from your fellow players.
 * Step 2: Either create a new lobby, or if someone has already made one, join theirs.
 * Step 3: Once everyone from your party has joined the lobby, selected their starting role (hunter/runner), and the host has edited the settings, you are ready to start.
 * Step 4: When the host clicks "START GAME" all the players will be put into the game. Runners have a head start before the hunters can catch them.
