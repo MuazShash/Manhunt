@@ -32,7 +32,7 @@ public class Lobby extends AppCompatActivity {
 
     //database reference
     DatabaseReference lobbyRef;
-    ValueEventListener dcListener, startListener, usersListener, kickListener;
+    ValueEventListener dcListener, startListener, usersListener, kickListener, settingsListener;
 
     // Write a string when this client loses connection
     ListView listOfPlayers;
@@ -110,25 +110,28 @@ public class Lobby extends AppCompatActivity {
         };
 
         //putting every user into the game now
+
         startListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if ((boolean) snapshot.getValue()) {
-                    lobbyRef.child("settings").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            int i = 0;
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError error) { }
-                    });
+                    lobbyRef.child("settings").addValueEventListener(settingsListener);
                     startActivity(new Intent(Lobby.this, Game.class)); //open maps game activity
                     globalPlayer.stopTheme();
                     finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) { }
+        };
+
+        settingsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                int i = 0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    globalPlayer.setSettings(i++, Integer.parseInt(String.valueOf(dataSnapshot.getValue())));
                 }
             }
 
@@ -239,10 +242,12 @@ public class Lobby extends AppCompatActivity {
         super.onStop();
 
         if (globalPlayer.isLeader() && !globalPlayer.isRunningInBackground()) {
+            lobbyRef.child("settings").removeEventListener(settingsListener);
             lobbyRef.child("disconnect").setValue(true);
             lobbyRef.removeValue();
 
         } else if(!globalPlayer.isRunningInBackground()){
+            lobbyRef.child("settings").removeEventListener(settingsListener);
             lobbyRef.child("users").child(globalPlayer.getName()).removeValue();
         }
     }

@@ -81,7 +81,7 @@ Game extends FragmentActivity implements OnMapReadyCallback {
     private Button scan, players, forfeit;
     private Location lastLocation = new Location("");
     boolean ready = false, inBound = true, gameEnd = false, booting = true, doubleBackToExitPressedOnce = false, updateMap;
-    long startTime = System.currentTimeMillis(), warningTimer, runTime, cooldownTimer = System.currentTimeMillis(), caughtTimer = System.currentTimeMillis(), gameEndTime; //Stores information for round start and out of bounds timers
+    long startTime = System.currentTimeMillis(), warningTimer, runTime, cooldownTimer = 0, caughtTimer = System.currentTimeMillis(), gameEndTime; //Stores information for round start and out of bounds timers
     double startLat, startLng;
     int zoom;
 
@@ -281,7 +281,7 @@ Game extends FragmentActivity implements OnMapReadyCallback {
                     globalPlayer.setHunter(true); //They are hunter on their device
                     mpCaught.setVolume(0.1f, 0.1f);
                     mpCaught.start();
-                    globalPlayer.setUserStat(TIME_ALIVE, (startTime - System.currentTimeMillis())/60000);
+                    globalPlayer.setUserStat(TIME_ALIVE, (System.currentTimeMillis() - startTime)/60000);
                     showToast("You have been caught by a hunter!");
                     showStatus("hunter", Color.RED);
                     ShowButton();
@@ -490,6 +490,9 @@ Game extends FragmentActivity implements OnMapReadyCallback {
                         stopService(backgroundServiceIntent);
                         startActivity(new Intent(Game.this, EndGame.class)); //sending users to the endgame screen
                         globalPlayer.setRunningInBackground(false);
+                        if(!globalPlayer.isHunter()){
+                            globalPlayer.setUserStat(TIME_ALIVE, (System.currentTimeMillis() - startTime - 7000)/60000);
+                        }
                         finish(); //kills game activity
                     }
                 } else {
@@ -576,10 +579,15 @@ Game extends FragmentActivity implements OnMapReadyCallback {
     }
 
     protected void onDestroy(){
+        super.onDestroy();
+
         if(quit){
             Process.killProcess(Process.myPid());
         }
-        super.onDestroy();
+
+        Intent stopIntent = new Intent(this, BackgroundLocationService.class);
+        stopIntent.setAction("stop_service");
+        startService(stopIntent);
 
         if (globalPlayer.isLeader() && !gameEnd) {
             lobbyRef.setValue(null);
@@ -587,9 +595,7 @@ Game extends FragmentActivity implements OnMapReadyCallback {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
 
-        Intent stopIntent = new Intent(this, BackgroundLocationService.class);
-        stopIntent.setAction("stop_service");
-        startService(stopIntent);
+
 
     }
 
@@ -688,13 +694,12 @@ Game extends FragmentActivity implements OnMapReadyCallback {
                     CountDownTimer countDown = new CountDownTimer(5000, 2000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
-                            showToast("They will turn into a hunter within " + Long.toString(millisUntilFinished/10) + " seconds");
+                            showToast("They will turn into a hunter within " + Long.toString(millisUntilFinished/1000) + " seconds");
                         }
 
                         @Override
                         public void onFinish() {
                             lobbyRef.child("users").child(playerName).child("hunter").setValue(true); //Convert the runner to a hunter
-                            lobbyRef.child("users").child(playerName).child("caught").setValue(true); //Convert the runner to a hunter
                             // updating user's stats
                             globalPlayer.setUserStat(RUNNERS_CAUGHT, globalPlayer.getUserStat(RUNNERS_CAUGHT) + 1.0);
                         }
