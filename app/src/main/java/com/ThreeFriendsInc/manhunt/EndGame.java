@@ -33,7 +33,7 @@ public class EndGame extends AppCompatActivity {
     private final int RUNNERS_CAUGHT = 1;
     private final int CLOSE_CALLS = 2;
 
-    private String[] awards = {"page 1", "page 2", "page 3", "page 4"};
+    private String[] awards = {"Best Runner", "Best Hunter", "Most Evasive", "First Caught"};
 
     ViewPager mViewPager;
     ViewPagerAdapter mViewPagerAdapter;
