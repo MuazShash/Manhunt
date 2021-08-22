@@ -37,6 +37,7 @@ public class Start extends AppCompatActivity {
     WifiAwareManager mWifiAwareManager;
     LocationManager locationManager;
     public static final int locationRequest = 20;
+    public static final int backgroundLocationRequest = 21;
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
@@ -168,7 +169,8 @@ public class Start extends AppCompatActivity {
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(this)
                         .setTitle("Location Permission")
-                        .setMessage("Manhunt needs your location to continue")
+                        .setMessage("Manhunt collects location data for proper game running. The purpose of this is for Hunters to be able to see Runners " +
+                                "and to check if a Runner has been caught.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -208,7 +210,8 @@ public class Start extends AppCompatActivity {
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
                 new AlertDialog.Builder(this)
                         .setTitle("Background Location Permission")
-                        .setMessage("Manhunt needs your Background location to continue")
+                        .setMessage("Manhunt collects background location data to enable proper Hunter and Runner capturing even when the app is closed or not in use. " +
+                                "This is for the purpose of users to move freely and safely without looking at their device while they play.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -249,7 +252,7 @@ public class Start extends AppCompatActivity {
                     // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED ||
+                            == PackageManager.PERMISSION_GRANTED &&
                             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                                     == PackageManager.PERMISSION_GRANTED) {
 
@@ -269,7 +272,6 @@ public class Start extends AppCompatActivity {
                 }
                 return;
             }
-
         }
     }
 
