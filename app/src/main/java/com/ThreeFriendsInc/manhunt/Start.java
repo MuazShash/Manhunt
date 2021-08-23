@@ -46,7 +46,6 @@ public class Start extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        checkBackgroundLocationPermission();
         checkLocationPermission();
         globalPlayer = (GlobalPlayerClass) getApplicationContext();
 
@@ -130,13 +129,20 @@ public class Start extends AppCompatActivity {
             public void onClick(View v) {
                 String username = usernameInput.getText().toString(); // storing username
 
+                if (ContextCompat.checkSelfPermission(Start.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(Start.this, "Please allow location access to play Manhunt", Toast.LENGTH_SHORT).show();
+                }
+
                 // if username is blank, they need to make one before advancing
                 if (username.equals("")) {
 
                     // popup asking for username
                     Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
 
-                } else { // once they have a username
+                } else  { // once they have a username
 
                     // set username
                     globalPlayer.setName(username);
@@ -199,42 +205,6 @@ public class Start extends AppCompatActivity {
             return true;
         }
 
-    }
-    public boolean checkBackgroundLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
-                new AlertDialog.Builder(this)
-                        .setTitle("Background Location Permission")
-                        .setMessage("Manhunt collects background location data to enable proper Hunter and Runner capturing even when the app is closed or not in use. " +
-                                "This is for the purpose of users to move freely and safely without looking at their device while they play.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(Start.this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, locationRequest);
-                            }
-                        })
-                        .create()
-                        .show();
-                }
-
-                else {
-
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, locationRequest);
-                }
-
-            return false;
-
-            }
-
-         else {
-            return true;
-        }
     }
 
     @Override
