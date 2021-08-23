@@ -142,7 +142,9 @@ public class Start extends AppCompatActivity {
                     // popup asking for username
                     Toast.makeText(Start.this, "Please enter a username", Toast.LENGTH_SHORT).show();
 
-                } else  { // once they have a username
+                } else if (!username.equals("") && ContextCompat.checkSelfPermission(Start.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) { // once they have a username
 
                     // set username
                     globalPlayer.setName(username);
