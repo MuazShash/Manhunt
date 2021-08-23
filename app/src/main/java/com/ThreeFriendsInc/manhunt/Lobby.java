@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +39,8 @@ public class Lobby extends AppCompatActivity {
     ListView listOfPlayers;
     GlobalPlayerClass globalPlayer;
     String lobbyChosen;
+    long dcTIme;
+
     int hunters = 0;
 
     private long lastTouchTime = 0;
@@ -244,7 +247,17 @@ public class Lobby extends AppCompatActivity {
         if (globalPlayer.isLeader() && !globalPlayer.isRunningInBackground()) {
             lobbyRef.child("settings").removeEventListener(settingsListener);
             lobbyRef.child("disconnect").setValue(true);
-            lobbyRef.removeValue();
+            CountDownTimer countDown = new CountDownTimer(3000, 2000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    lobbyRef.removeValue();
+                }
+            }.start();
 
         } else if(!globalPlayer.isRunningInBackground()){
             lobbyRef.child("settings").removeEventListener(settingsListener);

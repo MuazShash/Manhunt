@@ -590,7 +590,17 @@ Game extends FragmentActivity implements OnMapReadyCallback {
         startService(stopIntent);
 
         if (globalPlayer.isLeader() && !gameEnd) {
-            lobbyRef.setValue(null);
+            CountDownTimer countDown = new CountDownTimer(3000, 2000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    lobbyRef.removeValue();
+                }
+            }.start();
         } else if (!globalPlayer.isLeader()) {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }
