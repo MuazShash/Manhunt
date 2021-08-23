@@ -588,10 +588,19 @@ Game extends FragmentActivity implements OnMapReadyCallback {
         Intent stopIntent = new Intent(this, BackgroundLocationService.class);
         stopIntent.setAction("stop_service");
         startService(stopIntent);
-
+        lobbyRef.child("disconnected").setValue(true);
         if (globalPlayer.isLeader() && !gameEnd) {
-            lobbyRef.child("disconnected").setValue(true);
-            lobbyRef.removeValue();
+            CountDownTimer countDown = new CountDownTimer(5000, 2000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                }
+
+                @Override
+                public void onFinish() {
+                    lobbyRef.removeValue();
+                }
+            }.start();
+
         } else if (!globalPlayer.isLeader()) {
             lobbyRef.child("users").child(globalPlayer.getName()).setValue(null);
         }

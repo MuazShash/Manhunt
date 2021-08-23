@@ -247,7 +247,16 @@ public class Lobby extends AppCompatActivity {
         if (globalPlayer.isLeader() && !globalPlayer.isRunningInBackground()) {
             lobbyRef.child("settings").removeEventListener(settingsListener);
             lobbyRef.child("disconnected").setValue(true);
-            lobbyRef.removeValue();
+                CountDownTimer countDown = new CountDownTimer(5000, 2000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        lobbyRef.removeValue();
+                    }
+                }.start();
 
         } else if(!globalPlayer.isRunningInBackground()){
             lobbyRef.child("settings").removeEventListener(settingsListener);
