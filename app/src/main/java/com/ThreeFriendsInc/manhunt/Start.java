@@ -224,9 +224,7 @@ public class Start extends AppCompatActivity {
                     // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                                    == PackageManager.PERMISSION_GRANTED) {
+                            == PackageManager.PERMISSION_GRANTED) {
 
 
 
