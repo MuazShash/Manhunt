@@ -492,6 +492,7 @@ Game extends FragmentActivity implements OnMapReadyCallback {
                         globalPlayer.setRunningInBackground(false);
                         if(!globalPlayer.isHunter()){
                             globalPlayer.setUserStat(TIME_ALIVE, (System.currentTimeMillis() - startTime - 7000)/60000);
+                            System.out.println("Time Alive: " + globalPlayer.getUserStat(TIME_ALIVE));
                         }
                         finish(); //kills game activity
                     }

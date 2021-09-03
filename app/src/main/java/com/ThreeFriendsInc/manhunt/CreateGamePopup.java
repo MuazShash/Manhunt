@@ -122,13 +122,13 @@ public class CreateGamePopup extends AppCompatActivity {
                     globalPlayer.setSettings(3, 1);
 
                     //Stats
-                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_hunter").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_hunter").child("name").setValue("No one");
                     myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_hunter").child("catches").setValue(0);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_runner").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_runner").child("name").setValue("No one");
                     myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("best_runner").child("time_alive").setValue(0);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("first_caught").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("first_caught").child("name").setValue("No one");
                     myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("first_caught").child("time_alive").setValue(0);
-                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("most_evasive").child("name").setValue("Muaz");
+                    myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("most_evasive").child("name").setValue("No one");
                     myRef.child(globalPlayer.getLobbyChosen()).child("stats").child("most_evasive").child("close_calls").setValue(0);
 
                     startActivity(new Intent(CreateGamePopup.this, Lobby.class)); //open lobby activity
