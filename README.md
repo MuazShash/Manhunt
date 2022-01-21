@@ -1,4 +1,4 @@
-#![alt text](https://user-images.githubusercontent.com/59676679/150467518-7c569028-0b9d-40fd-b499-de9b6b5d785c.png)
+![alt text](https://user-images.githubusercontent.com/59676679/150467518-7c569028-0b9d-40fd-b499-de9b6b5d785c.png)
 
 * [What is Manhunt?](https://github.com/MuazShash/Manhunt/blob/main/README.md#what-is-manhunt)
 * [How it works](https://github.com/MuazShash/Manhunt/blob/main/README.md#how-it-works)
